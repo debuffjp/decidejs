@@ -40,30 +40,31 @@ export function logits(head: Pick<Head, "labels" | "dim" | "weights" | "bias">, 
 export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}) {
   const { epochs = 60, learningRate = 0.5, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
   const dim = X[0].length, C = labels.length;
+  let s = seed;
+  const rand = () => (s = (s * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
+  const idx = X.map((_, i) => i).sort(() => rand() - 0.5);
+  const nVal = Math.max(1, Math.floor(idx.length * holdout));
+  const val = idx.slice(0, nVal), fit = idx.slice(nVal);
 
-    let s = seed;
-    const rand = () => (s = (s * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
-    const idx = X.map((_, i) => i).sort(() => rand() - 0.5);
-    const nVal = Math.max(1, Math.floor(idx.length * holdout));
-    const val = idx.slice(0, nVal), fit = idx.slice(nVal);
-
+  // One training run on `rows`. With `check`, keeps the epoch that scores best on it.
+  async function run(rows: number[], nEpochs: number, check?: number[]) {
     const head = { labels, dim, weights: new Float32Array(C * dim), bias: new Float32Array(C) };
-    // Start each label at the normalised mean of its examples (nearest centroid), scaled like zero-shot similarities.
-    // With a handful of examples per label this is most of the accuracy; gradient descent refines it.
-    for (const i of fit) for (let j = 0; j < dim; j++) head.weights[y[i] * dim + j] += X[i][j];
+    // Start each label at the normalised mean of its examples (nearest centroid), scaled like zero-shot
+    // similarities. With a handful of examples per label this is most of the accuracy; gradient descent refines it.
+    for (const i of rows) for (let j = 0; j < dim; j++) head.weights[y[i] * dim + j] += X[i][j];
     for (let c = 0; c < C; c++) {
       const row = head.weights.subarray(c * dim, (c + 1) * dim);
       const norm = Math.hypot(...row) || 1;
       for (let j = 0; j < dim; j++) row[j] = (row[j] / norm) * CENTROID_SCALE;
     }
-    const acc = () => val.filter((i) => { const z = logits(head, X[i]); return z.indexOf(Math.max(...z)) === y[i]; }).length / val.length;
-    let best = { acc: acc(), weights: head.weights.slice(), bias: head.bias.slice() };
+    const acc = () => check!.filter((i) => { const z = logits(head, X[i]); return z.indexOf(Math.max(...z)) === y[i]; }).length / check!.length;
+    let best = { acc: check ? acc() : 0, weights: head.weights.slice(), bias: head.bias.slice(), epochs: 0 };
     const gW = new Float64Array(C * dim), gb = new Float64Array(C);
-
-    for (let ep = 0; ep < epochs; ep++) {
-      fit.sort(() => rand() - 0.5);
-      for (let b = 0; b < fit.length; b += BATCH) {
-        const ids = fit.slice(b, b + BATCH);
+    const order = [...rows];
+    for (let ep = 0; ep < nEpochs; ep++) {
+      order.sort(() => rand() - 0.5);
+      for (let b = 0; b < order.length; b += BATCH) {
+        const ids = order.slice(b, b + BATCH);
         gW.fill(0); gb.fill(0);
         for (const i of ids) {
           const p = softmax(logits(head, X[i]), 1);
@@ -76,16 +77,22 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
           for (let j = 0; j < dim; j++) { const k = c * dim + j; head.weights[k] -= learningRate * (gW[k] / ids.length + l2 * head.weights[k]); }
         }
       }
+      if (!check) continue;
       const a = acc();
       onEpoch?.(ep, a);
-      if (a > best.acc) best = { acc: a, weights: head.weights.slice(), bias: head.bias.slice() };
+      if (a > best.acc) best = { acc: a, weights: head.weights.slice(), bias: head.bias.slice(), epochs: ep + 1 };
     }
-    head.weights = best.weights; head.bias = best.bias;
+    return check ? { ...head, weights: best.weights, bias: best.bias, epochs: best.epochs } : { ...head, epochs: nEpochs };
+  }
 
-    let temperature = 1, bestNll = Infinity;
-    for (let t = 0.2; t <= 5; t += 0.05) {
-      const nll = val.reduce((sum, i) => sum - Math.log(softmax(logits(head, X[i]), t)[y[i]] + 1e-12), 0);
-      if (nll < bestNll) { bestNll = nll; temperature = Number(t.toFixed(2)); }
-    }
+  // Pick the epoch count and temperature on the holdout, then retrain on every example for that many epochs: with
+  // 5 examples per label, the holdout would otherwise cost each label one of its five.
+  const probe = await run(fit, epochs, val);
+  let temperature = 1, bestNll = Infinity;
+  for (let t = 0.2; t <= 5; t += 0.05) {
+    const nll = val.reduce((sum, i) => sum - Math.log(softmax(logits(probe, X[i]), t)[y[i]] + 1e-12), 0);
+    if (nll < bestNll) { bestNll = nll; temperature = Number(t.toFixed(2)); }
+  }
+  const head = await run(idx, probe.epochs);
   return { labels, dim, weights: head.weights, bias: head.bias, temperature };
 }
