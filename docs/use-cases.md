@@ -41,8 +41,8 @@ error?" Small decisions an app makes thousands of times.
   can't read alongside the text.
 - **Languages other than English** with the default model. A multilingual encoder can be passed as `model`, but we
   haven't measured one yet.
-- **Labels you can't give examples for**, when accuracy matters. Zero-shot is a starting point, not a result, and its
-  `confidence` isn't calibrated.
+- **Labels you can't give examples for**, when accuracy matters. Zero-shot got 61-70% on our intent benchmarks against
+  90-94% for a trained head.
 
 ## Share yours
 

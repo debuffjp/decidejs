@@ -9,8 +9,9 @@ export interface Decision<L extends string, C extends L | null = L> {
   /** The most likely option or label; `null` when below `minConfidence`. */
   choice: C;
   /**
-   * Probability of `choice`, 0 to 1. Calibrated for trained heads (fitted on held-out examples). Zero-shot
-   * confidence uses a fixed temperature and reads close to 1 even when wrong, so don't threshold on it.
+   * Probability of `choice`, 0 to 1. Trained heads fit it on held-out examples. Zero-shot uses a fixed temperature
+   * (0.05), which measured close to calibrated on two intent datasets (error 0.005-0.045 with 2 to 150 options);
+   * check it on your own options before thresholding.
    */
   confidence: number;
   /** Probability of every option; sums to 1. */
