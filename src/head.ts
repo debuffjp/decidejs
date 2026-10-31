@@ -37,7 +37,7 @@ export function logits(head: Pick<Head, "labels" | "dim" | "weights" | "bias">, 
 
 
 /** Fits weights, biases and temperature to embeddings `X` with label indices `y`. */
-export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}) {
+export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}, priors?: ArrayLike<number>[], priorWeight = 1) {
   const { epochs = 60, learningRate = 2, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
   const dim = X[0].length, C = labels.length;
   let s = seed;
@@ -52,6 +52,7 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
     // Start each label at the normalised mean of its examples (nearest centroid), scaled like zero-shot
     // similarities. With a handful of examples per label this is most of the accuracy; gradient descent refines it.
     for (const i of rows) for (let j = 0; j < dim; j++) head.weights[y[i] * dim + j] += X[i][j];
+    if (priors) for (let c = 0; c < C; c++) for (let j = 0; j < dim; j++) head.weights[c * dim + j] += priorWeight * priors[c][j];
     for (let c = 0; c < C; c++) {
       const row = head.weights.subarray(c * dim, (c + 1) * dim);
       const norm = Math.hypot(...row) || 1;

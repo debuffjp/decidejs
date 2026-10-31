@@ -15,7 +15,8 @@ const rows = async (n) => [...(await (await fetch(CSV + n + ".csv")).text()).mat
 const [train, test] = [await rows("train"), await rows("test")];
 const device = new URLSearchParams(location.search).get("device") || "wasm";
 let t0 = performance.now();
-const d = await createWorkerDecider({ device });
+const model = new URLSearchParams(location.search).get("model") || undefined;
+const d = await createWorkerDecider({ device, model });
 const loadSeconds = (performance.now() - t0) / 1000;
 log("loaded " + loadSeconds.toFixed(1) + " s");
 let last = performance.now(), maxStall = 0;
@@ -28,7 +29,7 @@ const ms = []; let right = 0;
 for (const ex of test) { const s = performance.now(); if ((await d.decide(ex.text, head)).choice === ex.label) right++; ms.push(performance.now() - s); }
 ms.sort((a, b) => a - b);
 
-window.__result = { device, isolated: crossOriginIsolated, threads: navigator.hardwareConcurrency, ua: navigator.userAgent, loadSeconds, trainSeconds, maxStallMs: Math.round(maxStall),
+window.__result = { model: model ?? "default", device, isolated: crossOriginIsolated, threads: navigator.hardwareConcurrency, ua: navigator.userAgent, loadSeconds, trainSeconds, maxStallMs: Math.round(maxStall),
   testAccuracy: right / test.length, p50: ms[ms.length >> 1], p95: ms[Math.floor(ms.length * 0.95)], temperature: head.temperature };
 log(JSON.stringify(window.__result, null, 2));
 </script>

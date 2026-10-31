@@ -22,9 +22,19 @@ try { cache = JSON.parse(await readFile(cacheFile, "utf8")); } catch {
   await writeFile(cacheFile, JSON.stringify(cache));
 }
 
+// PRIOR=w adds each label's readable name as w extra examples in the centroid start.
+const priorWeight = Number(process.env.PRIOR ?? 0);
+const labelVec = new Map<string, number[]>();
+if (priorWeight) {
+  const d = await createDecider({ model });
+  const all = [...new Set([...sets.bTrain, ...sets.cTrain].map((r) => r.label))];
+  const v = await d.embed(all.map((l) => l.replace(/[_-]+/g, " ").toLowerCase()));
+  all.forEach((l, i) => labelVec.set(l, v[i]));
+}
 async function accuracy(train: Row[], dev: Row[], seed = 7) {
   const labels = [...new Set(train.map((r) => r.label))].sort();
-  const head = await fitHead(train.map((r) => cache[r.text]), train.map((r) => labels.indexOf(r.label)), labels, { seed });
+  const priors = priorWeight ? labels.map((l) => labelVec.get(l)!) : undefined;
+  const head = await fitHead(train.map((r) => cache[r.text]), train.map((r) => labels.indexOf(r.label)), labels, { seed }, priors, priorWeight);
   return dev.filter((r) => { const z = logits(head, cache[r.text]); return labels[z.indexOf(Math.max(...z))] === r.label; }).length / dev.length;
 }
 const mean = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length;

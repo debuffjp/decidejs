@@ -31,7 +31,7 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "eval": "node --experimental-strip-types eval/banking77.ts",
-    "bench": "esbuild src/worker.ts src/browser.ts --bundle --format=esm --platform=browser --outdir=bench && node bench/serve.mjs",
+    "bench": "esbuild src/worker.ts src/browser.ts --bundle --format=esm --platform=browser --outdir=bench --alias:onnxruntime-web/webgpu=onnxruntime-web/wasm && node bench/serve.mjs",
     "bench:run": "node bench/run.mjs",
     "eval:suite": "node --experimental-strip-types eval/suite.ts",
     "eval:hill": "node --experimental-strip-types eval/hill.ts",
