@@ -44,7 +44,7 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
   const rand = () => (s = (s * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
   const idx = X.map((_, i) => i).sort(() => rand() - 0.5);
   const nVal = Math.max(1, Math.floor(idx.length * holdout));
-  const val = idx.slice(0, nVal), fit = idx.slice(nVal);
+  const val = idx.slice(0, nVal);
 
   // One training run on `rows`. With `check`, keeps the epoch that scores best on it.
   async function run(rows: number[], nEpochs: number, check?: number[]) {
@@ -85,14 +85,22 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
     return check ? { ...head, weights: best.weights, bias: best.bias, epochs: best.epochs } : { ...head, epochs: nEpochs };
   }
 
-  // Pick the epoch count and temperature on the holdout, then retrain on every example for that many epochs: with
-  // 5 examples per label, the holdout would otherwise cost each label one of its five.
-  const probe = await run(fit, epochs, val);
+  // Pick the epoch count and temperature on held-out examples, then retrain on every example for that many epochs:
+  // with 5 examples per label, a holdout would otherwise cost each label one of its five. A holdout under 200
+  // examples gave a temperature off by up to 0.40 calibration error, so small sets use 5 folds instead: every example
+  // is held out once and the temperature is fitted on all of them.
+  const folds = nVal < 200 ? Array.from({ length: 5 }, (_, f) => idx.filter((_, i) => i % 5 === f)) : [val];
+  const heldOut: { z: Float64Array; y: number }[] = [], foldEpochs: number[] = [];
+  for (const check of folds) {
+    const probe = await run(idx.filter((i) => !check.includes(i)), epochs, check);
+    foldEpochs.push(probe.epochs);
+    for (const i of check) heldOut.push({ z: logits(probe, X[i]), y: y[i] });
+  }
   let temperature = 1, bestNll = Infinity;
   for (let t = 0.2; t <= 5; t += 0.05) {
-    const nll = val.reduce((sum, i) => sum - Math.log(softmax(logits(probe, X[i]), t)[y[i]] + 1e-12), 0);
+    const nll = heldOut.reduce((sum, h) => sum - Math.log(softmax(h.z, t)[h.y] + 1e-12), 0);
     if (nll < bestNll) { bestNll = nll; temperature = Number(t.toFixed(2)); }
   }
-  const head = await run(idx, probe.epochs);
+  const head = await run(idx, foldEpochs.sort((a, b) => a - b)[foldEpochs.length >> 1]);
   return { labels, dim, weights: head.weights, bias: head.bias, temperature };
 }
