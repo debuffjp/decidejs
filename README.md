@@ -116,6 +116,11 @@ a threshold there.
 in-scope examples only, with `minConfidence` 0.93 picked on the validation split, 86.3% of them come back `null`,
 and 82.9% of in-scope queries are answered and right (94.0% are right with no threshold).
 
+**With few examples, try bge-small.** `createDecider({ model: "Xenova/bge-small-en-v1.5" })` (34 MB, MIT) does
+better at 5 per label (82.3% on BANKING77, 89.6% on CLINC150) and about the same with all the data (90.7%, 94.4%).
+It takes about twice as long per decision in Chrome. Pass `{ labelNames: false }` to `train()` with it: label names
+helped MiniLM but slightly hurt bge-small on the dev splits. [eval/results-bge-small.json](eval/results-bge-small.json).
+
 Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run` (Chrome).
 
 ## What it's for
