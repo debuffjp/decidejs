@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-31T07:33:51.616Z",
+  "model": "Xenova/all-MiniLM-L6-v2",
+  "results": [
+    {
+      "dataset": "banking77",
+      "perLabel": 5,
+      "accuracy": [
+        0.7412337662337662,
+        0.763961038961039,
+        0.7454545454545455
+      ],
+      "mean": 0.7502164502164502
+    },
+    {
+      "dataset": "banking77",
+      "perLabel": 10,
+      "accuracy": [
+        0.8087662337662338,
+        0.797077922077922,
+        0.812987012987013
+      ],
+      "mean": 0.8062770562770564
+    },
+    {
+      "dataset": "banking77",
+      "perLabel": 25,
+      "accuracy": [
+        0.8662337662337662,
+        0.8467532467532467,
+        0.836038961038961
+      ],
+      "mean": 0.8496753246753247
+    },
+    {
+      "dataset": "banking77",
+      "perLabel": "all",
+      "accuracy": [
+        0.8935064935064935
+      ],
+      "mean": 0.8935064935064935
+    },
+    {
+      "dataset": "clinc150",
+      "perLabel": 5,
+      "accuracy": [
+        0.8491111111111111,
+        0.852,
+        0.8417777777777777
+      ],
+      "mean": 0.8476296296296296
+    },
+    {
+      "dataset": "clinc150",
+      "perLabel": 10,
+      "accuracy": [
+        0.8831111111111111,
+        0.8842222222222222,
+        0.888
+      ],
+      "mean": 0.8851111111111111
+    },
+    {
+      "dataset": "clinc150",
+      "perLabel": 25,
+      "accuracy": [
+        0.9088888888888889,
+        0.9122222222222223,
+        0.9093333333333333
+      ],
+      "mean": 0.910148148148148
+    },
+    {
+      "dataset": "clinc150",
+      "perLabel": "all",
+      "accuracy": [
+        0.9388888888888889
+      ],
+      "mean": 0.9388888888888889
+    },
+    {
+      "dataset": "clinc150-oos",
+      "threshold": 0.93,
+      "inScopeAccuracyNoThreshold": 0.9388888888888889,
+      "inScopeAccuracyAtThreshold": 0.8006666666666666,
+      "oosRecall": 0.878,
+      "oosAcceptedAsInScope": 0.122
+    }
+  ]
+}

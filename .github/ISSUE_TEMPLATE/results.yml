@@ -1,0 +1,16 @@
+name: Results on my data
+description: Share how decidejs did on a real task, good or bad
+labels: [results]
+body:
+  - type: textarea
+    attributes:
+      label: Task
+      description: What you're deciding, the labels and how many examples per label.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Numbers
+      description: Accuracy, speed, model, browser or Node, machine. Compared with anything else?
+    validations:
+      required: true

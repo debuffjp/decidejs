@@ -3,9 +3,16 @@
 // accurate. Both return the option literals as the choice type.
 import { pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
 
+/** The result of `decide()`. */
 export interface Decision<L extends string> {
+  /** The most likely option or label. */
   choice: L;
+  /**
+   * Probability of `choice`, 0 to 1. Calibrated for trained heads (fitted on held-out examples). Zero-shot
+   * confidence uses a fixed temperature and reads close to 1 even when wrong, so don't threshold on it.
+   */
   confidence: number;
+  /** Probability of every option; sums to 1. */
   probs: Record<L, number>;
 }
 
@@ -19,31 +26,40 @@ export interface Head<L extends string = string> {
   temperature: number;
 }
 
+/** One labelled example for `train()`. */
 export interface Example<L extends string> {
   text: string;
   label: L;
 }
 
 export interface TrainOptions {
+  /** Passes over the examples. Default 60; the best holdout epoch is kept. */
   epochs?: number;
+  /** Default 0.5. */
   learningRate?: number;
+  /** Weight decay. Default 1e-4. */
   l2?: number;
-  /** Share of examples held out for early stopping and temperature fitting. */
+  /** Share of examples held out for early stopping and temperature fitting. Default 0.1. */
   holdout?: number;
+  /** Seed for the holdout split and shuffling, so runs repeat. Default 7. */
   seed?: number;
+  /** Called after each epoch with accuracy on the holdout. */
   onEpoch?: (epoch: number, holdoutAccuracy: number) => void;
 }
 
 export interface DeciderOptions {
+  /** A Hugging Face sentence-embedding model with ONNX weights. Default `Xenova/all-MiniLM-L6-v2` (23.7 MB at q8). */
   model?: string;
   /** Defaults to transformers.js' choice: wasm in browsers, cpu in Node. */
   device?: "wasm" | "webgpu" | "cpu";
+  /** Weight precision. Default `q8`. */
   dtype?: "q8" | "fp16" | "fp32";
-  /** Softmax temperature for zero-shot similarities. */
+  /** Softmax temperature for zero-shot similarities. Default 0.05. */
   temperature?: number;
 }
 
 const BATCH = 64;
+const CENTROID_SCALE = 20;
 
 // Lets a tab paint and handle input between training batches. A message-channel task, unlike setTimeout, isn't
 // throttled to once a second (or minute) when the tab is in the background.
@@ -82,6 +98,11 @@ function logits(head: Pick<Head, "labels" | "dim" | "weights" | "bias">, x: Arra
   return z;
 }
 
+/**
+ * Loads the encoder (downloaded once, then cached by the browser or transformers.js) and returns `decide()` and
+ * `train()`. In a browser, prefer `createWorkerDecider()` from `decidejs/browser`: the encoder blocks the thread
+ * it runs on.
+ */
 export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device, dtype = "q8", temperature = 0.05 }: DeciderOptions = {}) {
   const embed: FeatureExtractionPipeline = await (pipeline as any)("feature-extraction", model, { device, dtype });
   const optionCache = new Map<string, number[][]>();
@@ -95,6 +116,10 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
     return out;
   }
 
+  /**
+   * Picks one of `options` (zero-shot) or one of a trained head's labels. The result's `choice` has the literal type
+   * of the options or labels. A head trained on a different model throws.
+   */
   async function decide<const L extends string>(text: string, using: readonly L[] | Head<L>): Promise<Decision<L>> {
     const [q] = await vectors([text]);
     if ("weights" in using) {
@@ -108,7 +133,12 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
     return toDecision(using, softmax(sims, temperature));
   }
 
-  /** Trains a head by mini-batch gradient descent, keeps the best holdout epoch, then fits the temperature. */
+  /**
+   * Trains a head on labelled examples: mini-batch gradient descent on the embeddings, keeping the best holdout
+   * epoch, then a temperature fitted on the holdout so `confidence` is calibrated. Every label needs at least a few
+   * examples. Each label starts at the mean of its examples, so 5 per label already gave 75% on BANKING77 and
+   * 85% on CLINC150 (see the README).
+   */
   async function train<const L extends string>(examples: readonly Example<L>[], opts: TrainOptions = {}): Promise<Head<L>> {
     const { epochs = 60, learningRate = 0.5, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
     const labels = [...new Set(examples.map((e) => e.label))].sort() as L[];
@@ -123,8 +153,16 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
     const val = idx.slice(0, nVal), fit = idx.slice(nVal);
 
     const head = { labels, dim, weights: new Float32Array(C * dim), bias: new Float32Array(C) };
+    // Start each label at the normalised mean of its examples (nearest centroid), scaled like zero-shot similarities.
+    // With a handful of examples per label this is most of the accuracy; gradient descent refines it.
+    for (const i of fit) for (let j = 0; j < dim; j++) head.weights[y[i] * dim + j] += X[i][j];
+    for (let c = 0; c < C; c++) {
+      const row = head.weights.subarray(c * dim, (c + 1) * dim);
+      const norm = Math.hypot(...row) || 1;
+      for (let j = 0; j < dim; j++) row[j] = (row[j] / norm) * CENTROID_SCALE;
+    }
     const acc = () => val.filter((i) => { const z = logits(head, X[i]); return z.indexOf(Math.max(...z)) === y[i]; }).length / val.length;
-    let best = { acc: -1, weights: head.weights.slice(), bias: head.bias.slice() };
+    let best = { acc: acc(), weights: head.weights.slice(), bias: head.bias.slice() };
     const gW = new Float64Array(C * dim), gb = new Float64Array(C);
 
     for (let ep = 0; ep < epochs; ep++) {

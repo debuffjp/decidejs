@@ -1,0 +1,15 @@
+name: Bug
+description: Something broke or gave a wrong answer
+body:
+  - type: textarea
+    attributes:
+      label: What happened
+      description: Code or steps, what you expected and what you got.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Environment
+      description: decidejs version, browser or Node version, OS, model and device (wasm, webgpu, cpu)
+    validations:
+      required: true

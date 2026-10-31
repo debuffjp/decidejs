@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>decidejs in a page</title>
+<!-- Build first: npm run bench (writes bench/browser.js and bench/worker.js), then open /examples/browser.html. -->
+<input id="text" placeholder="Type a message" size="50" autofocus>
+<p id="out">loading the model (about 24 MB, once)</p>
+<script type="module">
+import { createWorkerDecider } from "../bench/browser.js";
+const d = await createWorkerDecider();
+const options = ["question", "bug report", "praise", "complaint"];
+const out = document.getElementById("out");
+out.textContent = "ready";
+document.getElementById("text").addEventListener("input", async (e) => {
+  const t = performance.now();
+  const { choice } = await d.decide(e.target.value, options);
+  out.textContent = `${choice} (${(performance.now() - t).toFixed(1)} ms, zero-shot)`;
+});
+</script>

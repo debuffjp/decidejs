@@ -1,6 +1,11 @@
 // The same decide() and train() as createDecider, running in a Web Worker so the page never freezes.
 import type { DeciderOptions, Decision, Example, Head, TrainOptions } from "./index.ts";
 
+/**
+ * `createDecider()` in a Web Worker: same `decide()` and `train()`, plus `terminate()`. Each call costs about 1 ms
+ * of message passing. Serve the page cross-origin isolated (COOP `same-origin`, COEP `credentialless`) so wasm
+ * can use several threads. Pass your own `worker` if your bundler needs a different worker URL.
+ */
 export async function createWorkerDecider(options: DeciderOptions = {}, worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" })) {
   let next = 0;
   const pending = new Map<number, { resolve: (v: any) => void; reject: (e: Error) => void; progress?: (p: any) => void }>();
