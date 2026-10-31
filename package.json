@@ -1,9 +1,9 @@
 {
-  "name": "decide-ts",
+  "name": "decidejs",
   "version": "0.1.0",
   "description": "Typed, calibrated decisions in the browser or Node. Your options are the type; no server, no API key.",
   "license": "MIT",
-  "repository": "github:debuffjp/decide-ts",
+  "repository": "github:debuffjp/decidejs",
   "keywords": ["classification", "intent", "zero-shot", "embeddings", "browser", "typescript", "system one"],
   "type": "module",
   "exports": {

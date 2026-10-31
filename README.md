@@ -1,9 +1,9 @@
-# decide-ts
+# decidejs
 
 Typed, calibrated decisions in the browser or Node. Your options are the type. No server, no API key.
 
 ```ts
-import { createDecider } from "decide-ts";
+import { createDecider } from "decidejs";
 
 const { decide } = await createDecider();
 const r = await decide("my card never arrived", ["card_arrival", "refund", "other"]);
@@ -19,7 +19,7 @@ option. That's zero-shot: quick to try, rough on hard tasks. For real accuracy, 
 A head is a small layer trained on your examples: 160 KB for 77 labels. Train it once, ship it as a static file.
 
 ```ts
-import { createDecider, saveHead, loadHead } from "decide-ts";
+import { createDecider, saveHead, loadHead } from "decidejs";
 
 const d = await createDecider();
 const head = await d.train(examples); // { text, label }[]
@@ -38,7 +38,7 @@ Use the worker version. The encoder's wasm work blocks the page otherwise (we me
 training).
 
 ```ts
-import { createWorkerDecider } from "decide-ts/browser";
+import { createWorkerDecider } from "decidejs/browser";
 
 const d = await createWorkerDecider();
 const r = await d.decide(text, head);
