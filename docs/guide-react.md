@@ -1,7 +1,7 @@
 # React
 
 `decidejs/react` has two hooks over the worker decider. React is an optional peer dependency (18 or later): nothing
-extra is installed for apps that don't use it. Tested with React 19 in Next.js 16 (`next dev` and `next build`).
+extra is installed for apps that don't use it. Tested with React 19 in Next.js 16 (`next dev` and `next build`) and Vite 7 (StrictMode).
 
 ```tsx
 "use client";

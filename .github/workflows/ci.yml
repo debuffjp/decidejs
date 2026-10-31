@@ -10,5 +10,6 @@ jobs:
           node-version: 24
       - run: npm ci
       - run: npm run typecheck
+      - run: npm run lint:prose
       - run: npm test
       - run: npm run build

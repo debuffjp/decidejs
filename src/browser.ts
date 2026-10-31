@@ -39,7 +39,7 @@ export async function createWorkerDecider({ onProgress, ...options }: DeciderOpt
   }
   return {
     decide, decideMany,
-    train: <const L extends string>(examples: readonly Example<L>[], { onEpoch, ...opts }: TrainOptions = {}) =>
+    train: <const L extends string>(examples: readonly Example<L>[], { onEpoch, ...opts }: TrainOptions<L> = {}) =>
       call<Head<L>>("train", { args: [examples, opts] }, (p) => onEpoch?.(p.epoch, p.accuracy)),
     terminate: () => {
       worker.terminate();

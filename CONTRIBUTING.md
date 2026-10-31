@@ -30,3 +30,6 @@ browser and number of runs. A pull request that changes the numbers includes the
 ## Style
 
 Small pull requests. TypeScript strict. No new runtime dependencies without saying why in the pull request.
+
+Prose in docs, comments and commit messages follows the rules in `scripts/lint-prose.mjs` (no em dashes, no
+filler words or phrases). `npm run lint:prose` checks them, and CI runs it.

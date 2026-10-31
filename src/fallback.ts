@@ -1,51 +1,60 @@
-// Decide locally when the head is confident; otherwise ask something slower (an LLM, a person, an API) and,
-// optionally, keep its answers as training examples so the head needs it less over time.
-import type { Decision, Example, Head, TrainOptions } from "./index.ts";
+// Decide locally when confident; otherwise ask something slower (an LLM, a person, an API) and, optionally, keep its
+// answers as training examples so the head needs it less over time. Can start from labels alone (zero-shot) and
+// train its first head from the answers.
+import type { Choices, Decision, Example, Head, TrainOptions } from "./index.ts";
 
 /** What `withFallback()` needs from a decider: `createDecider()` and `createWorkerDecider()` both fit. */
 export interface Trainable {
-  decide<const L extends string>(text: string, using: Head<L>): Promise<Decision<L>>;
-  train<const L extends string>(examples: readonly Example<L>[], options?: TrainOptions): Promise<Head<L>>;
+  decide<const L extends string>(text: string, using: Choices<L>): Promise<Decision<L>>;
+  train<const L extends string>(examples: readonly Example<L>[], options?: TrainOptions<L>): Promise<Head<L>>;
 }
 
 export interface FallbackOptions<L extends string> {
   /** Below this confidence, call `ask`. Default 0.9. */
   minConfidence?: number;
   /**
-   * Answers the texts the head isn't sure about: return one of `labels`, or `null` for none of them. Answers that
-   * aren't one of the labels count as `null`.
+   * Answers the texts the local decision isn't sure about: return one of `labels`, or `null` for none of them.
+   * Answers that aren't one of the labels count as `null`.
    */
   ask: (text: string, labels: readonly L[], local: Decision<L>) => L | null | Promise<L | null>;
   /**
-   * The examples the head was trained on. Pass them to learn from `ask`: each answer becomes an example, and
-   * `retrain()` trains on both.
+   * The examples a trained head was trained on. Pass them (or start from labels) to learn from `ask`: each answer
+   * becomes an example, and `retrain()` trains on both.
    */
   examples?: readonly Example<L>[];
-  /** Retrain on its own after this many new answers (needs `examples`). Default: only when you call `retrain()`. */
+  /** Retrain on its own after this many new answers. Default: only when you call `retrain()`. */
   retrainEvery?: number;
   /** Passed to `train()` when retraining. */
-  trainOptions?: TrainOptions;
+  trainOptions?: Omit<TrainOptions<L>, "labels">;
 }
 
-/** A decision plus where it came from. `confidence` and `probs` are always the head's. */
+/** A decision plus where it came from. `confidence` and `probs` are always the local decision's. */
 export interface RoutedDecision<L extends string> extends Decision<L, L | null> {
   source: "local" | "fallback";
 }
 
+const isHead = (c: unknown): c is Head => typeof c === "object" && c !== null && "weights" in c;
+
 /**
- * Routes each text to the head, or to `ask` when the head's confidence is below `minConfidence`. With `examples`,
- * `ask`'s answers are kept as new examples; `retrain()` (or `retrainEvery`) trains a new head on them.
+ * Routes each text to the local decision, or to `ask` when its confidence is below `minConfidence`.
+ *
+ * - With a trained head and its `examples`, answers from `ask` are kept as new examples.
+ * - With labels (`["refund", "bug"]` or described labels), it starts zero-shot and always learns: `retrain()` (or
+ *   `retrainEvery`) trains the first head from the answers. Labels with no answers yet start from their names.
  */
-export function withFallback<const L extends string>(decider: Trainable, head: Head<L>, options: FallbackOptions<L>) {
-  const { minConfidence = 0.9, ask, examples, retrainEvery, trainOptions } = options;
+export function withFallback<const L extends string>(decider: Trainable, using: Choices<L>, options: FallbackOptions<L>) {
+  const { minConfidence = 0.9, ask, retrainEvery, trainOptions } = options;
+  const labels: readonly L[] = isHead(using) ? (using.labels as readonly L[]) : Array.isArray(using) ? using : (Object.keys(using) as L[]);
+  const examples = options.examples ?? (isHead(using) ? undefined : []);
   const learned: Example<L>[] = [];
-  let current = head;
+  let current: Choices<L> = using;
   let retraining: Promise<Head<L>> | undefined;
   let sinceRetrain = 0;
 
-  async function retrain(): Promise<Head<L>> {
-    if (!examples) throw new Error("decidejs: withFallback() needs `examples` to retrain");
-    retraining ??= decider.train([...examples, ...learned], trainOptions).then((h) => {
+  function retrain(): Promise<Head<L>> {
+    if (!examples) return Promise.reject(new Error("decidejs: withFallback() needs `examples` to retrain a head"));
+    if (!examples.length && !learned.length) return Promise.reject(new Error("decidejs: nothing to train on yet: no answers from `ask`"));
+    retraining ??= decider.train<L>([...examples, ...learned], { ...trainOptions, labels }).then((h) => {
       current = h;
       return h;
     }).finally(() => (retraining = undefined));
@@ -55,8 +64,8 @@ export function withFallback<const L extends string>(decider: Trainable, head: H
   async function route(text: string): Promise<RoutedDecision<L>> {
     const local = await decider.decide(text, current);
     if (local.confidence >= minConfidence) return { ...local, source: "local" };
-    const answer = await ask(text, current.labels, local);
-    const choice = answer !== null && current.labels.includes(answer) ? answer : null;
+    const answer = await ask(text, labels, local);
+    const choice = answer !== null && labels.includes(answer) ? answer : null;
     if (examples && choice !== null) {
       learned.push({ text, label: choice });
       if (retrainEvery && ++sinceRetrain >= retrainEvery) {
@@ -71,13 +80,13 @@ export function withFallback<const L extends string>(decider: Trainable, head: H
   // defineProperties, not Object.assign: assign would copy the getters' values once.
   return Object.defineProperties(route as typeof route & {
     retrain: typeof retrain;
-    /** The head in use; replaced after each retrain. */
-    readonly head: Head<L>;
+    /** The trained head in use, or `null` while still zero-shot. Replaced after each retrain. */
+    readonly head: Head<L> | null;
     /** Answers from `ask` kept as examples since the start. */
     readonly learned: readonly Example<L>[];
   }, {
     retrain: { value: retrain },
-    head: { get: () => current },
+    head: { get: () => (isHead(current) ? current : null) },
     learned: { get: () => learned },
   });
 }

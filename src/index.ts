@@ -57,9 +57,14 @@ export interface Example<L extends string> {
   label: L;
 }
 
-export interface TrainOptions {
+export interface TrainOptions<L extends string = string> {
   /** Use label names as a hint (default true). Turn off when labels are opaque ids like `c17`. */
   labelNames?: boolean;
+  /**
+   * Labels to include even without examples yet. They start from their readable name alone, as zero-shot does, and
+   * can still be chosen. Needs `labelNames`.
+   */
+  labels?: readonly L[];
   /** Passes over the examples. Default 60; the best holdout epoch is kept. */
   epochs?: number;
   /** Default 2. */
@@ -165,10 +170,14 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
    * examples. Each label starts at the mean of its examples and its name, so 5 per label already gave 79% on BANKING77 and
    * 87% on CLINC150 (see the README).
    */
-  async function train<const L extends string>(examples: readonly Example<L>[], opts: TrainOptions = {}): Promise<Head<L>> {
+  async function train<const L extends string>(examples: readonly Example<L>[], opts: TrainOptions<L> = {}): Promise<Head<L>> {
     const bad = examples.findIndex((e) => typeof e?.text !== "string" || typeof e?.label !== "string" || !e.label);
     if (bad >= 0) throw new Error(`decidejs: example ${bad} needs a string text and a non-empty string label, got ${JSON.stringify(examples[bad])}`);
-    const labels = [...new Set(examples.map((e) => e.label))].sort() as L[];
+    if (!examples.length) throw new Error("decidejs: train() needs at least 1 example");
+    const labels = [...new Set([...(opts.labels ?? []), ...examples.map((e) => e.label)])].sort() as L[];
+    if (opts.labels && opts.labelNames === false && labels.some((l) => !examples.some((e) => e.label === l))) {
+      throw new Error("decidejs: labels without examples need labelNames, which is what they start from");
+    }
     if (labels.length < 2) throw new Error(`decidejs: train() needs at least 2 labels, got ${labels.length}`);
     const y = examples.map((e) => labels.indexOf(e.label));
     const texts = [...new Set(examples.map((e) => e.text))];

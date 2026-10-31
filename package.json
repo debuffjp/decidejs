@@ -42,7 +42,8 @@
     "bench:run": "node bench/run.mjs",
     "eval:suite": "node --experimental-strip-types eval/suite.ts",
     "eval:hill": "node --experimental-strip-types eval/hill.ts",
-    "test": "node --test --experimental-strip-types \"test/*.test.ts\""
+    "test": "node --test --experimental-strip-types \"test/*.test.ts\"",
+    "lint:prose": "node scripts/lint-prose.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "4.2.0"
