@@ -118,7 +118,10 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
   for (const check of folds) {
     const probe = await run(idx.filter((i) => !check.includes(i)), epochs, check);
     foldEpochs.push(probe.epochs);
-    for (const i of check) heldOut.push({ z: logits(probe, X[i]), y: y[i] });
+    // A label whose only examples are all held out can never be chosen; counting those answers as misses pulled
+    // the temperature far too high (1 example per label: 93% right at 48% mean confidence).
+    const seen = new Set(idx.filter((i) => !check.includes(i)).map((i) => y[i]));
+    for (const i of check) if (seen.has(y[i])) heldOut.push({ z: logits(probe, X[i]), y: y[i] });
   }
   let temperature = 1, bestNll = Infinity;
   for (let t = 0.2; t <= 5; t += 0.05) {
