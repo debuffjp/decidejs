@@ -32,6 +32,7 @@
     "typecheck": "tsc --noEmit",
     "eval": "node --experimental-strip-types eval/banking77.ts",
     "bench": "esbuild src/worker.ts src/browser.ts --bundle --format=esm --platform=browser --outdir=bench --alias:onnxruntime-web/webgpu=onnxruntime-web/wasm && node bench/serve.mjs",
+    "playground": "node playground/build.mjs",
     "heads": "node --experimental-strip-types heads/build.ts",
     "bench:run": "node bench/run.mjs",
     "eval:suite": "node --experimental-strip-types eval/suite.ts",

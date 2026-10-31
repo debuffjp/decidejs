@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>decidejs playground</title>
+<style>
+  :root { color-scheme: light dark; --fg: #1b1b1b; --bg: #fff; --muted: #6b6b6b; --line: #ddd; --bar: #3b6fd8; }
+  @media (prefers-color-scheme: dark) { :root { --fg: #eee; --bg: #161616; --muted: #9a9a9a; --line: #333; --bar: #6f9bff; } }
+  body { font: 16px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; } p.sub { color: var(--muted); margin: 0 0 20px; }
+  label { display: block; font-weight: 600; margin: 16px 0 6px; }
+  textarea, input, select, button { font: inherit; color: inherit; background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 8px; box-sizing: border-box; }
+  textarea, input, select { width: 100%; } textarea { resize: vertical; }
+  button { cursor: pointer; padding: 8px 14px; } button:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  .hint { color: var(--muted); font-size: .875rem; }
+  #status { color: var(--muted); font-size: .875rem; min-height: 1.5em; margin-top: 12px; }
+  #result { margin-top: 20px; } .choice { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+  .p { display: grid; grid-template-columns: minmax(0, 14em) 1fr 4em; gap: 8px; align-items: center; font-size: .875rem; margin: 3px 0; }
+  .p span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .p .track { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; } .p .fill { height: 100%; background: var(--bar); }
+  .p span:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  [hidden] { display: none !important; }
+</style>
+<h1>decidejs playground</h1>
+<p class="sub">Typed, calibrated text decisions, running in this tab. Nothing you type leaves your device.</p>
+
+<label for="mode">Decide with</label>
+<select id="mode">
+  <option value="zero">Your labels (zero-shot)</option>
+  <option value="banking77">BANKING77 head: 77 banking support intents</option>
+  <option value="clinc150">CLINC150 head: 150 assistant intents</option>
+  <option value="train">A head you train here</option>
+</select>
+
+<div id="zero-box">
+  <label for="labels">Labels</label>
+  <textarea id="labels" rows="4">question
+bug_report
+praise: says something nice about the product</textarea>
+  <div class="hint">One per line. Add <code>: description</code> to say what a label means.</div>
+</div>
+
+<div id="train-box" hidden>
+  <label for="examples">Examples</label>
+  <textarea id="examples" rows="8">refund, I want my money back
+refund, please refund my order
+refund, can I get a refund for this
+shipping, where is my package
+shipping, my order hasn't arrived
+shipping, when will it be delivered
+account, I can't log in
+account, how do I reset my password
+account, change my email address</textarea>
+  <div class="hint">One per line: <code>label, text</code>. A few per label is enough to start.</div>
+  <div class="row"><button id="train">Train</button><span id="train-status" class="hint"></span></div>
+</div>
+
+<label for="text">Text</label>
+<input id="text" value="the app crashes when I open settings">
+<div class="row">
+  <button id="go" disabled>Decide</button>
+  <label class="hint" style="margin:0;font-weight:400"><input id="min" type="checkbox" style="width:auto"> "None of these" below</label>
+  <input id="min-value" type="number" min="0" max="1" step="0.05" value="0.9" style="width:5em">
+</div>
+<div id="status">Loading the model...</div>
+<div id="result"></div>
+<script type="module" src="app.js"></script>
+</html>

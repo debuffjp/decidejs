@@ -6,3 +6,4 @@ bench/*.js
 !bench/serve.mjs
 !bench/run.mjs
 eval/*.log
+playground/dist/

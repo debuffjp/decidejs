@@ -73,13 +73,16 @@ Use the worker version. The encoder blocks whatever thread it runs on (we measur
 on the main thread; in a worker the page's longest stall was 18 ms).
 
 ```ts
-import { createWorkerDecider } from "decidejs/browser";
+import { createWorkerDecider, loadHead } from "decidejs/browser";
 
+const head = loadHead(await (await fetch("/intent.head.json")).text());
 const d = await createWorkerDecider({
   onProgress: ({ file, loaded, total }) => showProgress(file, loaded / total), // first visit only
 });
 const r = await d.decide(text, head);
 ```
+
+Import `loadHead` from `decidejs/browser` too, not from `decidejs`: that keeps the encoder out of your page bundle.
 
 Tested from npm in Vite 7, webpack 5 and Next.js 16 apps; see [docs/bundlers.md](docs/bundlers.md) for the config, including a one-line alias
 that halves the wasm download. Serve the page cross-origin isolated if you can:
@@ -122,6 +125,11 @@ It takes about twice as long per decision in Chrome. Pass `{ labelNames: false }
 helped MiniLM but slightly hurt bge-small on the dev splits. [eval/results-bge-small.json](eval/results-bge-small.json).
 
 Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run` (Chrome).
+
+## Playground
+
+`npm run playground`, then serve `playground/dist` cross-origin isolated (`node bench/serve.mjs` style headers).
+Try zero-shot labels, the ready-made heads, a head trained in the page and "none of these".
 
 ## Ready-made heads
 
