@@ -102,6 +102,9 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
     const nll = heldOut.reduce((sum, h) => sum - Math.log(softmax(h.z, t)[h.y] + 1e-12), 0);
     if (nll < bestNll) { bestNll = nll; temperature = Number(t.toFixed(2)); }
   }
+  // Under 50 held-out answers, a perfect score pulls the temperature to its floor and every answer to confidence
+  // 1.0 (seen with 6 examples). Never sharpen on that little evidence.
+  if (heldOut.length < 50) temperature = Math.max(temperature, 1);
   const head = await run(idx, foldEpochs.sort((a, b) => a - b)[foldEpochs.length >> 1]);
   return { labels, dim, weights: head.weights, bias: head.bias, temperature };
 }

@@ -50,5 +50,8 @@
     "node": ">=22.18"
   },
   "homepage": "https://github.com/debuffjp/decidejs#readme",
-  "bugs": "https://github.com/debuffjp/decidejs/issues"
+  "bugs": "https://github.com/debuffjp/decidejs/issues",
+  "bin": {
+    "decidejs": "./dist/cli.js"
+  }
 }

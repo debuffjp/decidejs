@@ -52,7 +52,7 @@ for (const [name, data] of [["banking77", banking], ["clinc150", clinc]] as cons
     const seeds = k === Infinity ? [7] : [7, 8, 9];
     const accs: number[] = [], eces: number[] = [];
     for (const seed of seeds) {
-      const head = await d.train(k === Infinity ? data.train : kShot(data.train, k, seed), { seed });
+      const head = await d.train(k === Infinity ? data.train : kShot(data.train, k, seed), { seed, labelNames: process.env.LABEL_NAMES !== "0" });
       const s = await score(head, data.test);
       accs.push(acc(s)); eces.push(ece(s));
     }

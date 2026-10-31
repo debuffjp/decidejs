@@ -57,3 +57,9 @@ test("saveHead and loadHead round-trip exactly", async () => {
   assert.deepEqual(back.labels, head.labels);
   assert.equal(back.temperature, head.temperature);
 });
+
+test("tiny training sets never get a temperature below 1", async () => {
+  const { X, y } = clusters(2);
+  const head = await fitHead(X, y, ["a", "b", "c"]);
+  assert.ok(head.temperature >= 1, `temperature ${head.temperature}`);
+});
