@@ -123,6 +123,11 @@ helped MiniLM but slightly hurt bge-small on the dev splits. [eval/results-bge-s
 
 Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run` (Chrome).
 
+## Ready-made heads
+
+[heads/](heads/) has a BANKING77 support-intent head (90.6%) and a CLINC150 assistant-intent head (94.2%), so you
+can try a trained head before collecting examples.
+
 ## What it's for
 
 Routing support messages, triaging feedback, search and command intent, moderation hints while someone types,
