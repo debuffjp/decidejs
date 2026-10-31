@@ -104,6 +104,8 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
     progress_callback: onProgress && ((p: any) => p.status === "progress" && onProgress({ file: p.file, loaded: p.loaded, total: p.total })),
   });
   const optionCache = new Map<string, number[][]>();
+  // The last training set's embeddings, so retraining after adding or fixing a few examples only encodes those.
+  let trainCache = new Map<string, number[]>();
 
   async function vectors(texts: readonly string[]): Promise<number[][]> {
     const out: number[][] = [];
@@ -165,7 +167,13 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
     const labels = [...new Set(examples.map((e) => e.label))].sort() as L[];
     if (labels.length < 2) throw new Error(`decidejs: train() needs at least 2 labels, got ${labels.length}`);
     const y = examples.map((e) => labels.indexOf(e.label));
-    const X = await vectors(examples.map((e) => e.text));
+    const texts = [...new Set(examples.map((e) => e.text))];
+    const fresh = texts.filter((t) => !trainCache.has(t));
+    const encoded = await vectors(fresh);
+    const cache = new Map(texts.map((t) => [t, trainCache.get(t)!]));
+    fresh.forEach((t, i) => cache.set(t, encoded[i]));
+    trainCache = cache;
+    const X = examples.map((e) => cache.get(e.text)!);
 
     // Each label's readable name counts as 3 extra examples in the starting point: +1.2 to +1.5 points at 5 examples
     // per label on the dev splits, level with all the data.

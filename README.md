@@ -55,6 +55,8 @@ npx decidejs train examples.csv -o intent.head.json   # CSV with text,label colu
 npx decidejs decide intent.head.json "my card never arrived"
 ```
 
+Add `--types` to also write `intent.head.labels.ts`, so `loadHead<Label>(json)` types the choice as your labels.
+
 ## "None of these"
 
 ```ts

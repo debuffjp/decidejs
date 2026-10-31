@@ -1,13 +1,15 @@
 #!/usr/bin/env node
-// decidejs train <examples.csv|.jsonl> [-o head.json] [--model id] [--no-label-names]
+// decidejs train <examples.csv|.jsonl> [-o head.json] [--model id] [--no-label-names] [--types]
 // decidejs decide <head.json> "<text>" [--min-confidence 0.9]
 import { readFile, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { createDecider, loadHead, saveHead, type Example } from "./index.ts";
 
 const USAGE = `usage:
-  decidejs train <examples.csv|.jsonl> [-o head.json] [--model <hf-id>] [--no-label-names]
+  decidejs train <examples.csv|.jsonl> [-o head.json] [--model <hf-id>] [--no-label-names] [--types]
   decidejs decide <head.json> "<text>" [--min-confidence <0-1>]
+
+--types also writes head.labels.ts with the labels as a const array and a union type.
 
 CSV needs a header with "text" and "label" columns. JSONL needs {"text", "label"} per line.`;
 
@@ -36,11 +38,19 @@ export async function readExamples(file: string): Promise<Example<string>[]> {
   return rows.map((r) => ({ text: r[t], label: r[l] }));
 }
 
+/** A module with the head's labels, so code that loads the head file can type it: `loadHead<Label>(json)`. */
+export function labelsModule(labels: readonly string[]): string {
+  return `// Written by decidejs train --types. Labels of the head next to this file.
+export const labels = ${JSON.stringify(labels)} as const;
+export type Label = (typeof labels)[number];
+`;
+}
+
 async function main(argv: string[]) {
   const { values, positionals } = parseArgs({
     args: argv, allowPositionals: true,
     options: {
-      out: { type: "string", short: "o" }, model: { type: "string" }, "no-label-names": { type: "boolean" },
+      out: { type: "string", short: "o" }, model: { type: "string" }, "no-label-names": { type: "boolean" }, types: { type: "boolean" },
       "min-confidence": { type: "string" }, help: { type: "boolean", short: "h" },
     },
   });
@@ -60,6 +70,11 @@ async function main(argv: string[]) {
     const out = values.out ?? "head.json";
     const json = saveHead(head);
     await writeFile(out, json);
+    if (values.types) {
+      const ts = out.replace(/.json$/, "") + ".labels.ts";
+      await writeFile(ts, labelsModule(head.labels));
+      console.error(`wrote ${ts}`);
+    }
     console.error(`wrote ${out} (${Math.round(json.length / 1024)} KB) in ${((performance.now() - t0) / 1000).toFixed(1)} s, temperature ${head.temperature}`);
     return;
   }

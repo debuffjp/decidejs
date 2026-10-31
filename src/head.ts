@@ -35,11 +35,37 @@ export function logits(head: Pick<Head, "labels" | "dim" | "weights" | "bias">, 
   return z;
 }
 
+// Sums the softmax cross-entropy gradient over one batch into gW and gb. A plain function, not inline in the async
+// training loop: inline it took 777 s on the hill harness, here 340 s (the previous loop: 448 s).
+function batchGradient(ids: number[], X: Float64Array, y: number[], W: Float32Array, B: Float32Array, gW: Float64Array, gb: Float64Array, z: Float64Array, C: number, dim: number) {
+  for (const i of ids) {
+    const x = i * dim;
+    let max = -Infinity;
+    for (let c = 0; c < C; c++) {
+      let v = B[c];
+      const row = c * dim;
+      for (let j = 0; j < dim; j++) v += W[row + j] * X[x + j];
+      z[c] = v;
+      if (v > max) max = v;
+    }
+    let sum = 0;
+    for (let c = 0; c < C; c++) sum += (z[c] = Math.exp(z[c] - max));
+    for (let c = 0; c < C; c++) {
+      const p = z[c] / sum - (c === y[i] ? 1 : 0);
+      gb[c] += p;
+      const row = c * dim;
+      for (let j = 0; j < dim; j++) gW[row + j] += p * X[x + j];
+    }
+  }
+}
 
 /** Fits weights, biases and temperature to embeddings `X` with label indices `y`. */
 export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}, priors?: ArrayLike<number>[], priorWeight = 1) {
   const { epochs = 60, learningRate = 2, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
   const dim = X[0].length, C = labels.length;
+  // One flat buffer, so the inner loops read typed memory instead of an array of arrays.
+  const Xf = new Float64Array(X.length * dim);
+  X.forEach((x, i) => Xf.set(x, i * dim));
   let s = seed;
   const rand = () => (s = (s * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
   const idx = X.map((_, i) => i).sort(() => rand() - 0.5);
@@ -60,22 +86,19 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
     }
     const acc = () => check!.filter((i) => { const z = logits(head, X[i]); return z.indexOf(Math.max(...z)) === y[i]; }).length / check!.length;
     let best = { acc: check ? acc() : 0, weights: head.weights.slice(), bias: head.bias.slice(), epochs: 0 };
-    const gW = new Float64Array(C * dim), gb = new Float64Array(C);
+    const gW = new Float64Array(C * dim), gb = new Float64Array(C), z = new Float64Array(C);
+    const W = head.weights, B = head.bias;
     const order = [...rows];
     for (let ep = 0; ep < nEpochs; ep++) {
       order.sort(() => rand() - 0.5);
       for (let b = 0; b < order.length; b += BATCH) {
         const ids = order.slice(b, b + BATCH);
         gW.fill(0); gb.fill(0);
-        for (const i of ids) {
-          const p = softmax(logits(head, X[i]), 1);
-          p[y[i]] -= 1;
-          for (let c = 0; c < C; c++) { gb[c] += p[c]; for (let j = 0; j < dim; j++) gW[c * dim + j] += p[c] * X[i][j]; }
-        }
+        batchGradient(ids, Xf, y, W, B, gW, gb, z, C, dim);
         await yieldToPage();
         for (let c = 0; c < C; c++) {
-          head.bias[c] -= (learningRate * gb[c]) / ids.length;
-          for (let j = 0; j < dim; j++) { const k = c * dim + j; head.weights[k] -= learningRate * (gW[k] / ids.length + l2 * head.weights[k]); }
+          B[c] -= (learningRate * gb[c]) / ids.length;
+          for (let j = 0; j < dim; j++) { const k = c * dim + j; W[k] -= learningRate * (gW[k] / ids.length + l2 * W[k]); }
         }
       }
       if (!check) continue;
