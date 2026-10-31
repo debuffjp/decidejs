@@ -175,9 +175,8 @@ worker has loaded the model.
 Differences from `createDecider()`:
 
 - No `embed` and no `model` on the result.
-- `terminate()` stops the worker. Calls still pending never settle.
-- Errors thrown in the worker come back as `Error`s whose message is the original error as a string, so it starts with
-  `Error: decidejs: ...`.
+- `terminate()` stops the worker and rejects any calls still pending ("decidejs: the worker was terminated").
+- Errors thrown in the worker come back as `Error`s with the original message.
 - Each call costs about 1 ms of message passing.
 
 `worker` defaults to `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`. Pass your own when your
