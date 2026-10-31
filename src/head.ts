@@ -38,7 +38,7 @@ export function logits(head: Pick<Head, "labels" | "dim" | "weights" | "bias">, 
 
 /** Fits weights, biases and temperature to embeddings `X` with label indices `y`. */
 export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}) {
-  const { epochs = 60, learningRate = 0.5, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
+  const { epochs = 60, learningRate = 2, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
   const dim = X[0].length, C = labels.length;
   let s = seed;
   const rand = () => (s = (s * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
