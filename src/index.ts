@@ -42,7 +42,7 @@ const readable = (label: string) => label.replace(/[_-]+/g, " ").replace(/([a-z]
 export interface DecideOptions {
   /**
    * Below this confidence, `choice` is `null`: "none of these". Use it with trained heads, whose confidence is
-   * calibrated. On CLINC150, 0.88 returned null for 81.7% of out-of-scope queries.
+   * calibrated. On CLINC150, 0.93 returned null for 86.3% of out-of-scope queries.
    */
   minConfidence?: number;
 }
@@ -77,6 +77,8 @@ export interface DeciderOptions {
   device?: "wasm" | "webgpu" | "cpu";
   /** Weight precision. Default `q8`. */
   dtype?: "q8" | "fp16" | "fp32";
+  /** Called as model files download (first load only; later loads come from cache). */
+  onProgress?: (progress: { file: string; loaded: number; total: number }) => void;
   /** Softmax temperature for zero-shot similarities. Default 0.05. */
   temperature?: number;
 }
@@ -96,8 +98,11 @@ function toDecision<L extends string>(labels: readonly L[], p: number[]): Decisi
  * `train()`. In a browser, prefer `createWorkerDecider()` from `decidejs/browser`: the encoder blocks the thread
  * it runs on.
  */
-export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device, dtype = "q8", temperature = 0.05 }: DeciderOptions = {}) {
-  const embed: FeatureExtractionPipeline = await (pipeline as any)("feature-extraction", model, { device, dtype });
+export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device, dtype = "q8", temperature = 0.05, onProgress }: DeciderOptions = {}) {
+  const embed: FeatureExtractionPipeline = await (pipeline as any)("feature-extraction", model, {
+    device, dtype,
+    progress_callback: onProgress && ((p: any) => p.status === "progress" && onProgress({ file: p.file, loaded: p.loaded, total: p.total })),
+  });
   const optionCache = new Map<string, number[][]>();
 
   async function vectors(texts: readonly string[]): Promise<number[][]> {
@@ -109,20 +114,14 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
     return out;
   }
 
-  /**
-   * Picks one of `options` (zero-shot) or one of a trained head's labels. The result's `choice` has the literal type
-   * of the options or labels. A head trained on a different model throws.
-   */
-  async function decide<const L extends string>(text: string, using: Choices<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>>;
-  async function decide<const L extends string>(text: string, using: Choices<L>, options: DecideOptions): Promise<Decision<L, L | null>>;
-  async function decide<const L extends string>(text: string, using: Choices<L>, { minConfidence }: DecideOptions = {}): Promise<Decision<L, L | null>> {
-    const [q] = await vectors([text]);
+  async function score<L extends string>(q: number[], using: Choices<L>, minConfidence?: number): Promise<Decision<L, L | null>> {
     let d: Decision<L>;
     if (isHead(using)) {
-      if (using.model !== model) throw new Error(`head was trained on ${using.model}, decider uses ${model}`);
+      if (using.model !== model) throw new Error(`decidejs: this head was trained on ${using.model}, but the decider uses ${model}. Pass { model: "${using.model}" } to createDecider.`);
       d = toDecision(using.labels, softmax(logits(using, q), using.temperature));
     } else {
       const labels = (Array.isArray(using) ? using : Object.keys(using)) as L[];
+      if (labels.length < 2) throw new Error(`decidejs: decide() needs at least 2 options, got ${labels.length}`);
       // Bare labels are compared as readable text ("card_arrival" as "card arrival"): 2.6 points better on CLINC150's
       // dev split. Descriptions are compared as given.
       const texts = Array.isArray(using) ? labels.map(readable) : labels.map((l) => (using as Record<L, string>)[l]);
@@ -136,13 +135,35 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
   }
 
   /**
+   * Picks one of a list of labels or described labels (zero-shot), or one of a trained head's labels. The result's
+   * `choice` has the literal type of the labels. A head trained on a different model throws.
+   */
+  async function decide<const L extends string>(text: string, using: Choices<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>>;
+  async function decide<const L extends string>(text: string, using: Choices<L>, options: DecideOptions): Promise<Decision<L, L | null>>;
+  async function decide<const L extends string>(text: string, using: Choices<L>, { minConfidence }: DecideOptions = {}): Promise<Decision<L, L | null>> {
+    const [q] = await vectors([text]);
+    return score(q, using, minConfidence);
+  }
+
+  /** `decide()` for many texts, encoded in batches of 64: much faster than one call per text in Node. */
+  async function decideMany<const L extends string>(texts: readonly string[], using: Choices<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>[]>;
+  async function decideMany<const L extends string>(texts: readonly string[], using: Choices<L>, options: DecideOptions): Promise<Decision<L, L | null>[]>;
+  async function decideMany<const L extends string>(texts: readonly string[], using: Choices<L>, { minConfidence }: DecideOptions = {}): Promise<Decision<L, L | null>[]> {
+    const qs = await vectors(texts);
+    return Promise.all(qs.map((q) => score(q, using, minConfidence)));
+  }
+
+  /**
    * Trains a head on labelled examples: mini-batch gradient descent on the embeddings, keeping the best holdout
    * epoch, then a temperature fitted on the holdout so `confidence` is calibrated. Every label needs at least a few
-   * examples. Each label starts at the mean of its examples, so 5 per label already gave 77% on BANKING77 and
-   * 86% on CLINC150 (see the README).
+   * examples. Each label starts at the mean of its examples and its name, so 5 per label already gave 79% on BANKING77 and
+   * 87% on CLINC150 (see the README).
    */
   async function train<const L extends string>(examples: readonly Example<L>[], opts: TrainOptions = {}): Promise<Head<L>> {
+    const bad = examples.findIndex((e) => typeof e?.text !== "string" || typeof e?.label !== "string" || !e.label);
+    if (bad >= 0) throw new Error(`decidejs: example ${bad} needs a string text and a non-empty string label, got ${JSON.stringify(examples[bad])}`);
     const labels = [...new Set(examples.map((e) => e.label))].sort() as L[];
+    if (labels.length < 2) throw new Error(`decidejs: train() needs at least 2 labels, got ${labels.length}`);
     const y = examples.map((e) => labels.indexOf(e.label));
     const X = await vectors(examples.map((e) => e.text));
 
@@ -153,7 +174,7 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
   }
 
   return {
-    model, decide, train,
+    model, decide, decideMany, train,
     /** Embeds texts with the encoder: unit-length vectors, one per text. */
     embed: vectors,
   };

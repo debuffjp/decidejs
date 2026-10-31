@@ -17,3 +17,8 @@ expect<Equal<typeof c.choice, "yes" | "no" | null>>();
 
 const e = await d.decide("x", { refund: "wants their money back", bug: "something is broken" });
 expect<Equal<typeof e.choice, "refund" | "bug">>();
+
+const m = await d.decideMany(["x"], ["yes", "no"]);
+expect<Equal<(typeof m)[number]["choice"], "yes" | "no">>();
+const n = await w.decideMany(["x"], ["yes", "no"], { minConfidence: 0.5 });
+expect<Equal<(typeof n)[number]["choice"], "yes" | "no" | null>>();

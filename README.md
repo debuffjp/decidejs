@@ -10,7 +10,7 @@ const r = await d.decide("my card never arrived", ["card_arrival", "refund", "ot
 r.choice; // "card_arrival" | "refund" | "other"
 ```
 
-Give it 5 examples per label and it reaches 77% on BANKING77 (77 intents); give it the full training set and it
+Give it 5 examples per label and it reaches 79% on BANKING77 (77 intents); give it the full training set and it
 reaches 90.6%, with each answer taking 3-6 ms in Chrome. Training runs in the user's tab, so their data never
 leaves the device.
 
@@ -41,19 +41,31 @@ await writeFile("intent.head.json", saveHead(head));
 
 // later, in the app
 const r = await d.decide(text, loadHead(json)); // choice is typed as your labels
+const rs = await d.decideMany(texts, head); // many texts, encoded in batches
 ```
 
-Each label starts at the average of its examples, so a handful per label already works. Training then fits a
-temperature on held-out examples, so `confidence` is calibrated: of the answers given at 0.9, about 90% are right.
+Each label starts at the average of its examples plus its own name, so a handful per label already works. If your
+labels are opaque ids (`c17`), pass `{ labelNames: false }`. Training then fits a temperature on held-out examples,
+so `confidence` is calibrated: of the answers given at 0.9, about 90% are right.
+
+Or train from the command line and ship the file:
+
+```sh
+npx decidejs train examples.csv -o intent.head.json   # CSV with text,label columns, or JSONL
+npx decidejs decide intent.head.json "my card never arrived"
+```
 
 ## "None of these"
 
 ```ts
-const r = await d.decide(text, head, { minConfidence: 0.88 });
+const r = await d.decide(text, head, { minConfidence: 0.9 });
 r.choice; // "card_arrival" | "refund" | ... | null
 ```
 
-Below the threshold, `choice` is `null`. Use it to send unclear messages to a person or a bigger model.
+Below the threshold, `choice` is `null`. Use it to send unclear messages to a person or a bigger model. It needs
+enough examples to mean something: with 3 examples per label, a head still gave "hello" 0.89. The numbers below come
+from CLINC150's 100 examples per label. With fewer, check the threshold on some off-topic text of your own, or add an
+`other` label trained on it.
 
 ## In the browser
 
@@ -63,11 +75,14 @@ on the main thread; in a worker the page's longest stall was 18 ms).
 ```ts
 import { createWorkerDecider } from "decidejs/browser";
 
-const d = await createWorkerDecider();
+const d = await createWorkerDecider({
+  onProgress: ({ file, loaded, total }) => showProgress(file, loaded / total), // first visit only
+});
 const r = await d.decide(text, head);
 ```
 
-Tested from npm in a Vite 7 app. Serve the page cross-origin isolated if you can:
+Tested from npm in a Vite 7 app; see [docs/bundlers.md](docs/bundlers.md) for the config, including a one-line alias
+that halves the wasm download. Serve the page cross-origin isolated if you can:
 
 ```
 Cross-Origin-Opener-Policy: same-origin
@@ -86,20 +101,20 @@ error (ECE, lower is better) on each dataset's test split, mean of 3 seeds (one 
 
 | Examples per label | 5 | 10 | 25 | all |
 |---|---|---|---|---|
-| BANKING77 (77 labels) | 77.4% | 82.6% | 87.7% | 90.6% |
-| CLINC150 (150 labels) | 86.0% | 89.0% | 92.8% | 94.0% |
-| ECE, BANKING77 | 0.086 | 0.046 | 0.030 | 0.020 |
-| ECE, CLINC150 | 0.033 | 0.012 | 0.012 | 0.012 |
+| BANKING77 (77 labels) | 78.7% | 83.0% | 87.4% | 90.6% |
+| CLINC150 (150 labels) | 87.3% | 89.8% | 92.8% | 94.0% |
+| ECE, BANKING77 | 0.065 | 0.048 | 0.025 | 0.019 |
+| ECE, CLINC150 | 0.029 | 0.013 | 0.012 | 0.012 |
 
-Calibration is loosest at 5 examples per label on BANKING77 (0.07-0.12 across seeds). Add examples before relying on
+Calibration is loosest at 5 examples per label on BANKING77. Add examples before relying on
 a threshold there.
 
 **In Chrome** (BANKING77, full training set, worker, cross-origin isolated, [bench/results.json](bench/results.json)):
 90.6% accuracy, 3.1 ms median and 5.7 ms p95 per decision, 147 s to train on 10,003 examples.
 
 **Text that fits no label:** CLINC150 has 1,000 test queries that match none of its 150 intents. Trained on
-in-scope examples only, with `minConfidence` 0.88 picked on the validation split, 81.7% of them come back `null`,
-and 86.6% of in-scope queries are answered and right (94.0% are right with no threshold).
+in-scope examples only, with `minConfidence` 0.93 picked on the validation split, 86.3% of them come back `null`,
+and 82.9% of in-scope queries are answered and right (94.0% are right with no threshold).
 
 Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run` (Chrome).
 

@@ -2,11 +2,11 @@
 import type { Choices, DecideOptions, DeciderOptions, Decision, Example, Head, TrainOptions } from "./index.ts";
 
 /**
- * `createDecider()` in a Web Worker: same `decide()` and `train()`, plus `terminate()`. Each call costs about 1 ms
+ * `createDecider()` in a Web Worker: same `decide()`, `decideMany()` and `train()`, plus `terminate()`. Each call costs about 1 ms
  * of message passing. Serve the page cross-origin isolated (COOP `same-origin`, COEP `credentialless`) so wasm
  * can use several threads. Pass your own `worker` if your bundler needs a different worker URL.
  */
-export async function createWorkerDecider(options: DeciderOptions = {}, worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" })) {
+export async function createWorkerDecider({ onProgress, ...options }: DeciderOptions = {}, worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" })) {
   let next = 0;
   const pending = new Map<number, { resolve: (v: any) => void; reject: (e: Error) => void; progress?: (p: any) => void }>();
   worker.onmessage = ({ data }) => {
@@ -23,14 +23,19 @@ export async function createWorkerDecider(options: DeciderOptions = {}, worker =
       worker.postMessage({ id, op, ...payload });
     });
 
-  await call("init", { options });
+  await call("init", { options }, onProgress);
   function decide<const L extends string>(text: string, using: Choices<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>>;
   function decide<const L extends string>(text: string, using: Choices<L>, options: DecideOptions): Promise<Decision<L, L | null>>;
   function decide(text: string, using: unknown, opts?: DecideOptions) {
     return call("decide", { args: [text, using, opts] });
   }
+  function decideMany<const L extends string>(texts: readonly string[], using: Choices<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>[]>;
+  function decideMany<const L extends string>(texts: readonly string[], using: Choices<L>, options: DecideOptions): Promise<Decision<L, L | null>[]>;
+  function decideMany(texts: readonly string[], using: unknown, opts?: DecideOptions) {
+    return call("decideMany", { args: [texts, using, opts] });
+  }
   return {
-    decide,
+    decide, decideMany,
     train: <const L extends string>(examples: readonly Example<L>[], { onEpoch, ...opts }: TrainOptions = {}) =>
       call<Head<L>>("train", { args: [examples, opts] }, (p) => onEpoch?.(p.epoch, p.accuracy)),
     terminate: () => worker.terminate(),
