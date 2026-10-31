@@ -2,6 +2,7 @@ node_modules/
 dist/
 data/
 bench/*.js
+!bench/results.json
 !bench/serve.mjs
 !bench/run.mjs
 eval/*.log

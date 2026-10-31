@@ -1,0 +1,16 @@
+{
+  "device": "wasm",
+  "isolated": true,
+  "threads": 16,
+  "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+  "loadSeconds": 3.8089249999970196,
+  "trainSeconds": 146.6875450000018,
+  "maxStallMs": 18,
+  "testAccuracy": 0.9055194805194805,
+  "p50": 3.1299999952316284,
+  "p95": 5.685000002384186,
+  "temperature": 0.5,
+  "date": "2026-10-31",
+  "machine": "Ryzen 7 260 laptop",
+  "dataset": "BANKING77 full train, test split"
+}

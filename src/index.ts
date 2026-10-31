@@ -41,7 +41,7 @@ const readable = (label: string) => label.replace(/[_-]+/g, " ").replace(/([a-z]
 export interface DecideOptions {
   /**
    * Below this confidence, `choice` is `null`: "none of these". Use it with trained heads, whose confidence is
-   * calibrated. On CLINC150, 0.93 flagged 87.8% of out-of-scope queries.
+   * calibrated. On CLINC150, 0.88 returned null for 81.7% of out-of-scope queries.
    */
   minConfidence?: number;
 }
@@ -134,8 +134,8 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
   /**
    * Trains a head on labelled examples: mini-batch gradient descent on the embeddings, keeping the best holdout
    * epoch, then a temperature fitted on the holdout so `confidence` is calibrated. Every label needs at least a few
-   * examples. Each label starts at the mean of its examples, so 5 per label already gave 75% on BANKING77 and
-   * 85% on CLINC150 (see the README).
+   * examples. Each label starts at the mean of its examples, so 5 per label already gave 77% on BANKING77 and
+   * 86% on CLINC150 (see the README).
    */
   async function train<const L extends string>(examples: readonly Example<L>[], opts: TrainOptions = {}): Promise<Head<L>> {
     const labels = [...new Set(examples.map((e) => e.label))].sort() as L[];
