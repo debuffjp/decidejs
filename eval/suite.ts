@@ -36,6 +36,12 @@ const score = async (head: Head<string>, rows: Row[]) => {
   return out;
 };
 const acc = (s: { right: boolean }[]) => s.filter((x) => x.right).length / s.length;
+// Expected calibration error, 15 equal-width confidence bins.
+const ece = (s: { right: boolean; confidence: number }[]) => {
+  const bins = Array.from({ length: 15 }, () => ({ n: 0, conf: 0, right: 0 }));
+  for (const x of s) { const b = bins[Math.min(14, Math.floor(x.confidence * 15))]; b.n++; b.conf += x.confidence; b.right += x.right ? 1 : 0; }
+  return bins.reduce((sum, b) => sum + (b.n ? (b.n / s.length) * Math.abs(b.conf / b.n - b.right / b.n) : 0), 0);
+};
 
 const results: Record<string, unknown>[] = [];
 const log = (r: Record<string, unknown>) => { results.push(r); console.error(JSON.stringify(r)); };
@@ -44,12 +50,14 @@ const log = (r: Record<string, unknown>) => { results.push(r); console.error(JSO
 for (const [name, data] of [["banking77", banking], ["clinc150", clinc]] as const) {
   for (const k of [5, 10, 25, Infinity]) {
     const seeds = k === Infinity ? [7] : [7, 8, 9];
-    const accs: number[] = [];
+    const accs: number[] = [], eces: number[] = [];
     for (const seed of seeds) {
       const head = await d.train(k === Infinity ? data.train : kShot(data.train, k, seed), { seed });
-      accs.push(acc(await score(head, data.test)));
+      const s = await score(head, data.test);
+      accs.push(acc(s)); eces.push(ece(s));
     }
-    log({ dataset: name, perLabel: k === Infinity ? "all" : k, accuracy: accs, mean: accs.reduce((a, b) => a + b, 0) / accs.length });
+    const mean = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length;
+    log({ dataset: name, perLabel: k === Infinity ? "all" : k, accuracy: accs, mean: mean(accs), ece: eces, meanEce: mean(eces) });
   }
 }
 

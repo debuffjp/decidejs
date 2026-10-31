@@ -1,5 +1,5 @@
 // The same decide() and train() as createDecider, running in a Web Worker so the page never freezes.
-import type { DecideOptions, DeciderOptions, Decision, Example, Head, TrainOptions } from "./index.ts";
+import type { Choices, DecideOptions, DeciderOptions, Decision, Example, Head, TrainOptions } from "./index.ts";
 
 /**
  * `createDecider()` in a Web Worker: same `decide()` and `train()`, plus `terminate()`. Each call costs about 1 ms
@@ -24,8 +24,8 @@ export async function createWorkerDecider(options: DeciderOptions = {}, worker =
     });
 
   await call("init", { options });
-  function decide<const L extends string>(text: string, using: readonly L[] | Head<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>>;
-  function decide<const L extends string>(text: string, using: readonly L[] | Head<L>, options: DecideOptions): Promise<Decision<L, L | null>>;
+  function decide<const L extends string>(text: string, using: Choices<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>>;
+  function decide<const L extends string>(text: string, using: Choices<L>, options: DecideOptions): Promise<Decision<L, L | null>>;
   function decide(text: string, using: unknown, opts?: DecideOptions) {
     return call("decide", { args: [text, using, opts] });
   }

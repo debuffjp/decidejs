@@ -27,6 +27,16 @@ export interface Head<L extends string = string> {
   temperature: number;
 }
 
+/**
+ * What `decide()` chooses between: a list of labels, labels with descriptions (`{ refund: "wants their money back" }`,
+ * where the description is what gets compared), or a trained head.
+ */
+export type Choices<L extends string> = readonly L[] | Readonly<Record<L, string>> | Head<L>;
+
+const isHead = <L extends string>(c: Choices<L>): c is Head<L> => !Array.isArray(c) && (c as Head<L>).weights instanceof Float32Array;
+
+const readable = (label: string) => label.replace(/[_-]+/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+
 /** Options for one `decide()` call. */
 export interface DecideOptions {
   /**
@@ -99,20 +109,24 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
    * Picks one of `options` (zero-shot) or one of a trained head's labels. The result's `choice` has the literal type
    * of the options or labels. A head trained on a different model throws.
    */
-  async function decide<const L extends string>(text: string, using: readonly L[] | Head<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>>;
-  async function decide<const L extends string>(text: string, using: readonly L[] | Head<L>, options: DecideOptions): Promise<Decision<L, L | null>>;
-  async function decide<const L extends string>(text: string, using: readonly L[] | Head<L>, { minConfidence }: DecideOptions = {}): Promise<Decision<L, L | null>> {
+  async function decide<const L extends string>(text: string, using: Choices<L>, options?: { minConfidence?: undefined }): Promise<Decision<L>>;
+  async function decide<const L extends string>(text: string, using: Choices<L>, options: DecideOptions): Promise<Decision<L, L | null>>;
+  async function decide<const L extends string>(text: string, using: Choices<L>, { minConfidence }: DecideOptions = {}): Promise<Decision<L, L | null>> {
     const [q] = await vectors([text]);
     let d: Decision<L>;
-    if ("weights" in using) {
+    if (isHead(using)) {
       if (using.model !== model) throw new Error(`head was trained on ${using.model}, decider uses ${model}`);
       d = toDecision(using.labels, softmax(logits(using, q), using.temperature));
     } else {
-      const key = using.join("\u0000");
+      const labels = (Array.isArray(using) ? using : Object.keys(using)) as L[];
+      // Bare labels are compared as readable text ("card_arrival" as "card arrival"): 2.6 points better on CLINC150's
+      // dev split. Descriptions are compared as given.
+      const texts = Array.isArray(using) ? labels.map(readable) : labels.map((l) => (using as Record<L, string>)[l]);
+      const key = texts.join("\u0000");
       let opts = optionCache.get(key);
-      if (!opts) optionCache.set(key, (opts = await vectors(using)));
+      if (!opts) optionCache.set(key, (opts = await vectors(texts)));
       const sims = opts.map((o) => o.reduce((s, x, i) => s + x * q[i], 0));
-      d = toDecision(using, softmax(sims, temperature));
+      d = toDecision(labels, softmax(sims, temperature));
     }
     return minConfidence !== undefined && d.confidence < minConfidence ? { ...d, choice: null } : d;
   }

@@ -14,3 +14,6 @@ import { createWorkerDecider } from "../src/browser.ts";
 declare const w: Awaited<ReturnType<typeof createWorkerDecider>>;
 const c = await w.decide("x", ["yes", "no"], { minConfidence: 0.9 });
 expect<Equal<typeof c.choice, "yes" | "no" | null>>();
+
+const e = await d.decide("x", { refund: "wants their money back", bug: "something is broken" });
+expect<Equal<typeof e.choice, "refund" | "bug">>();
