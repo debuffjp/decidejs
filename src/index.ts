@@ -1,5 +1,5 @@
 // decide(text, options): typed, calibrated decisions on device. Zero-shot compares the text with each option's
-// embedding; a trained head (a softmax layer over the same embeddings, about 118 KB for 77 labels) is far more
+// embedding; a trained head (a softmax layer over the same embeddings, 156 KB for 77 labels) is far more
 // accurate. Both return the option literals as the choice type.
 import { pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
 import { fitHead, logits, softmax } from "./head.ts";
@@ -34,7 +34,11 @@ export interface Head<L extends string = string> {
  */
 export type Choices<L extends string> = readonly L[] | Readonly<Record<L, string>> | Head<L>;
 
-const isHead = <L extends string>(c: Choices<L>): c is Head<L> => !Array.isArray(c) && (c as Head<L>).weights instanceof Float32Array;
+function isHead<L extends string>(c: Choices<L>): c is Head<L> {
+  if (Array.isArray(c) || !("weights" in c)) return false;
+  if (!((c as Head<L>).weights instanceof Float32Array)) throw new Error("decidejs: this head's weights aren't a Float32Array. Read head files with loadHead(), not JSON.parse.");
+  return true;
+}
 
 const readable = (label: string) => label.replace(/[_-]+/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
 

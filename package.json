@@ -29,6 +29,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepack": "npm run build",
     "typecheck": "tsc --noEmit",
     "eval": "node --experimental-strip-types eval/banking77.ts",
     "bench": "esbuild src/worker.ts src/browser.ts --bundle --format=esm --platform=browser --outdir=bench --alias:onnxruntime-web/webgpu=onnxruntime-web/wasm && node bench/serve.mjs",

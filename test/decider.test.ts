@@ -21,3 +21,9 @@ test("decideMany() matches decide()", async () => {
   }
   assert.deepEqual(many.map((r) => r.choice), ["card_arrival", "refund"]);
 });
+
+test("a head read with JSON.parse throws instead of acting as labels", async () => {
+  const head = await d.train([{ text: "a", label: "x" }, { text: "b", label: "y" }]);
+  const { saveHead } = await import("../src/index.ts");
+  await assert.rejects(d.decide("a", JSON.parse(saveHead(head))), /loadHead/);
+});

@@ -11,7 +11,7 @@ r.choice; // "card_arrival" | "refund" | "other"
 ```
 
 Give it 5 examples per label and it reaches 79% on BANKING77 (77 intents); give it the full training set and it
-reaches 90.6%, with each answer taking 3-6 ms in Chrome. Training runs in the user's tab, so their data never
+reaches 90.6%, with each answer taking 3-5 ms (median) in Chrome. Training runs in the user's tab, so their data never
 leaves the device.
 
 ## Zero-shot
@@ -29,7 +29,7 @@ it on your own labels before relying on a threshold.
 
 ## Train a head
 
-A head is a small layer trained on your examples: 160 KB for 77 labels. Train it once and ship it as a static
+A head is a small layer trained on your examples: 156 KB for 77 labels. Train it once and ship it as a static
 file, or train it in the page.
 
 ```ts
@@ -94,7 +94,7 @@ Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: credentialless
 ```
 
-That lets wasm use several threads: in our runs it halved training time and cut p95 decision time from 14.3 ms to 7.8 ms.
+That lets wasm use several threads: in our runs it cut p95 decision time from 14.3 ms to 7.8 ms.
 
 Download on first visit: the model (23.7 MB) and onnxruntime's wasm (23.6 MB, 5.8 MB gzipped), both cached after.
 
@@ -132,7 +132,7 @@ Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run`
 
 ## Playground
 
-`npm run playground`, then serve `playground/dist` cross-origin isolated (`node bench/serve.mjs` style headers).
+Try it at [debuff.jp/decidejs](https://debuff.jp/decidejs/). To run it locally: `npm run playground`, then serve `playground/dist` cross-origin isolated (`node bench/serve.mjs` style headers).
 Try zero-shot labels, the ready-made heads, a head trained in the page and "none of these".
 
 ## Ready-made heads
@@ -158,6 +158,11 @@ labelling a dataset in the browser, and a cheap first pass before an LLM. Detail
 
 jimothy reports 92.4% on BANKING77, above our 90.6%. Pick it if you train in Node and want the higher number. Pick
 decidejs if training has to happen in the page, from the user's own data.
+
+## Docs
+
+[docs/README.md](docs/README.md) indexes the guides (training, confidence and thresholds, the browser), the
+API reference, how it works and the FAQ.
 
 ## Community
 

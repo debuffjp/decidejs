@@ -71,7 +71,7 @@ async function main(argv: string[]) {
     const json = saveHead(head);
     await writeFile(out, json);
     if (values.types) {
-      const ts = out.replace(/.json$/, "") + ".labels.ts";
+      const ts = out.replace(/\.json$/, "") + ".labels.ts";
       await writeFile(ts, labelsModule(head.labels));
       console.error(`wrote ${ts}`);
     }
@@ -82,6 +82,7 @@ async function main(argv: string[]) {
     const head = loadHead(await readFile(file, "utf8"));
     const d = await createDecider({ model: head.model });
     const min = values["min-confidence"];
+    if (min !== undefined && !(Number(min) >= 0 && Number(min) <= 1)) throw new Error(`--min-confidence needs a number from 0 to 1, got ${min}`);
     const r = min === undefined ? await d.decide(text, head) : await d.decide(text, head, { minConfidence: Number(min) });
     console.log(JSON.stringify({ choice: r.choice, confidence: Number(r.confidence.toFixed(4)) }));
     return;

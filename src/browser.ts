@@ -40,6 +40,10 @@ export async function createWorkerDecider({ onProgress, ...options }: DeciderOpt
     decide, decideMany,
     train: <const L extends string>(examples: readonly Example<L>[], { onEpoch, ...opts }: TrainOptions = {}) =>
       call<Head<L>>("train", { args: [examples, opts] }, (p) => onEpoch?.(p.epoch, p.accuracy)),
-    terminate: () => worker.terminate(),
+    terminate: () => {
+      worker.terminate();
+      for (const p of pending.values()) p.reject(new Error("decidejs: the worker was terminated"));
+      pending.clear();
+    },
   };
 }

@@ -23,6 +23,6 @@ self.onmessage = async ({ data }: MessageEvent<Request>) => {
     });
     self.postMessage({ id: data.id, value });
   } catch (e) {
-    self.postMessage({ id: data.id, error: String(e) });
+    self.postMessage({ id: data.id, error: e instanceof Error ? e.message : String(e) });
   }
 };
