@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>decide browser bench</title>
+<script type="importmap">{"imports":{"@huggingface/transformers":"https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0"}}</script>
+<pre id="out">running</pre>
+<script type="module">
+// Trains and scores BANKING77 in the tab. Reports the longest main-thread stall during training, which is what a
+// user would feel, and per-decision latency on the test split.
+import { createWorkerDecider } from "./browser.js";
+const out = document.getElementById("out");
+const log = (s) => (out.textContent += "\n" + s);
+const CSV = "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/";
+const rows = async (n) => [...(await (await fetch(CSV + n + ".csv")).text()).matchAll(/("(?:[^"]|"")*"|[^,\n]*),([^\n]*?)\r?(?:\n|$)/g)]
+  .slice(1).filter((m) => m[2]).map(([, t, label]) => ({ text: t.startsWith('"') ? t.slice(1, -1).replace(/""/g, '"') : t, label }));
+const [train, test] = [await rows("train"), await rows("test")];
+const device = new URLSearchParams(location.search).get("device") || "wasm";
+let t0 = performance.now();
+const d = await createWorkerDecider({ device });
+const loadSeconds = (performance.now() - t0) / 1000;
+log("loaded " + loadSeconds.toFixed(1) + " s");
+let last = performance.now(), maxStall = 0;
+const tick = setInterval(() => { const now = performance.now(); maxStall = Math.max(maxStall, now - last); last = now; }, 16);
+t0 = performance.now();
+const head = await d.train(train, { onEpoch: (e, a) => e % 10 === 0 && log("epoch " + e + " " + a.toFixed(3)) });
+const trainSeconds = (performance.now() - t0) / 1000;
+clearInterval(tick);
+const ms = []; let right = 0;
+for (const ex of test) { const s = performance.now(); if ((await d.decide(ex.text, head)).choice === ex.label) right++; ms.push(performance.now() - s); }
+ms.sort((a, b) => a - b);
+
+window.__result = { device, isolated: crossOriginIsolated, threads: navigator.hardwareConcurrency, ua: navigator.userAgent, loadSeconds, trainSeconds, maxStallMs: Math.round(maxStall),
+  testAccuracy: right / test.length, p50: ms[ms.length >> 1], p95: ms[Math.floor(ms.length * 0.95)], temperature: head.temperature };
+log(JSON.stringify(window.__result, null, 2));
+</script>

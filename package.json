@@ -1,0 +1,24 @@
+{
+  "name": "decide-ts",
+  "version": "0.1.0",
+  "description": "Typed, calibrated decisions in the browser or Node. Your options are the type; no server, no API key.",
+  "license": "MIT",
+  "repository": "github:debuffjp/decide-ts",
+  "keywords": ["classification", "intent", "zero-shot", "embeddings", "browser", "typescript", "system one"],
+  "type": "module",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./browser": { "types": "./dist/browser.d.ts", "default": "./dist/browser.js" }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "eval": "node --experimental-strip-types eval/banking77.ts",
+    "bench": "esbuild src/worker.ts src/browser.ts --bundle --format=esm --platform=browser --outdir=bench && node bench/serve.mjs",
+    "bench:run": "node bench/run.mjs"
+  },
+  "dependencies": { "@huggingface/transformers": "4.2.0" },
+  "devDependencies": { "typescript": "5.9.3", "@types/node": "22.15.3", "esbuild": "0.25.10", "playwright-core": "1.64.1" },
+  "engines": { "node": ">=22.18" }
+}
