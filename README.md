@@ -81,7 +81,7 @@ const d = await createWorkerDecider({
 const r = await d.decide(text, head);
 ```
 
-Tested from npm in a Vite 7 app; see [docs/bundlers.md](docs/bundlers.md) for the config, including a one-line alias
+Tested from npm in Vite 7, webpack 5 and Next.js 16 apps; see [docs/bundlers.md](docs/bundlers.md) for the config, including a one-line alias
 that halves the wasm download. Serve the page cross-origin isolated if you can:
 
 ```

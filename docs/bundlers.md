@@ -26,10 +26,50 @@ Add the cross-origin isolation headers to the dev server and your host:
 server: { headers: { "Cross-Origin-Opener-Policy": "same-origin", "Cross-Origin-Embedder-Policy": "credentialless" } },
 ```
 
-## webpack 5 and Next.js
+## webpack 5
 
-Not tested yet. The same alias goes in `resolve.alias`. Reports welcome in
-[Discussions](https://github.com/debuffjp/decidejs/discussions).
+Tested with webpack 5.112 from the packed package, served cross-origin isolated, run in headless Chrome (zero-shot
+and training). It works with no config: webpack splits the worker into its own chunk. The alias brings the wasm
+from 22.5 MiB to 12.3 MiB:
+
+```js
+// webpack.config.js
+export default {
+  experiments: { topLevelAwait: true }, // only if your own code awaits at the top level
+  resolve: { alias: { "onnxruntime-web/webgpu$": "onnxruntime-web/wasm" } },
+};
+```
+
+## Next.js
+
+Tested with Next.js 16.4 (Turbopack, App Router), `next build` then `next start`, in headless Chrome. Import
+`decidejs/browser` inside a client component, and only in the browser: a dynamic `import()` inside `useEffect`
+keeps it out of server rendering.
+
+```js
+// next.config.mjs
+export default {
+  turbopack: { resolveAlias: { "onnxruntime-web/webgpu": "onnxruntime-web/wasm" } },
+  async headers() {
+    return [{ source: "/:path*", headers: [
+      { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+      { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
+    ] }];
+  },
+};
+```
+
+```js
+"use client";
+useEffect(() => {
+  import("decidejs/browser").then(async ({ createWorkerDecider }) => {
+    const d = await createWorkerDecider();
+    // ...
+  });
+}, []);
+```
+
+Next.js with webpack (`next build --webpack`) is not tested; the webpack alias above should apply.
 
 ## Without a bundler
 
