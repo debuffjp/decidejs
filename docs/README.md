@@ -16,3 +16,5 @@ Start with the [main README](../README.md) for a five-line example and the headl
 - [How it works](how-it-works.md): the encoder, the head and each training step, with the numbers behind them.
 - [FAQ](faq.md).
 - [Ready-made heads](../heads/README.md): BANKING77 and CLINC150 heads to try before collecting examples.
+- [Falling back to an LLM](guide-fallback.md): `withFallback()`, learning from the fallback, measured savings.
+- [React](guide-react.md): `useDecider()` and `useDecision()`.

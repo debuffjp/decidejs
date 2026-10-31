@@ -326,3 +326,9 @@ The output has the shape `{"choice":"card_arrival","confidence":<number>}`.
 `confidence` is rounded to 4 decimals; `choice` is `null` below `--min-confidence`.
 
 Exit codes: 0 on success, 1 on an error (the message goes to stderr), 2 on a usage error.
+
+## withFallback() and decidejs/react
+
+`withFallback(decider, head, options)` (from `decidejs` and `decidejs/browser`) is documented in
+[guide-fallback.md](guide-fallback.md). `useDecider()` and `useDecision()` (from `decidejs/react`) are documented in
+[guide-react.md](guide-react.md).

@@ -22,3 +22,16 @@ const m = await d.decideMany(["x"], ["yes", "no"]);
 expect<Equal<(typeof m)[number]["choice"], "yes" | "no">>();
 const n = await w.decideMany(["x"], ["yes", "no"], { minConfidence: 0.5 });
 expect<Equal<(typeof n)[number]["choice"], "yes" | "no" | null>>();
+
+import { useDecision, type WorkerDecider } from "../src/react.ts";
+declare const wd: WorkerDecider | null;
+const hd = useDecision(wd, "x", ["yes", "no"]);
+expect<Equal<NonNullable<typeof hd.decision>["choice"], "yes" | "no">>();
+const hn = useDecision(wd, "x", ["yes", "no"], { minConfidence: 0.9 });
+expect<Equal<NonNullable<typeof hn.decision>["choice"], "yes" | "no" | null>>();
+
+import { withFallback } from "../src/index.ts";
+declare const hh: import("../src/index.ts").Head<"a" | "b">;
+const route = withFallback(d, hh, { ask: async () => "a" as const });
+const rr = await route("x");
+expect<Equal<typeof rr.choice, "a" | "b" | null>>();

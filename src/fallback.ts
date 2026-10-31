@@ -1,0 +1,83 @@
+// Decide locally when the head is confident; otherwise ask something slower (an LLM, a person, an API) and,
+// optionally, keep its answers as training examples so the head needs it less over time.
+import type { Decision, Example, Head, TrainOptions } from "./index.ts";
+
+/** What `withFallback()` needs from a decider: `createDecider()` and `createWorkerDecider()` both fit. */
+export interface Trainable {
+  decide<const L extends string>(text: string, using: Head<L>): Promise<Decision<L>>;
+  train<const L extends string>(examples: readonly Example<L>[], options?: TrainOptions): Promise<Head<L>>;
+}
+
+export interface FallbackOptions<L extends string> {
+  /** Below this confidence, call `ask`. Default 0.9. */
+  minConfidence?: number;
+  /**
+   * Answers the texts the head isn't sure about: return one of `labels`, or `null` for none of them. Answers that
+   * aren't one of the labels count as `null`.
+   */
+  ask: (text: string, labels: readonly L[], local: Decision<L>) => L | null | Promise<L | null>;
+  /**
+   * The examples the head was trained on. Pass them to learn from `ask`: each answer becomes an example, and
+   * `retrain()` trains on both.
+   */
+  examples?: readonly Example<L>[];
+  /** Retrain on its own after this many new answers (needs `examples`). Default: only when you call `retrain()`. */
+  retrainEvery?: number;
+  /** Passed to `train()` when retraining. */
+  trainOptions?: TrainOptions;
+}
+
+/** A decision plus where it came from. `confidence` and `probs` are always the head's. */
+export interface RoutedDecision<L extends string> extends Decision<L, L | null> {
+  source: "local" | "fallback";
+}
+
+/**
+ * Routes each text to the head, or to `ask` when the head's confidence is below `minConfidence`. With `examples`,
+ * `ask`'s answers are kept as new examples; `retrain()` (or `retrainEvery`) trains a new head on them.
+ */
+export function withFallback<const L extends string>(decider: Trainable, head: Head<L>, options: FallbackOptions<L>) {
+  const { minConfidence = 0.9, ask, examples, retrainEvery, trainOptions } = options;
+  const learned: Example<L>[] = [];
+  let current = head;
+  let retraining: Promise<Head<L>> | undefined;
+  let sinceRetrain = 0;
+
+  async function retrain(): Promise<Head<L>> {
+    if (!examples) throw new Error("decidejs: withFallback() needs `examples` to retrain");
+    retraining ??= decider.train([...examples, ...learned], trainOptions).then((h) => {
+      current = h;
+      return h;
+    }).finally(() => (retraining = undefined));
+    return retraining;
+  }
+
+  async function route(text: string): Promise<RoutedDecision<L>> {
+    const local = await decider.decide(text, current);
+    if (local.confidence >= minConfidence) return { ...local, source: "local" };
+    const answer = await ask(text, current.labels, local);
+    const choice = answer !== null && current.labels.includes(answer) ? answer : null;
+    if (examples && choice !== null) {
+      learned.push({ text, label: choice });
+      if (retrainEvery && ++sinceRetrain >= retrainEvery) {
+        sinceRetrain = 0;
+        // A failed background retrain keeps the current head; call retrain() yourself to see the error.
+        retrain().catch(() => {});
+      }
+    }
+    return { ...local, choice, source: "fallback" };
+  }
+
+  // defineProperties, not Object.assign: assign would copy the getters' values once.
+  return Object.defineProperties(route as typeof route & {
+    retrain: typeof retrain;
+    /** The head in use; replaced after each retrain. */
+    readonly head: Head<L>;
+    /** Answers from `ask` kept as examples since the start. */
+    readonly learned: readonly Example<L>[];
+  }, {
+    retrain: { value: retrain },
+    head: { get: () => current },
+    learned: { get: () => learned },
+  });
+}

@@ -193,3 +193,4 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
 }
 
 export { saveHead, loadHead } from "./head-io.ts";
+export { withFallback, type FallbackOptions, type RoutedDecision, type Trainable } from "./fallback.ts";

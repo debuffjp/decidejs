@@ -69,6 +69,21 @@ enough examples to mean something: with 3 examples per label, a head still gave 
 from CLINC150's 100 examples per label. With fewer, check the threshold on some off-topic text of your own, or add an
 `other` label trained on it.
 
+## Fall back to an LLM
+
+```ts
+const route = withFallback(d, head, { minConfidence: 0.9, ask: (text, labels) => askMyLlm(text, labels), examples });
+const r = await route(text); // r.source: "local" | "fallback"
+```
+
+Below the threshold, `ask` answers and its answer becomes a training example. Simulated on CLINC150 from 5 examples
+per label, the share sent to the LLM fell from 41% to 14-17% over 10,000 queries while the head went from 86% to 94%:
+[docs/guide-fallback.md](docs/guide-fallback.md).
+
+## React
+
+`useDecider()` and `useDecision(decider, text, labels)` from `decidejs/react`: [docs/guide-react.md](docs/guide-react.md).
+
 ## In the browser
 
 Use the worker version. The encoder blocks whatever thread it runs on (we measured a 171 s freeze while training

@@ -22,6 +22,10 @@
     "./browser": {
       "types": "./dist/browser.d.ts",
       "default": "./dist/browser.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "default": "./dist/react.js"
     }
   },
   "files": [
@@ -44,10 +48,12 @@
     "@huggingface/transformers": "4.2.0"
   },
   "devDependencies": {
-    "typescript": "5.9.3",
     "@types/node": "22.15.3",
+    "@types/react": "19.3.0",
     "esbuild": "0.25.10",
-    "playwright-core": "1.64.1"
+    "playwright-core": "1.64.1",
+    "react": "19.3.1",
+    "typescript": "5.9.3"
   },
   "engines": {
     "node": ">=22.18"
@@ -56,5 +62,13 @@
   "bugs": "https://github.com/debuffjp/decidejs/issues",
   "bin": {
     "decidejs": "./dist/cli.js"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   }
 }
