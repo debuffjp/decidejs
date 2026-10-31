@@ -50,6 +50,31 @@ What this doesn't show: a real LLM is sometimes wrong, and its mistakes become t
 was always right. Check a sample of learned examples (`route.learned`) before you trust them, or have a person
 confirm them. The traffic was in-scope CLINC150 queries in random order; real traffic drifts.
 
+## Starting from labels alone
+
+Pass labels (or described labels) in place of a head. It starts zero-shot, always learns, and `retrain()` (or
+`retrainEvery`) trains the first head from the answers. Labels nobody has answered yet start from their names.
+
+```ts
+const route = withFallback(d, ["refund", "bug_report", "question"], { ask, retrainEvery: 100 });
+route.head; // null until the first retrain
+```
+
+The same simulation with no examples at all ([eval/results-fallback-cold-0.9.jsonl](../eval/results-fallback-cold-0.9.jsonl),
+`COLD=1`):
+
+| Round | Examples | Sent to the fallback | Local answers right | Head accuracy |
+|---|---|---|---|---|
+| 1 (zero-shot) | 0 | 67.1% | 97.6% | 69.6% |
+| 2 | 671 | 33.3% | 95.1% | 81.4% |
+| 3 | 1,004 | 23.3% | 97.7% | 87.2% |
+| 5 | 1,475 | 17.2% | 99.3% | 92.1% |
+| 10 | 2,383 | 14.5% | 98.8% | 93.3% |
+
+By round 5 it matched the run that started from 5 examples per label (92.1%), and 2,528 of the 10,000 queries went
+to the fallback, against 2,249 for that run. The first head, trained on answers alone, was the weakest point:
+95.1% of its local answers were right in round 2.
+
 ## Options
 
 | Option | Default | |
@@ -57,7 +82,7 @@ confirm them. The traffic was in-scope CLINC150 queries in random order; real tr
 | `minConfidence` | 0.9 | Below this, `ask` is called. |
 | `ask(text, labels, local)` | required | Returns one of `labels` or `null`; may be async. `local` is the head's own decision. Any other answer counts as `null`. |
 | `examples` | none | The head's training examples. With them, every non-null answer is kept as an example. |
-| `retrainEvery` | none | Retrain in the background after this many new answers. Needs `examples`. |
+| `retrainEvery` | none | Retrain in the background after this many new answers. Needs `examples` or labels. |
 | `trainOptions` | `{}` | Passed to `train()` on retrain. |
 
 The returned function also has:

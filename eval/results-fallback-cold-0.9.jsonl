@@ -1,0 +1,10 @@
+{"round":1,"examples":671,"sentToFallback":0.671,"answeredRight":0.992,"localPrecision":0.976,"headDevAccuracy":0.696}
+{"round":2,"examples":1004,"sentToFallback":0.333,"answeredRight":0.967,"localPrecision":0.951,"headDevAccuracy":0.814}
+{"round":3,"examples":1237,"sentToFallback":0.233,"answeredRight":0.982,"localPrecision":0.977,"headDevAccuracy":0.872}
+{"round":4,"examples":1475,"sentToFallback":0.238,"answeredRight":0.99,"localPrecision":0.987,"headDevAccuracy":0.897}
+{"round":5,"examples":1647,"sentToFallback":0.172,"answeredRight":0.994,"localPrecision":0.993,"headDevAccuracy":0.921}
+{"round":6,"examples":1867,"sentToFallback":0.22,"answeredRight":0.995,"localPrecision":0.994,"headDevAccuracy":0.926}
+{"round":7,"examples":2054,"sentToFallback":0.187,"answeredRight":0.988,"localPrecision":0.985,"headDevAccuracy":0.931}
+{"round":8,"examples":2232,"sentToFallback":0.178,"answeredRight":0.99,"localPrecision":0.988,"headDevAccuracy":0.926}
+{"round":9,"examples":2383,"sentToFallback":0.151,"answeredRight":0.991,"localPrecision":0.989,"headDevAccuracy":0.936}
+{"round":10,"examples":2528,"sentToFallback":0.145,"answeredRight":0.99,"localPrecision":0.988,"headDevAccuracy":0.933}

@@ -77,7 +77,7 @@ const r = await route(text); // r.source: "local" | "fallback"
 ```
 
 Below the threshold, `ask` answers and its answer becomes a training example. Simulated on CLINC150 from 5 examples
-per label, the share sent to the LLM fell from 41% to 14-17% over 10,000 queries while the head went from 86% to 94%:
+per label, the share sent to the LLM fell from 41% to 14-17% over 10,000 queries while the head went from 86% to 94%. It can also start from labels alone, with no examples:
 [docs/guide-fallback.md](docs/guide-fallback.md).
 
 ## React
