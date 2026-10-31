@@ -111,7 +111,9 @@ error (ECE, lower is better) on each dataset's test split, mean of 3 seeds (one 
 | ECE, BANKING77 | 0.065 | 0.048 | 0.025 | 0.019 |
 | ECE, CLINC150 | 0.029 | 0.013 | 0.012 | 0.012 |
 
-Calibration is loosest at 5 examples per label on BANKING77. Add examples before relying on
+Calibration is loosest at 5 examples per label on BANKING77. On small tasks (2 to 10 labels sampled from CLINC150, scored on its validation
+queries, [eval/tiny.ts](eval/tiny.ts)), 1 example per label was right 93% of the time with calibration error 0.020, and
+3 per label 98% with 0.016. Add examples before relying on
 a threshold there.
 
 **In Chrome** (BANKING77, full training set, worker, cross-origin isolated, [bench/results.json](bench/results.json)):
