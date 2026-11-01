@@ -56,6 +56,19 @@ a link to the target itself is taken directly. Results on 2026-11-01, one run ea
 | Baseball to Sun | 7 hops | gave up after 4 |
 | DNA to Manipuri pony | lost after 12 hops (reached "History of the horse in the Indian subcontinent") | 6 hops |
 
+Through switch's own WikiRace domain and  loop, which shows at most 200 links a step and opens sections
+for the rest, the same decider (reading the target's summary) reached Moon in 12 hops and Sun in 18, and hit the
+40-step limit on DNA to Manipuri pony after reaching Manipur. Its paths wander: it revisits articles and follows
+lexical look-alikes. That is the work in the next section.
+
 About 4 s of decisions for all three, on a laptop CPU. Zero-shot decidejs picks the link closest in meaning to the
 target, so it walks into near-misses such as "Pony (disambiguation)"; reading the summary instead of the title helped
 (with the title it lost two races). It has no plan, which is where a teacher or a trained head comes in.
+
+## Where it falls short
+
+Zero-shot decidejs ranks options by closeness in meaning to one text. It has no plan and no memory of where it has
+been, so in a search it takes near-misses and loops. Trained heads fix this for questions that repeat; for searches,
+the next steps are a reranker that reads the target and the option together, looking one step ahead (decidejs is
+local, so peeking at each candidate's links is cheap) and a teacher. Reports and ideas are welcome in
+[Discussions](https://github.com/debuffjp/decidejs/discussions).
