@@ -86,8 +86,8 @@ head's labels, so it always counts as wrong when answered) and check how much of
 ## Zero-shot confidence
 
 Zero-shot `decide()` (a label array or a record of descriptions) has no examples to fit a temperature on. It uses a
-fixed one per model (`createDecider({ temperature })`): 0.03 for the default bge-small, 0.05 for all-MiniLM-L6-v2 and
-other models. Before this release it was 0.05 for every model. On the BANKING77 and CLINC150 dev splits these came out
+fixed one per model (`createDecider({ temperature })`): 0.03 for the default bge-small (0.025 for described labels,
+which score higher: ECE 0.042 on BANKING77 and 0.020 on CLINC150), 0.05 for all-MiniLM-L6-v2 and other models. Before this release it was 0.05 for every model. On the BANKING77 and CLINC150 dev splits these came out
 close to calibrated, ECE 0.03-0.04 for bge-small (MiniLM at 0.05: 0.005-0.045 with 2 to 150 options). Describing your
 labels also raises accuracy: see [how-it-works.md](how-it-works.md#describe-your-labels). That was measured on two intent datasets only. Your labels or
 descriptions may be scored sharper or flatter, so check zero-shot confidence on some labelled text of your own before

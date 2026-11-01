@@ -92,7 +92,10 @@ export interface DeciderOptions {
   dtype?: "q8" | "fp16" | "fp32";
   /** Called as model files download (first load only; later loads come from cache). */
   onProgress?: (progress: { file: string; loaded: number; total: number }) => void;
-  /** Softmax temperature for zero-shot similarities. Default 0.03 for bge-small, 0.05 for other models. */
+  /**
+   * Softmax temperature for zero-shot similarities. Default 0.03 for bge-small (0.025 for described labels, which
+   * score higher), 0.05 for other models. Setting it uses the same value for both.
+   */
   temperature?: number;
 }
 
@@ -100,7 +103,9 @@ const BATCH = 64;
 const LABEL_NAME_WEIGHT = 1;
 // Zero-shot temperatures that measured calibrated on the BANKING77 and CLINC150 dev splits (eval/gains.ts). Models
 // differ in how spread out their similarities are: at 0.05, bge-small answered only 3% of texts at 0.9 confidence.
-const TEMPERATURES: Record<string, number> = { "Xenova/bge-small-en-v1.5": 0.03, "Xenova/all-MiniLM-L6-v2": 0.05 };
+// Described labels get their own: on bge-small, 0.025 halved their calibration error on CLINC150 (0.066 to 0.020) and
+// raised it on BANKING77 (0.032 to 0.042); names alone measured best at 0.03 (eval/descriptions.ts).
+const TEMPERATURES: Record<string, [names: number, described: number]> = { "Xenova/bge-small-en-v1.5": [0.03, 0.025], "Xenova/all-MiniLM-L6-v2": [0.05, 0.05] };
 
 function toDecision<L extends string>(labels: readonly L[], p: number[]): Decision<L> {
   let best = 0;
@@ -114,7 +119,7 @@ function toDecision<L extends string>(labels: readonly L[], p: number[]): Decisi
  * `train()`. In a browser, prefer `createWorkerDecider()` from `decidejs/browser`: the encoder blocks the thread
  * it runs on.
  */
-export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device, dtype = "q8", temperature = TEMPERATURES[model] ?? 0.05, onProgress }: DeciderOptions = {}) {
+export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device, dtype = "q8", temperature, onProgress }: DeciderOptions = {}) {
   const embed: FeatureExtractionPipeline = await (pipeline as any)("feature-extraction", model, {
     device, dtype,
     progress_callback: onProgress && ((p: any) => p.status === "progress" && onProgress({ file: p.file, loaded: p.loaded, total: p.total })),
@@ -149,7 +154,8 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
       if (!opts) optionCache.set(key, (opts = await vectors(texts)));
       const all = opts.map((o) => o.reduce((s, x, i) => s + x * q[i], 0));
       const sims = Array.isArray(using) ? all : labels.map((_, c) => Math.max(all[2 * c], all[2 * c + 1]));
-      d = toDecision(labels, softmax(sims, temperature));
+      const [names, described] = temperature !== undefined ? [temperature, temperature] : TEMPERATURES[model] ?? [0.05, 0.05];
+      d = toDecision(labels, softmax(sims, Array.isArray(using) ? names : described));
     }
     return minConfidence !== undefined && d.confidence < minConfidence ? { ...d, choice: null } : d;
   }

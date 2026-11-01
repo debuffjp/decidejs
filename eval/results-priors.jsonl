@@ -33,3 +33,10 @@
 {"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"names+descriptions w3","accuracy":0.9149}
 {"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"names w3 scale 33","accuracy":0.9098}
 {"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"descriptions w3 scale 33","accuracy":0.927}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":10,"idea":"none","accuracy":0.9269}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":10,"idea":"names w1","accuracy":0.9294}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":10,"idea":"names w3","accuracy":0.9319}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":10,"idea":"descriptions w3","accuracy":0.9371}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":10,"idea":"names+descriptions w3","accuracy":0.9368}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":10,"idea":"names w3 scale 33","accuracy":0.9318}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":10,"idea":"descriptions w3 scale 33","accuracy":0.9367}

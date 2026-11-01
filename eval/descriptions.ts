@@ -29,13 +29,13 @@ for (const [idea, texts] of Object.entries(variants)) {
   const vecs = await Promise.all(texts.map((t) => d.embed(t)));
   const sims = rows.map((r) => vecs.map((vs) => Math.max(...vs.map((v) => dot(v, cache[r.text])))));
   const mean = labels.map((_, c) => sims.reduce((s, z) => s + z[c], 0) / sims.length);
-  for (const shift of [0, 1]) {
-    const s = sims.map((z, i) => { const p = softmax(z.map((v, c) => v - shift * mean[c]), 0.05); return { right: labels[p.indexOf(Math.max(...p))] === rows[i].label, confidence: Math.max(...p) }; });
+  for (const [shift, temp] of [[0, 0.02], [0, 0.025], [0, 0.03], [0, 0.035]]) {
+    const s = sims.map((z, i) => { const p = softmax(z.map((v, c) => v - shift * mean[c]), temp); return { right: labels[p.indexOf(Math.max(...p))] === rows[i].label, confidence: Math.max(...p) }; });
     // Expected calibration error, 15 bins, as in eval/suite.ts.
     const bins = Array.from({ length: 15 }, () => ({ n: 0, conf: 0, right: 0 }));
     for (const x of s) { const b = bins[Math.min(14, Math.floor(x.confidence * 15))]; b.n++; b.conf += x.confidence; b.right += x.right ? 1 : 0; }
     const ece = bins.reduce((sum, b) => sum + (b.n ? (b.n / s.length) * Math.abs(b.conf / b.n - b.right / b.n) : 0), 0);
-    const line = { model, date: "2026-11-01", dataset, idea: idea + (shift ? "+context" : ""), accuracy: +(s.filter((x) => x.right).length / rows.length).toFixed(4), ece: +ece.toFixed(4) };
+    const line = { model, date: "2026-11-01", dataset, idea, temperature: temp, accuracy: +(s.filter((x) => x.right).length / rows.length).toFixed(4), ece: +ece.toFixed(4) };
     console.log(JSON.stringify(line));
     await appendFile("eval/results-gains.jsonl", JSON.stringify(line) + "\n");
   }

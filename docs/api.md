@@ -39,7 +39,7 @@ const r = await d.decide("my card never arrived", ["card_arrival", "refund", "ot
 | `device` | `"wasm" \| "webgpu" \| "cpu"` | transformers.js' choice (wasm in browsers, cpu in Node) | Where the encoder runs. |
 | `dtype` | `"q8" \| "fp16" \| "fp32"` | `"q8"` | Weight precision of the encoder. |
 | `onProgress` | `(p: { file: string; loaded: number; total: number }) => void` | none | Called as model files download. Only fires on a download, so not on cached loads. |
-| `temperature` | `number` | `0.03` for bge-small, `0.05` for other models (`0.05` for all models before this release) | Softmax temperature for zero-shot similarities. Has no effect on trained heads, which carry their own. |
+| `temperature` | `number` | `0.03` for bge-small (`0.025` for described labels), `0.05` for other models (`0.05` for all models before this release) | Softmax temperature for zero-shot similarities. Setting it uses the same value for named and described labels. Has no effect on trained heads, which carry their own. |
 
 The returned `model` is the model id in use. Trained heads record it, and `decide()` refuses a head trained on a
 different model.

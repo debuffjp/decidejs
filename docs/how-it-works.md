@@ -23,7 +23,8 @@ labels are turned into words first (`card_arrival` becomes "card arrival"), whic
 dev split than the raw label. With a record of descriptions, both the readable name and the description are encoded,
 and each label scores by the better of the two. Before this release, the description replaced the name.
 
-The cosine similarities go through a softmax at a fixed temperature per model: 0.03 for bge-small, 0.05 for
+The cosine similarities go through a softmax at a fixed temperature per model: 0.03 for bge-small (0.025 when the
+labels are described, since descriptions score higher), 0.05 for
 all-MiniLM-L6-v2 and any other model. Models spread their similarities differently: at 0.05, bge-small answered only
 3% of texts at 0.9 confidence. At these temperatures zero-shot came out close to calibrated on the BANKING77 and
 CLINC150 dev splits (ECE 0.03-0.04 for bge-small; 0.005-0.045 for MiniLM at 0.05 in earlier runs). Zero-shot accuracy
