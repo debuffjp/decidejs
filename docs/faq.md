@@ -139,6 +139,13 @@ of examples.
 No. A head knows only the labels it was trained on. To add, remove or rename a label, change the examples and call
 `train()` again; on the same decider, only new texts are encoded.
 
+## npm warns that install scripts were blocked
+
+npm 11 skips install scripts for packages your project hasn't allowed and says so for three of decidejs's
+dependencies: onnxruntime-node, sharp and protobufjs. decidejs works anyway: onnxruntime-node ships its binaries in
+the package, and decidejs doesn't use sharp (transformers.js loads it for images). The packed-package test in CI
+installs this way. You don't need to approve them.
+
 ## Why does `decide()` throw "this head was trained on ..."?
 
 A head only works with the encoder it was trained on. Create the decider with the head's model:

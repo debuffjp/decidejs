@@ -86,19 +86,22 @@ async function ask(text: string, _labels: readonly Label[], localDecision: { pro
   return dot.choice ?? null;
 }
 
-const d = await createWorkerDecider(
-  { onProgress: ({ loaded, total }) => (status = `Downloading the model (first visit only): ${Math.round((100 * loaded) / total)}%`) },
+// Not awaited: the diagram draws (with download progress) while the model loads, and messages wait for it.
+let route: ReturnType<typeof withFallback<Label>> | null = null;
+let head: Head<Label> | null = null;
+void createWorkerDecider(
+  { onProgress: ({ loaded, total }) => (status = loaded < total ? `Downloading the model (first visit only): ${Math.round((100 * loaded) / total)}%` : "Starting the model...") },
   new Worker(new URL("../worker.js", import.meta.url), { type: "module" }),
-);
-const route = withFallback(d, DESCRIPTIONS, { minConfidence: THRESHOLD, ask, retrainEvery: EVERY });
-let head: Head<Label> | null = route.head;
-status = "";
+).then((d) => {
+  route = withFallback(d, DESCRIPTIONS, { minConfidence: THRESHOLD, ask, retrainEvery: EVERY });
+  status = "";
+});
 
 function depart(dot: Dot) {
   dot.phase = "toGut";
   dot.path = path(dot.x + QUEUE.w / 2, dot.y + QUEUE.h / 2, GUT.x - GUT.r + 4, GUT.y, 650, -40);
   inFlight.set(dot.m.text, dot);
-  void route(dot.m.text).then((r) => {
+  void route!(dot.m.text).then((r) => {
     if (r.source !== "local") return;
     dot.via = "local";
     dot.choice = r.choice ?? topOf(r.probs)[0][0];
@@ -151,7 +154,7 @@ function update(dt: number) {
     for (let i = 0; i < 20; i++) dots.push({ m: MESSAGES[i], idx: i, again: true, x: QUEUE.x, y: QUEUE.y + (QUEUE.shown + i) * 60, colour: C.muted, phase: "queued" });
   }
   const front = dots.find((d) => d.phase === "queued");
-  if (front && clock >= departAt && !inFlight.has(front.m.text)) {
+  if (route && front && clock >= departAt && !inFlight.has(front.m.text)) {
     depart(front);
     departAt = clock + CADENCE;
   }
@@ -210,7 +213,7 @@ function update(dt: number) {
     }
   }
   // A new head object means withFallback really retrained.
-  if (route.head !== head) {
+  if (route && route.head !== head) {
     head = route.head;
     retrains++;
     flashAt = clock;
@@ -385,7 +388,7 @@ function render() {
     draw.text(`${Math.round((100 * right) / labelled)}%`, BIN.x, cy + 14, { font: F.big, color: C.text, baseline: "middle" });
     draw.text("on device and LLM answers together", BIN.x, cy + 42, { font: F.m, color: C.muted, baseline: "middle" });
   }
-  if (status) draw.text(status, W / 2, H / 2, { font: "15px Geist", color: C.text, align: "center", baseline: "middle" });
+  if (status) draw.text(status, W / 2, H - 14, { font: "15px Geist", color: C.text, align: "center", baseline: "middle" });
   draw.end();
 }
 
