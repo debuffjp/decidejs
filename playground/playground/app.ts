@@ -23,6 +23,9 @@ const d = await createWorkerDecider({
     let a = 0, b = 0;
     for (const [x, y] of files.values()) { a += x; b += y; }
     status(`Downloading the model, first visit only: ${(a / 1e6).toFixed(1)} of ${(b / 1e6).toFixed(1)} MB`);
+    const text = document.getElementById("load-text"), bar = document.getElementById("load-bar");
+    if (text) text.textContent = a < b ? `Downloading the model: ${(a / 1e6).toFixed(1)} of ${(b / 1e6).toFixed(1)} MB` : "Starting the model...";
+    if (bar) bar.style.width = `${(100 * a) / b}%`;
   },
 }, new Worker(new URL("../worker.js", import.meta.url), { type: "module" }));
 ready = true;

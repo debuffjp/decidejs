@@ -80,3 +80,10 @@ canvas { display: block; width: 100%; }
 .embed .row, .embed .legend { padding: 0 16px; }
 html.embed { overflow: hidden; }
 .embed body { background: transparent; }
+
+/* First-visit model download, shown where the result will appear. */
+.loading { padding: 8px 0; }
+.loading p { margin: 0 0 10px; }
+.loading .hint { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; }
+.loading .bar { height: 6px; border-radius: 3px; background: var(--soft); overflow: hidden; }
+.loading .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
