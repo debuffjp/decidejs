@@ -75,6 +75,12 @@ export interface TrainOptions<L extends string = string> {
   holdout?: number;
   /** Seed for the holdout split and shuffling, so runs repeat. Default 7. */
   seed?: number;
+  /**
+   * Examples known to be right, used only to fit the temperature (how far to trust the head). Pass them when the
+   * training examples come from a source that is sometimes wrong, such as an LLM through `withFallback()`: fitted on
+   * those, the temperature learns to doubt the head. 2 per label is enough (eval/long-stream.ts).
+   */
+  calibrateOn?: readonly Example<L>[];
   /** Called after each epoch with accuracy on the holdout. */
   onEpoch?: (epoch: number, holdoutAccuracy: number) => void;
 }
@@ -211,7 +217,11 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
     // by 1 to 14 points at 1 to 5 examples per label on the dev splits, and beat weight 3 (the MiniLM setting) by 0.9
     // to 2.5 points (eval/priors.ts).
     const priors = opts.labelNames === false ? undefined : await vectors(labels.map(readable));
-    return { model, ...(await fitHead(X, y, labels, opts, priors, LABEL_NAME_WEIGHT, undefined, SMALL_HEAD_FLOOR[model] ?? 1)) };
+    const cal = opts.calibrateOn;
+    const unknown = cal?.find((e) => !labels.includes(e.label));
+    if (unknown) throw new Error(`decidejs: calibrateOn has label ${JSON.stringify(unknown.label)}, which isn't one of the head's labels`);
+    const calibration = cal?.length ? { X: await vectors(cal.map((e) => e.text)), y: cal.map((e) => labels.indexOf(e.label)) } : undefined;
+    return { model, ...(await fitHead(X, y, labels, opts, priors, LABEL_NAME_WEIGHT, undefined, SMALL_HEAD_FLOOR[model] ?? 1, calibration)) };
   }
 
   return {

@@ -48,7 +48,7 @@ split ([eval/results-fallback-0.9.jsonl](../eval/results-fallback-0.9.jsonl)).
 
 What this doesn't show: a real LLM is sometimes wrong, and its mistakes become training examples; here the stand-in
 was always right. Check a sample of learned examples (`route.learned`) before you trust them, or have a person
-confirm them. The traffic was in-scope CLINC150 queries in random order; real traffic drifts.
+confirm them (and see [When the LLM is wrong](#when-the-llm-is-wrong)). The traffic was in-scope CLINC150 queries in random order; real traffic drifts.
 
 ## Starting from labels alone
 
@@ -74,6 +74,38 @@ The same simulation with no examples at all ([eval/results-fallback-cold-0.9.jso
 By round 5 it matched the run that started from 5 examples per label (92.1%), and 2,528 of the 10,000 queries went
 to the fallback, against 2,249 for that run. The first head, trained on answers alone, was the weakest point:
 95.1% of its local answers were right in round 2.
+
+## When the LLM is wrong
+
+A real LLM gets some answers wrong, and more of the hard texts the head sends it. Those mistakes become training
+examples. The head still gets more accurate, but it also fits its temperature (how far it trusts itself) on those
+answers, so it learns to doubt itself: its confidence rarely reaches `minConfidence` and it keeps asking.
+
+Fix it with `calibrateOn`: a few examples you know are right, 2 per label is enough. The temperature is then fitted on
+those, not on the LLM's answers:
+
+```ts
+const checked = [{ text: "where is my new card", label: "card_arrival" }, /* 2 per label */];
+const route = withFallback(d, labels, { ask, retrainEvery: 1000, trainOptions: { calibrateOn: checked } });
+```
+
+Simulated with [eval/long-stream.ts](../eval/long-stream.ts): all 77 BANKING77 labels, starting from labels with
+descriptions, 10,000 training messages as traffic, retraining every 1,000. The stand-in LLM is wrong on a share of
+what it is sent, picking the closest wrong label (real Llama 3.1 8B mistakes were 97% in the head's top 3). Numbers
+are for the last 1,000 messages ([eval/results-long-stream.jsonl](../eval/results-long-stream.jsonl)).
+
+| LLM wrong | `calibrateOn` | Sent to the LLM | Answered right | Head on the test set |
+|---|---|---|---|---|
+| 0% | no | 23% | 98% | 92.0% |
+| 15% | no | 64% | 90% | 90.2% |
+| 15% | 2 per label | 24% | 95% | 90.1% |
+| 30% | no | 86% | 71% | 85.6% |
+| 30% | 2 per label | 34% | 86% | 86.2% |
+
+Zero-shot alone, never learning, sent 59% and answered 97%, 87% and 80% right at 0%, 15% and 30% wrong; it scores
+74% on the test set. At 15% wrong, `calibrateOn` brought the share sent down to what a perfect LLM gave. At 30% it beat not learning at
+all, which plain learning didn't. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
+on the lanes demo's messages.
 
 ## Options
 

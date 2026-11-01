@@ -131,6 +131,7 @@ const head = await d.train([
 | `l2` | `number` | `1e-4` | Weight decay. |
 | `holdout` | `number` | `0.1` | Share of examples held out to pick the epoch count and fit the temperature. When that share is under 200 examples, 5 folds are used instead (every example is held out once). |
 | `seed` | `number` | `7` | Seed for the split and the shuffling, so a run repeats exactly. |
+| `calibrateOn` | `Example<L>[]` | none | Examples known to be right, used only to fit the temperature. Pass about 2 per label when the training examples come from a source that is sometimes wrong, such as an LLM through `withFallback()`. Labels must be among the head's. |
 | `onEpoch` | `(epoch: number, holdoutAccuracy: number) => void` | none | Called after each epoch of the held-out runs with accuracy on the held-out examples. `epoch` counts from 0. With 5 folds it runs once per fold, so `epoch` starts again at 0 for each fold. It is not called during the final retrain on all examples. |
 
 Throws:

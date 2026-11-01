@@ -63,3 +63,13 @@ test("tiny training sets never get a temperature below 1", async () => {
   const head = await fitHead(X, y, ["a", "b", "c"]);
   assert.ok(head.temperature >= 1, `temperature ${head.temperature}`);
 });
+
+test("fitHead fits the temperature on calibration examples when given, so noisy labels don't make it doubt itself", async () => {
+  const { X, y } = clusters(60);
+  // A third of the training labels are wrong, as from a noisy teacher.
+  const noisy = y.map((c, i) => (i % 3 === 0 ? (c + 1) % 3 : c));
+  const clean = clusters(20, 42);
+  const plain = await fitHead(X, noisy, ["a", "b", "c"], { epochs: 20 });
+  const calibrated = await fitHead(X, noisy, ["a", "b", "c"], { epochs: 20 }, undefined, 1, undefined, 1, clean);
+  assert.ok(calibrated.temperature < plain.temperature, `${calibrated.temperature} < ${plain.temperature}`);
+});

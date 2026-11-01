@@ -37,3 +37,7 @@ test("train() with labels that have no examples yet can still choose them", asyn
   assert.equal((await d.decide("where is my parcel, shipping is late", head)).choice, "shipping");
   await assert.rejects(d.train([{ text: "a", label: "x" }], { labels: ["x", "y"], labelNames: false }), /need labelNames/);
 });
+
+test("train() rejects calibrateOn labels the head doesn't have", async () => {
+  await assert.rejects(d.train([{ text: "a", label: "x" }, { text: "b", label: "y" }], { calibrateOn: [{ text: "c", label: "z" as "x" }] }), /calibrateOn has label "z"/);
+});
