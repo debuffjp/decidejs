@@ -44,6 +44,11 @@ export interface FallbackOptions<L extends string> {
    * which are sometimes wrong. Pass your own `calibrateOn` to replace them.
    */
   trainOptions?: Omit<TrainOptions<L>, "labels">;
+  /**
+   * What an earlier session learned, from `route.saved()`, so a reload keeps it. Restoring doesn't retrain: call
+   * `retrain()` or pass the saved head as `using`.
+   */
+  restore?: { learned?: readonly Example<L>[]; confident?: readonly Example<L>[] };
 }
 
 /** A decision plus where it came from. `confidence` and `probs` are always the local decision's. */
@@ -65,16 +70,18 @@ const isHead = (c: unknown): c is Head => typeof c === "object" && c !== null &&
  */
 export function withFallback<const L extends string>(decider: Trainable, using: Choices<L>, options: FallbackOptions<L>) {
   const { minConfidence = 0.9, ask, retrainEvery, trainOptions, learnNone = true, noneBelow = 0.6 } = options;
-  const labels: readonly L[] = isHead(using) ? (using.labels as readonly L[]) : Array.isArray(using) ? using : (Object.keys(using) as L[]);
+  // A head saved from an earlier session may carry NONE; it isn't one of the labels `ask` chooses from.
+  const labels: readonly L[] = (isHead(using) ? (using.labels as readonly L[]) : Array.isArray(using) ? using : (Object.keys(using) as L[])).filter((l) => l !== NONE);
   const zeroShotChoices: Choices<L> = isHead(using) ? labels : using;
   const examples = options.examples ?? (isHead(using) ? undefined : []);
-  const learned: Example<L>[] = [];
+  const learned: Example<L>[] = [...(options.restore?.learned ?? [])];
   let current: Choices<L> = using;
   let retraining: Promise<Head<L>> | undefined;
   let sinceRetrain = 0;
   // Zero-shot's confident answers: right about 93% of the time on BANKING77, and enough to calibrate on (eval/long-stream.ts).
   // 4 per label, or more with few labels so the set can reach 50 (12 labels capped at 4 never did).
-  const confident: Example<L>[] = [], perLabel = new Map<L, number>(), perLabelCap = Math.max(4, Math.ceil(50 / labels.length));
+  const confident: Example<L>[] = [...(options.restore?.confident ?? [])], perLabel = new Map<L, number>(), perLabelCap = Math.max(4, Math.ceil(50 / labels.length));
+  for (const e of confident) perLabel.set(e.label, (perLabel.get(e.label) ?? 0) + 1);
 
   function retrain(): Promise<Head<L>> {
     if (!examples) return Promise.reject(new Error("decidejs: withFallback() needs `examples` to retrain a head"));
@@ -118,8 +125,11 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
     readonly head: Head<L> | null;
     /** Answers from `ask` kept as examples since the start; `null` answers appear with the label `NONE`. */
     readonly learned: readonly Example<L>[];
+    /** Everything to pass back as `restore` after a reload: the learned answers and the calibration set. Plain JSON. */
+    saved(): { learned: Example<L>[]; confident: Example<L>[] };
   }, {
     retrain: { value: retrain },
+    saved: { value: () => ({ learned: [...learned], confident: [...confident] }) },
     head: { get: () => (isHead(current) ? current : null) },
     learned: { get: () => learned },
   });

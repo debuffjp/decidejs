@@ -181,13 +181,26 @@ on the lanes demo's messages.
 | `trainOptions` | `{}` | Passed to `train()` on retrain. Starting from labels, `calibrateOn` defaults to texts zero-shot answered confidently. |
 | `learnNone` | `true` | Learn `null` answers as the label `NONE`, so the head can answer `null` itself. |
 | `noneBelow` | `0.6` | Learn a `null` as `NONE` only when the text's zero-shot similarity to every label is below this. `0` learns every `null`. |
+| `restore` | none | `{ learned, confident }` from an earlier `route.saved()`. Doesn't retrain by itself. |
 
 The returned function also has:
 
 - `route.retrain()`: train a new head on `examples` plus the learned answers now; resolves to the new head and
   switches to it. Calls while a retrain runs share it.
 - `route.head`: the head in use.
-- `route.learned`: the answers kept so far. Save them with your examples to keep what was learned across sessions.
+- `route.learned`: the answers kept so far.
+- `route.saved()`: the answers plus the calibration set, as plain JSON. Store it, pass it back as `restore`, then
+  call `retrain()` (or pass a saved head as the labels):
+
+  ```ts
+  const route = withFallback(decider, labels, { ask, restore: JSON.parse(localStorage.decideState ?? "{}") });
+  if (route.learned.length) await route.retrain();
+  // later
+  localStorage.decideState = JSON.stringify(route.saved());
+  ```
+
+  Before this, only `route.learned` could be saved, so a reload lost the calibration set and the next head fitted its
+  confidence on the LLM's answers.
 
 A background retrain that fails keeps the current head; call `retrain()` yourself to see the error.
 

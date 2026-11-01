@@ -32,7 +32,9 @@ The first release. Numbers are on public test splits unless noted; the scripts t
   example and `retrainEvery` retrains in the background. It can start from labels alone.
 - Built for an LLM that is sometimes wrong: starting from labels, it fits confidence on zero-shot's own confident
   answers rather than the LLM's, and learns `null` answers as the label `NONE` (`learnNone`) when the text is far
-  from every label (`noneBelow`), so it can answer `null` itself for off-topic text. With real Llama 3.1 8B answers on
+  from every label (`noneBelow`), so it can answer `null` itself for off-topic text.
+- `route.saved()` returns the learned answers and the calibration set as plain JSON; pass them back as `restore` after
+  a reload. With real Llama 3.1 8B answers on
   12 labels, the share sent fell from 30% (zero-shot) to 19%, and off-topic text given a wrong label from 6.7% to 2.4%.
 
 ### Browser and tools

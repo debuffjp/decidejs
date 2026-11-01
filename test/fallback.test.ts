@@ -129,3 +129,22 @@ test("a null answer close to the labels is not learned as NONE", async () => {
   await route("0.3 off-topic sim=0.4");
   assert.deepEqual(route.learned.map((e) => e.text), ["0.3 off-topic sim=0.4"]);
 });
+
+test("saved() and restore carry learned answers and the calibration set across a reload", async () => {
+  const { decider, trained, trainOpts } = fake();
+  const first = withFallback(decider, Array.from({ length: 20 }, (_, i) => `l${i}`), { ask: () => "l1" });
+  for (let i = 0; i < 60; i++) await first(`0.95 l${i % 20} ${i}`);
+  await first("0.3 unsure");
+  const state = JSON.parse(JSON.stringify(first.saved()));
+  const second = withFallback(decider, Array.from({ length: 20 }, (_, i) => `l${i}`), { ask: () => "l1", restore: state });
+  await second.retrain();
+  assert.deepEqual(trained.at(-1)!.map((e) => e.text), ["0.3 unsure"]);
+  assert.equal(trainOpts.at(-1)!.calibrateOn?.length, 60);
+});
+
+test("a saved head with NONE doesn't offer NONE to ask", async () => {
+  let offered: readonly string[] = [];
+  const route = withFallback(fake().decider, head(["a", "b", NONE]), { ask: (_, labels) => ((offered = labels), "a") });
+  await route("0.3 x");
+  assert.deepEqual(offered, ["a", "b"]);
+});
