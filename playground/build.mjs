@@ -1,4 +1,4 @@
-// Builds debuff.jp/decidekit into playground/dist: the front page, the playground and the two lanes demo.
+// Builds debuff.jp/decide into playground/dist: the front page, the playground and the two lanes demo.
 // npm run playground, then serve playground/dist cross-origin isolated.
 import { build } from "esbuild";
 import { cp, mkdir } from "node:fs/promises";

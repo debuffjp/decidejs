@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/decidekit?color=cffb2d&labelColor=11140d)](https://www.npmjs.com/package/decidekit) [![ci](https://github.com/debuffjp/decidekit/actions/workflows/ci.yml/badge.svg)](https://github.com/debuffjp/decidekit/actions/workflows/ci.yml) [![MIT](https://img.shields.io/badge/licence-MIT-cffb2d?labelColor=11140d)](LICENSE) [![Discord](https://img.shields.io/badge/discord-debuff-a78bfa?labelColor=11140d)](https://discord.gg/jshbDHSpCY)
 
-**[Try it in your browser](https://debuff.jp/decidekit/playground/)** · [Watch it learn from an LLM](https://debuff.jp/decidekit/lanes/) · [Launch post](https://debuff.jp/blog/introducing-decidekit) · [Research: when the LLM is wrong](https://debuff.jp/research/learning-from-a-noisy-llm)
+**[Try it in your browser](https://debuff.jp/decide/playground/)** · [Watch it learn from an LLM](https://debuff.jp/decide/lanes/) · [Launch post](https://debuff.jp/blog/introducing-decide) · [Research: when the LLM is wrong](https://debuff.jp/research/learning-from-a-noisy-llm)
 
 A decision model for the browser and Node: it picks one of your labels for a piece of text, with confidence you can trust, and learns from an LLM when it isn't sure. Your labels are the type. No server, no API key.
 
@@ -203,9 +203,9 @@ Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run`
 
 ## Playground
 
-Try it at [debuff.jp/decidekit](https://debuff.jp/decidekit/). To run it locally: `npm run playground`, then serve `playground/dist` cross-origin isolated (`node bench/serve.mjs` style headers).
+Try it at [debuff.jp/decide](https://debuff.jp/decide/). To run it locally: `npm run playground`, then serve `playground/dist` cross-origin isolated (`node bench/serve.mjs` style headers).
 Try zero-shot labels, the ready-made heads, a head trained in the page and "none of these".
-[Two lanes](https://debuff.jp/decidekit/lanes/) shows `withFallback` live: decidekit starts from twelve label names,
+[Two lanes](https://debuff.jp/decide/lanes/) shows `withFallback` live: decidekit starts from twelve label names,
 asks a small LLM when it's unsure, learns from each answer, and replays the first 20 messages at the end.
 
 ## Ready-made heads
@@ -238,7 +238,7 @@ decidekit if training has to happen in the page, from the user's own data.
 
 ## Docs
 
-[debuff.jp/decidekit/docs](https://debuff.jp/decidekit/docs/) (also in [docs/README.md](docs/README.md)) indexes the guides (training, confidence and thresholds, the browser), the
+[debuff.jp/decide/docs](https://debuff.jp/decide/docs/) (also in [docs/README.md](docs/README.md)) indexes the guides (training, confidence and thresholds, the browser), the
 API reference, how it works and the FAQ.
 
 ## Community
