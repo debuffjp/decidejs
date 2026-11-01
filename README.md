@@ -149,6 +149,8 @@ Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run`
 
 Try it at [debuff.jp/decidejs](https://debuff.jp/decidejs/). To run it locally: `npm run playground`, then serve `playground/dist` cross-origin isolated (`node bench/serve.mjs` style headers).
 Try zero-shot labels, the ready-made heads, a head trained in the page and "none of these".
+[Two lanes](https://debuff.jp/decidejs/lanes/) shows `withFallback` live: decidejs starts from twelve label names,
+asks a small LLM when it's unsure, learns from each answer, and replays the first 20 messages at the end.
 
 ## Ready-made heads
 
@@ -158,7 +160,8 @@ can try a trained head before collecting examples.
 ## What it's for
 
 Routing support messages, triaging feedback, search and command intent, moderation hints while someone types,
-labelling a dataset in the browser, and a cheap first pass before an LLM. Details, code and poor fits:
+labelling a dataset in the browser, a cheap first pass before an LLM that learns from it, games, extensions
+and offline apps, and text that can't leave the device. Details, code and poor fits:
 [docs/use-cases.md](docs/use-cases.md). Runnable examples are in [examples/](examples/).
 
 ## Compared with
