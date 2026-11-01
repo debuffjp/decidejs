@@ -8,6 +8,7 @@ Start with the [main README](../README.md) for a five-line example and the headl
 - [Confidence and thresholds](guide-confidence.md): what calibrated means, how the temperature is fitted, picking `minConfidence` on your own data and "none of these".
 - [In the browser](guide-browser.md): the worker, download progress, cross-origin isolation, first-load size and keeping the encoder out of the page bundle.
 - [Bundlers](bundlers.md): Vite, webpack and Next.js config.
+- [switch](guide-switch.md): decidejs as a decision model in the switch harness, with trained heads and a teacher, and WikiRace results.
 - [Use cases](use-cases.md): good fits, poor fits and example code.
 
 ## Reference

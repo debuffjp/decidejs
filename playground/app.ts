@@ -58,10 +58,10 @@ function chips() {
   }
 }
 
-for (const tab of document.querySelectorAll<HTMLButtonElement>("#tabs button")) {
+for (const tab of Array.from(document.querySelectorAll<HTMLButtonElement>("#tabs button"))) {
   tab.addEventListener("click", () => {
     mode = tab.dataset.mode as Mode;
-    for (const t of document.querySelectorAll<HTMLButtonElement>("#tabs button")) t.setAttribute("aria-selected", String(t === tab));
+    for (const t of Array.from(document.querySelectorAll<HTMLButtonElement>("#tabs button"))) t.setAttribute("aria-selected", String(t === tab));
     $("zero-box").hidden = mode !== "zero";
     $("train-box").hidden = mode !== "train";
     $("head-box").hidden = !about[mode];

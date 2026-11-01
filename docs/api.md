@@ -332,3 +332,17 @@ Exit codes: 0 on success, 1 on an error (the message goes to stderr), 2 on a usa
 `withFallback(decider, head, options)` (from `decidejs` and `decidejs/browser`) is documented in
 [guide-fallback.md](guide-fallback.md). `useDecider()` and `useDecision()` (from `decidejs/react`) are documented in
 [guide-react.md](guide-react.md).
+
+## decidejs/switch
+
+### switchDecider(decider, options?)
+
+Wraps a decider from `createDecider()` as a [switch](https://github.com/osolmaz/switch) `Decider`. Answers `choice`, `bool` and `score` questions locally; images are ignored.
+
+- `text(state, question, id)`: what decidejs reads for a question. Default: `textOf(question.instructions, state)`.
+- `heads`: trained heads by question id.
+- `teacher`: a switch decider to ask when a choice is below `minConfidence` (default 0.9); its answers train a head per repeating question every 8 answers.
+
+### textOf(instructions, state)
+
+The instructions, then the state as `key: value` lines. See the [switch guide](guide-switch.md).

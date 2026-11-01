@@ -80,6 +80,12 @@ Below the threshold, `ask` answers and its answer becomes a training example. Si
 per label, the share sent to the LLM fell from 41% to 14-17% over 10,000 queries while the head went from 86% to 94%. It can also start from labels alone, with no examples:
 [docs/guide-fallback.md](docs/guide-fallback.md).
 
+## switch
+
+`decidejs/switch` makes decidejs a decision model for [switch](https://github.com/osolmaz/switch), the harness that
+runs a decision model through a task. Zero-shot, it won two of the three WikiRace races from switch's example on a
+laptop CPU. See the [switch guide](docs/guide-switch.md).
+
 ## React
 
 `useDecider()` and `useDecision(decider, text, labels)` from `decidejs/react`: [docs/guide-react.md](docs/guide-react.md).
