@@ -74,6 +74,9 @@ canvas { display: block; width: 100%; }
 
 /* lanes/?embed: just the demo, for the front page */
 .embed nav.top, .embed h1, .embed .lead, .embed .fine { display: none; }
-.embed main { padding: 0; max-width: none; }
+.embed main { padding: 0 0 16px; max-width: none; }
+/* The front page draws the frame, so the card's own border would double it. */
+.embed .card { border: 0; border-radius: 0; }
+.embed .row, .embed .legend { padding: 0 16px; }
 html.embed { overflow: hidden; }
 .embed body { background: transparent; }
