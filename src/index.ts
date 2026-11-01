@@ -105,6 +105,10 @@ const LABEL_NAME_WEIGHT = 1;
 // differ in how spread out their similarities are: at 0.05, bge-small answered only 3% of texts at 0.9 confidence.
 // Described labels get their own: on bge-small, 0.025 halved their calibration error on CLINC150 (0.066 to 0.020) and
 // raised it on BANKING77 (0.032 to 0.042); names alone measured best at 0.03 (eval/descriptions.ts).
+// Small heads (under 50 held-out answers) can't fit a trustworthy temperature, so it has a floor. On bge-small a floor
+// of 1 left them underconfident (calibration error 0.09 to 0.13; only 43 to 69% of texts at 0.9, nearly all right);
+// 0.5 gave 0.009 to 0.017. MiniLM's similarities are spread differently and keep 1 (eval/small-floor.ts).
+const SMALL_HEAD_FLOOR: Record<string, number> = { "Xenova/bge-small-en-v1.5": 0.5 };
 const TEMPERATURES: Record<string, [names: number, described: number]> = { "Xenova/bge-small-en-v1.5": [0.03, 0.025], "Xenova/all-MiniLM-L6-v2": [0.05, 0.05] };
 
 function toDecision<L extends string>(labels: readonly L[], p: number[]): Decision<L> {
@@ -207,7 +211,7 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
     // by 1 to 14 points at 1 to 5 examples per label on the dev splits, and beat weight 3 (the MiniLM setting) by 0.9
     // to 2.5 points (eval/priors.ts).
     const priors = opts.labelNames === false ? undefined : await vectors(labels.map(readable));
-    return { model, ...(await fitHead(X, y, labels, opts, priors, LABEL_NAME_WEIGHT)) };
+    return { model, ...(await fitHead(X, y, labels, opts, priors, LABEL_NAME_WEIGHT, undefined, SMALL_HEAD_FLOOR[model] ?? 1)) };
   }
 
   return {

@@ -34,8 +34,10 @@ picks the temperature so the probabilities match how often the head is right on 
    in that fold: that label could never be chosen, and counting it as a miss pulls the temperature too high.
 3. Try temperatures from 0.2 to 5 in steps of 0.05 and keep the one with the lowest negative log-likelihood on the
    held-out answers.
-4. With under 50 held-out answers, never go below 1. A perfect score on a few examples would otherwise push every
-   answer to confidence 1.0.
+4. With under 50 held-out answers, never go below a floor: 0.5 for bge-small, 1 for other models. A perfect score on a
+   few examples would otherwise push every answer to confidence 1.0. The floor was measured with `eval/small-floor.ts`:
+   at 0.5, bge-small heads trained on 1 to 5 examples per label had calibration error 0.009 to 0.017 (0.087 to 0.133 at
+   1, which made them underconfident). Pre-release builds used 1 for every model.
 5. Retrain on every example and keep the temperature.
 
 The head stores it as `head.temperature`. The 5-fold step matters with little data: at 1 example per label it took ECE

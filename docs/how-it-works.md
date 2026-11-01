@@ -105,7 +105,7 @@ not used at all.
 The held-out examples' scores are used to fit the temperature, as described in
 [guide-confidence.md](guide-confidence.md#how-the-temperature-is-fitted). In short: a grid search from 0.2 to 5 for the
 lowest negative log-likelihood, with 5 folds when the holdout is under 200 examples, held-out examples skipped when
-their label has nothing left to train on, and a floor of 1 under 50 held-out answers. The fold change took ECE at 1
+their label has nothing left to train on, and a floor under 50 held-out answers (0.5 for bge-small, 1 for other models; 1 for all in pre-release builds). The fold change took ECE at 1
 example per label from 0.459 to 0.020.
 
 ### 6. Retrain on all of it

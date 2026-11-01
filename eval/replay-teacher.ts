@@ -5,7 +5,12 @@
 // labels. STOP=1 adds a stop rule: audit 1 in 10 confident local answers with the teacher, and once 20 audits show the
 // teacher disagreeing with more than 15% of them, stop learning from it. PRIOR=descriptions|both starts each head from
 // the descriptions (or the sum of name and description) instead of the name, with weight PRIOR_W (default 1).
-// SWITCH_AT=n keeps zero-shot until n answers have been learned, then trains the first head.
+// SWITCH_AT=n keeps zero-shot until n answers have been learned, then trains the first head. MODE picks how zero-shot
+// and the head combine once there is a head: replace (default, what withFallback does), blend (mix the two, the head
+// weighted n / (n + BLEND_K) for n learned answers) or agree (when they pick the same label take the higher
+// confidence, else the lower) or earned (use the head only while it has matched the teacher's last 24 answers at
+// least as often as zero-shot did, each scored before it learned that answer).
+// FLOOR sets the small-head temperature floor (train() uses 0.5 on bge-small; 1 here unless set).
 //   node --experimental-strip-types eval/replay-teacher.ts
 import { appendFile, readFile } from "node:fs/promises";
 import { createDecider } from "../src/index.ts";
@@ -30,6 +35,21 @@ const descs = await d.embed(labels.map((l) => all[l]));
 const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0);
 const stopRule = process.env.STOP === "1";
 const switchAt = Number(process.env.SWITCH_AT ?? 0);
+const mode = process.env.MODE ?? "replace", blendK = Number(process.env.BLEND_K ?? 48);
+let earned = false;
+const zeroShot = (x: number[]) => softmax(labels.map((_, c) => Math.max(dot(names[c], x), dot(descs[c], x))), 0.025);
+function route(x: number[], head: Awaited<ReturnType<typeof fitHead>> | null, n: number): number[] {
+  const z = zeroShot(x);
+  if (!head) return z;
+  const h = softmax(logits(head, x), head.temperature);
+  if (mode === "blend") { const w = n / (n + blendK); return h.map((v, c) => w * v + (1 - w) * z[c]); }
+  if (mode === "earned") return earned ? h : z;
+  if (mode === "agree") {
+    const zb = z.indexOf(Math.max(...z)), hb = h.indexOf(Math.max(...h));
+    return zb === hb ? (z[zb] >= h[hb] ? z : h) : (z[zb] <= h[hb] ? z : h);
+  }
+  return h;
+}
 const priorKind = process.env.PRIOR ?? "names", priorW = Number(process.env.PRIOR_W ?? 1);
 const priors = priorKind === "descriptions" ? descs : priorKind === "both" ? names.map((n, c) => n.map((v, j) => v + descs[c][j])) : names;
 
@@ -39,11 +59,13 @@ for (const teacher of ["perfect", "8b-bare", "8b-described"] as const) {
     const rand = seeded(seed);
     const stream = [...both].sort(() => rand() - 0.5);
     let head: Awaited<ReturnType<typeof fitHead>> | null = null;
+    earned = false;
+    const record: { z: boolean; h: boolean }[] = [];
     const learned: { text: string; label: number }[] = [];
     let sinceRetrain = 0, sent = 0, right = 0, sentLate = 0, audits = 0, disagree = 0, stopped = false, wrongLearned = 0;
     for (const [i, m] of stream.entries()) {
       const x = vec.get(m.text)!;
-      const p = head ? softmax(logits(head, x), head.temperature) : softmax(labels.map((_, c) => Math.max(dot(names[c], x), dot(descs[c], x))), 0.025);
+      const p = route(x, head, learned.length);
       const best = p.indexOf(Math.max(...p));
       const answer = teacher === "perfect" ? m.label : teacher === "8b-bare" ? m.bare : m.described;
       if (p[best] >= 0.9) {
@@ -59,24 +81,31 @@ for (const teacher of ["perfect", "8b-bare", "8b-described"] as const) {
       sent++;
       if (i >= stream.length / 2) sentLate++;
       if (answer === m.label) right++;
+      if (answer && head) {
+        // Before learning this answer: would zero-shot and the head each have given it?
+        const z = zeroShot(x), h = softmax(logits(head, x), head.temperature);
+        record.push({ z: labels[z.indexOf(Math.max(...z))] === answer, h: labels[h.indexOf(Math.max(...h))] === answer });
+        const last = record.slice(-24);
+        earned = last.length >= 8 && last.filter((r) => r.h).length >= last.filter((r) => r.z).length;
+      }
       if (answer && !stopped) {
         learned.push({ text: m.text, label: labels.indexOf(answer) });
         if (answer !== m.label) wrongLearned++;
         if (++sinceRetrain >= 8 && learned.length >= switchAt) {
-          head = await fitHead(learned.map((l) => vec.get(l.text)!), learned.map((l) => l.label), labels, { seed: 7 }, priors, priorW);
+          head = await fitHead(learned.map((l) => vec.get(l.text)!), learned.map((l) => l.label), labels, { seed: 7 }, priors, priorW, 20, Number(process.env.FLOOR ?? 1));
           sinceRetrain = 0;
         }
       }
     }
     const final = heldOut.filter((r) => {
       const x = vec.get(r.text)!;
-      const p = head ? softmax(logits(head, x), head.temperature) : labels.map((_, c) => Math.max(dot(names[c], x), dot(descs[c], x)));
+      const p = route(x, head, learned.length);
       return labels[p.indexOf(Math.max(...p))] === r.label;
     }).length / heldOut.length;
     runs.push({ sent: sent / stream.length, sentLate: sentLate / (stream.length / 2), right: right / stream.length, final, wrongLearned: wrongLearned / Math.max(1, learned.length), stopped: stopped ? 1 : 0 });
   }
   const mean = (k: string) => +(runs.reduce((s, r) => s + r[k], 0) / runs.length).toFixed(3);
-  const line = { date: "2026-11-01", teacher, stopRule, prior: priorKind, priorWeight: priorW, switchAt, messages: both.length, heldOut: heldOut.length, sentToLlm: mean("sent"), sentSecondHalf: mean("sentLate"), answeredRight: mean("right"), finalHeadOnHeldOut: mean("final"), learnedWrong: mean("wrongLearned"), runsStopped: runs.filter((r) => r.stopped).length };
+  const line = { date: "2026-11-01", teacher, stopRule, prior: priorKind, priorWeight: priorW, switchAt, mode, blendK, floor: Number(process.env.FLOOR ?? 1), messages: both.length, heldOut: heldOut.length, sentToLlm: mean("sent"), sentSecondHalf: mean("sentLate"), answeredRight: mean("right"), finalHeadOnHeldOut: mean("final"), learnedWrong: mean("wrongLearned"), runsStopped: runs.filter((r) => r.stopped).length };
   console.log(JSON.stringify(line));
   await appendFile("eval/results-replay-teacher.jsonl", JSON.stringify(line) + "\n");
 }

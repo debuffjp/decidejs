@@ -60,7 +60,8 @@ function batchGradient(ids: number[], X: Float64Array, y: number[], W: Float32Ar
 }
 
 /** Fits weights, biases and temperature to embeddings `X` with label indices `y`. */
-export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}, priors?: ArrayLike<number>[], priorWeight = 1, centroidScale = CENTROID_SCALE) {
+export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}, priors?: ArrayLike<number>[], priorWeight = 1, centroidScale = CENTROID_SCALE, smallFloor = 1) {
+  // smallFloor: the lowest temperature a head with under 50 held-out answers may get; createDecider picks it per model.
   const { epochs = 60, learningRate = 2, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
   const dim = X[0].length, C = labels.length;
   // One flat buffer, so the inner loops read typed memory instead of an array of arrays.
@@ -129,8 +130,8 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
     if (nll < bestNll) { bestNll = nll; temperature = Number(t.toFixed(2)); }
   }
   // Under 50 held-out answers, a perfect score pulls the temperature to its floor and every answer to confidence
-  // 1.0 (seen with 6 examples). Never sharpen on that little evidence.
-  if (heldOut.length < 50) temperature = Math.max(temperature, 1);
+  // 1.0 (seen with 6 examples). Never sharpen past the floor on that little evidence.
+  if (heldOut.length < 50) temperature = Math.max(temperature, smallFloor);
   const head = await run(idx, foldEpochs.sort((a, b) => a - b)[foldEpochs.length >> 1]);
   return { labels, dim, weights: head.weights, bias: head.bias, temperature };
 }
