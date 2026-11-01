@@ -56,7 +56,7 @@ a link to the target itself is taken directly. Results on 2026-11-01, one run ea
 | Baseball to Sun | 7 hops | gave up after 4 |
 | DNA to Manipuri pony | lost after 12 hops (reached "History of the horse in the Indian subcontinent") | 6 hops |
 
-Through switch's own WikiRace domain and  loop, which shows at most 200 links a step and opens sections
+Through switch's own WikiRace domain and `run()` loop, which shows at most 200 links a step and opens sections
 for the rest, the same decider (reading the target's summary) reached Moon in 12 hops and Sun in 18, and hit the
 40-step limit on DNA to Manipuri pony after reaching Manipur. Its paths wander: it revisits articles and follows
 lexical look-alikes. That is the work in the next section.
