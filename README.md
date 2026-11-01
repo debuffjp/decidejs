@@ -146,6 +146,17 @@ That lets wasm use several threads: in our runs with all-MiniLM-L6-v2 it cut p95
 
 Download on first visit: the model (34 MB) and onnxruntime's wasm (23.6 MB, 5.8 MB gzipped), both cached after.
 
+## Models
+
+decidekit runs the Decide models, each a sentence encoder plus a calibrated head:
+
+| Model | Encoder | Download | Reads |
+|---|---|---|---|
+| Decide Small (default) | `Xenova/bge-small-en-v1.5` | 34 MB | English |
+| Decide Multilingual | `Xenova/multilingual-e5-small` | 118 MB | 76% on Japanese and Chinese intents |
+
+Pass the encoder id as `model` to `createDecider()`.
+
 ## Numbers
 
 bge-small-en-v1.5 (the default) at q8, Ryzen 7 260 laptop, Node 24 and headless Chrome 156, 2026-11-01. Accuracy
@@ -223,6 +234,8 @@ and offline apps, and text that can't leave the device. Details, code and poor f
 jimothy reports 92.4% on BANKING77, above our 90.7%. Pick it if you train in Node and want the higher number. Pick
 decidekit if training has to happen in the page, from the user's own data.
 
+[system-one](https://github.com/lukeramsden/system-one) is a different kind of tool: a typed client for hosted System One models (Jev and Laya). It runs no model itself.
+
 ## Docs
 
 [docs/README.md](docs/README.md) indexes the guides (training, confidence and thresholds, the browser), the
@@ -236,7 +249,6 @@ issue template for them. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Status
 
-0.1. English with the default model, other languages with `multilingual-e5-small` ([FAQ](docs/faq.md#which-languages-does-it-support)); short texts (about a paragraph). Not done yet: WebGPU in the worker, a
-fallback to a hosted model below the threshold, and fine-tuning the encoder (the likely route past about 91%).
+0.1. English with the default model, other languages with `multilingual-e5-small` ([FAQ](docs/faq.md#which-languages-does-it-support)); short texts (about a paragraph). Not done yet: WebGPU in the worker and fine-tuning the encoder (the likely route past about 91%).
 
 Made by the [debuff](https://debuff.jp) team. MIT.
