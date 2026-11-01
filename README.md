@@ -238,7 +238,7 @@ decidekit if training has to happen in the page, from the user's own data.
 
 ## Docs
 
-[docs/README.md](docs/README.md) indexes the guides (training, confidence and thresholds, the browser), the
+[debuff.jp/decidekit/docs](https://debuff.jp/decidekit/docs/) (also in [docs/README.md](docs/README.md)) indexes the guides (training, confidence and thresholds, the browser), the
 API reference, how it works and the FAQ.
 
 ## Community
