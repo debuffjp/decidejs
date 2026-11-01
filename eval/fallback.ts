@@ -2,7 +2,7 @@
 // queries as traffic in rounds, let the true label stand in for the LLM below the threshold, retrain after each
 // round. Reports the share sent to the fallback and the head's own accuracy on the validation split. Uses the hill
 // embedding cache (npm run eval:hill once first). COLD=1 starts from labels alone: zero-shot until the first retrain,
-// labels without answers starting from their names. Usage: [COLD=1] node --experimental-strip-types eval/fallback.ts [threshold]
+// labels without answers starting from their names. Usage: [COLD=1] [MODEL=id] node --experimental-strip-types eval/fallback.ts [threshold]
 import { readFile } from "node:fs/promises";
 import { fitHead, logits, softmax } from "../src/head.ts";
 import { createDecider } from "../src/index.ts";
@@ -10,7 +10,8 @@ import { kShot, loadData, seeded } from "./data.ts";
 
 const threshold = Number(process.argv[2] ?? 0.9);
 const { clinc } = await loadData();
-const cache: Record<string, number[]> = JSON.parse(await readFile("data/emb-Xenova_all_MiniLM_L6_v2.json", "utf8"));
+const decider = await createDecider({ model: process.env.MODEL });
+const cache: Record<string, number[]> = JSON.parse(await readFile(`data/emb-${decider.model.replace(/\W/g, "_")}.json`, "utf8"));
 const labels = [...new Set(clinc.train.map((r) => r.label))].sort();
 const cold = process.env.COLD === "1";
 const base = cold ? [] : kShot(clinc.train, 5, 7);
@@ -18,12 +19,12 @@ const inBase = new Set(base.map((r) => r.text));
 const rand = seeded(5);
 const traffic = clinc.train.filter((r) => !inBase.has(r.text)).sort(() => rand() - 0.5);
 // Label names, as train() and zero-shot decide() read them.
-const names = await (await createDecider()).embed(labels.map((l) => l.replace(/[_-]+/g, " ").toLowerCase()));
+const names = await decider.embed(labels.map((l) => l.replace(/[_-]+/g, " ").toLowerCase()));
 const fit = (rows: typeof base) => fitHead(rows.map((r) => cache[r.text]), rows.map((r) => labels.indexOf(r.label)), labels, { seed: 7 }, cold ? names : undefined, 3); // the warm run in results-fallback-0.9.jsonl had no label names
 type Fitted = Awaited<ReturnType<typeof fit>>;
 const decide = (head: Fitted | null, text: string) => {
   const x = cache[text];
-  const p = head ? softmax(logits(head, x), head.temperature) : softmax(names.map((n) => n.reduce((s, v, i) => s + v * x[i], 0)), 0.05);
+  const p = head ? softmax(logits(head, x), head.temperature) : softmax(names.map((n) => n.reduce((s, v, i) => s + v * x[i], 0)), decider.model.includes("bge-small") ? 0.03 : 0.05);
   const best = p.indexOf(Math.max(...p));
   return { choice: labels[best], confidence: p[best] };
 };

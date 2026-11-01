@@ -10,8 +10,8 @@ const r = await d.decide("my card never arrived", ["card_arrival", "refund", "ot
 r.choice; // "card_arrival" | "refund" | "other"
 ```
 
-Give it 5 examples per label and it reaches 79% on BANKING77 (77 intents); give it the full training set and it
-reaches 90.6%, with each answer taking 3-5 ms (median) in Chrome. Training runs in the user's tab, so their data never
+Give it 5 examples per label and it reaches 82% on BANKING77 (77 intents); give it the full training set and it
+reaches 90.7%, with each answer taking about 8 ms (median) in Chrome. Training runs in the user's tab, so their data never
 leaves the device.
 
 ## Zero-shot
@@ -115,15 +115,24 @@ Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: credentialless
 ```
 
-That lets wasm use several threads: in our runs it cut p95 decision time from 14.3 ms to 7.8 ms.
+That lets wasm use several threads: in our runs with all-MiniLM-L6-v2 it cut p95 decision time from 14.3 ms to 7.8 ms. With the default bge-small, isolated, p95 is 13.8 ms.
 
-Download on first visit: the model (23.7 MB) and onnxruntime's wasm (23.6 MB, 5.8 MB gzipped), both cached after.
+Download on first visit: the model (34 MB) and onnxruntime's wasm (23.6 MB, 5.8 MB gzipped), both cached after.
 
 ## Numbers
 
-All-MiniLM-L6-v2 at q8, Ryzen 7 260 laptop, Node 24 and headless Chrome 156, 2026-10-31. Accuracy and calibration
-error (ECE, lower is better) on each dataset's test split, mean of 3 seeds (one run for "all"):
-[eval/results.json](eval/results.json).
+bge-small-en-v1.5 (the default) at q8, Ryzen 7 260 laptop, Node 24 and headless Chrome 156, 2026-11-01. Accuracy
+and calibration error (ECE, lower is better) on each dataset's test split, mean of 3 seeds (one run for "all"):
+[eval/results-bge-small.json](eval/results-bge-small.json).
+
+| Examples per label | 5 | 10 | 25 | all |
+|---|---|---|---|---|
+| BANKING77 (77 labels) | 82.3% | 83.8% | 88.7% | 90.7% |
+| CLINC150 (150 labels) | 89.6% | 92.0% | 93.4% | 94.4% |
+| ECE, BANKING77 | 0.071 | 0.029 | 0.011 | 0.017 |
+| ECE, CLINC150 | 0.028 | 0.010 | 0.015 | 0.008 |
+
+Pre-release builds defaulted to all-MiniLM-L6-v2 (23.7 MB, 2026-10-31, [eval/results.json](eval/results.json)):
 
 | Examples per label | 5 | 10 | 25 | all |
 |---|---|---|---|---|
@@ -133,21 +142,24 @@ error (ECE, lower is better) on each dataset's test split, mean of 3 seeds (one 
 | ECE, CLINC150 | 0.029 | 0.013 | 0.012 | 0.012 |
 
 Calibration is loosest at 5 examples per label on BANKING77. On small tasks (2 to 10 labels sampled from CLINC150, scored on its validation
-queries, [eval/tiny.ts](eval/tiny.ts)), 1 example per label was right 93% of the time with calibration error 0.020, and
+queries, [eval/tiny.ts](eval/tiny.ts), measured with all-MiniLM-L6-v2), 1 example per label was right 93% of the time with calibration error 0.020, and
 3 per label 98% with 0.016. Add examples before relying on
 a threshold there.
 
-**In Chrome** (BANKING77, full training set, worker, cross-origin isolated, [bench/results.json](bench/results.json)):
-90.6% accuracy, 3.1 ms median and 5.7 ms p95 per decision, 147 s to train on 10,003 examples.
+**In Chrome** (BANKING77, full training set, worker, cross-origin isolated, 16 threads): 7.7 ms median and 13.8 ms
+p95 per decision, 228 s to train on 10,003 examples with no page stall longer than 18 ms. all-MiniLM-L6-v2 in the
+same run: 4.2 ms median, 7.7 ms p95. In Node: 3.2 ms median for a single text, 1.1 ms per text batched (MiniLM 2.0
+and 0.7). Earlier MiniLM run: [bench/results.json](bench/results.json).
 
 **Text that fits no label:** CLINC150 has 1,000 test queries that match none of its 150 intents. Trained on
-in-scope examples only, with `minConfidence` 0.93 picked on the validation split, 86.3% of them come back `null`,
-and 82.9% of in-scope queries are answered and right (94.0% are right with no threshold).
+in-scope examples only, with `minConfidence` 0.93 picked on the validation split, the shipped bge-small head returns
+`null` for 89.9% of them. With all-MiniLM-L6-v2 that was 86.3%, and 82.9% of in-scope queries were answered and right
+(94.0% right with no threshold).
 
-**With few examples, try bge-small.** `createDecider({ model: "Xenova/bge-small-en-v1.5" })` (34 MB, MIT) does
-better at 5 per label (82.3% on BANKING77, 89.6% on CLINC150) and about the same with all the data (90.7%, 94.4%).
-It takes about twice as long per decision in Chrome. Pass `{ labelNames: false }` to `train()` with it: label names
-helped MiniLM but slightly hurt bge-small on the dev splits. [eval/results-bge-small.json](eval/results-bge-small.json).
+**The smaller model.** `createDecider({ model: "Xenova/all-MiniLM-L6-v2" })` (23.7 MB, the pre-release default) is
+about 1.8x faster per decision in Chrome and 3 to 5 points less accurate with few examples, about the same with all
+the data. Pass it to keep using heads trained on it. Before this default changed, the README suggested
+`{ labelNames: false }` with bge-small: label names slightly hurt it on the dev splits.
 
 Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run` (Chrome).
 
@@ -160,7 +172,7 @@ asks a small LLM when it's unsure, learns from each answer, and replays the firs
 
 ## Ready-made heads
 
-[heads/](heads/) has a BANKING77 support-intent head (90.6%) and a CLINC150 assistant-intent head (94.2%), so you
+[heads/](heads/) has a BANKING77 support-intent head (90.6%) and a CLINC150 assistant-intent head (95.0%), so you
 can try a trained head before collecting examples.
 
 ## What it's for
@@ -180,7 +192,7 @@ and offline apps, and text that can't leave the device. Details, code and poor f
 | MediaPipe text classifier | yes | no, offline | no | no |
 | LLM structured output (AI SDK `Output.choice`) | no, API | n/a | yes | no |
 
-jimothy reports 92.4% on BANKING77, above our 90.6%. Pick it if you train in Node and want the higher number. Pick
+jimothy reports 92.4% on BANKING77, above our 90.7%. Pick it if you train in Node and want the higher number. Pick
 decidejs if training has to happen in the page, from the user's own data.
 
 ## Docs

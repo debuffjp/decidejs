@@ -25,14 +25,15 @@ files in its cache directory after the first download.
 
 ## What does it cost to run?
 
-Nothing per call. The costs are the first download (about 36 MB with the wasm alias in [bundlers.md](bundlers.md)) and
-the user's CPU: 3-5 ms median per decision in Chrome, 0.8-1.5 ms per text in Node with `decideMany()`.
+Nothing per call. The costs are the first download (34 MB of model plus 12.9 MB of wasm, 3.3 MB gzipped, with the
+wasm alias in [bundlers.md](bundlers.md)) and the user's CPU: about 8 ms median per decision in Chrome, 1.1 ms per text
+in Node with `decideMany()`. The pre-release default, all-MiniLM-L6-v2, needed about 36 MB and 3-5 ms.
 
 ## Should I use this or an LLM?
 
 Use decidejs when the answer is one of a fixed set of labels and you can collect examples. Use an LLM when the answer is
 open-ended, needs reasoning over facts the text doesn't contain, or when you have no examples and need more than the
-61-70% zero-shot reaches. LLM structured output gives a typed choice too, but needs an API, costs per call and its
+66-73% zero-shot reaches with label names (72-83% with one-sentence descriptions). LLM structured output gives a typed choice too, but needs an API, costs per call and its
 confidence isn't calibrated.
 
 They combine: decide locally, and send only answers below `minConfidence` (where `choice` is `null`) to a larger model.
@@ -40,7 +41,7 @@ They combine: decide locally, and send only answers below `minConfidence` (where
 ## How does it compare with jimothy?
 
 [jimothy](https://www.npmjs.com/package/jimothy) (MIT) also builds typed local classifiers with calibrated confidence. It
-reports 92.4% on BANKING77, above decidejs' 90.6%. It trains in Node and runs inference in a worker. Pick jimothy if you
+reports 92.4% on BANKING77, above decidejs' 90.7%. It trains in Node and runs inference in a worker. Pick jimothy if you
 train ahead of time in Node and want the higher number. Pick decidejs if training has to happen in the page, from the
 user's own data.
 
@@ -57,7 +58,7 @@ leave out the wasm alias from [bundlers.md](bundlers.md).
 
 ## Does it work on phones?
 
-Not tested yet. It needs the same downloads as on a desktop (about 36 MB on the first visit) and decisions will be
+Not tested yet. It needs the same downloads as on a desktop (34 MB of model plus the wasm on the first visit) and decisions will be
 slower on a phone's CPU. Measure on the devices you care about before relying on it.
 
 ## Node or browser?
@@ -76,7 +77,8 @@ A head you train on your own data is yours. decidejs itself is MIT. The ready-ma
 ## How accurate will it be on my data?
 
 It depends on how distinct your labels are and how many examples you have. On two public intent benchmarks, a trained
-head reached 78.7-87.3% with 5 examples per label and 90.6-94.0% with all the training data. Small tasks with 2 to 10
+head reached 82.3-89.6% with 5 examples per label and 90.7-94.4% with all the training data (78.7-87.3% and
+90.6-94.0% with the pre-release default, all-MiniLM-L6-v2). Small tasks with 2 to 10
 labels reached 93.4% with one example per label. Hold back some labelled examples and measure: the recipe is in
 [guide-confidence.md](guide-confidence.md#pick-a-threshold-on-your-own-data).
 

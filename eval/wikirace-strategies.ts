@@ -2,11 +2,13 @@
 // target's first sentences as the query. The first three are switch's WikiRace cases (github.com/osolmaz/switch), where
 // Jev took 6 hops, 3 hops and gave up. Pages are cached in data/wiki/, so runs repeat and only the first reads Wikipedia.
 //
-//   STRATEGY=base|rerank|look node --experimental-strip-types eval/wikirace-strategies.ts
+//   STRATEGY=base|both|rerank|look [MODEL=...] node --experimental-strip-types eval/wikirace-strategies.ts
 //
 // base: the link closest in meaning to the target's summary (what zero-shot decide() picks), never a page already
-// visited. rerank: base's top 20, reordered by a cross-encoder that reads the summary and the link together.
-// look: base's top 5, each scored by its own similarity or its best link's, a little discounted (one step ahead).
+// visited. both: the better of a link's closeness to the summary and to the target's title (as described labels
+// score in decide()). rerank: base's top 20, reordered by a cross-encoder that reads the summary and the link together.
+// look: base's top 5, each scored by its own similarity or its best link's, a little discounted (one step ahead). look
+// reads pages the player hasn't visited, which the game doesn't allow: it's a ceiling, not a fair result.
 import { createHash } from "node:crypto";
 import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { AutoModelForSequenceClassification, AutoTokenizer } from "@huggingface/transformers";
@@ -57,7 +59,7 @@ const summary = (title: string) => cached(`summary:${title}`, async () => {
   return { title: j.title as string, about: (j.extract as string).split(". ").slice(0, 2).join(". ") };
 });
 
-const local = await createDecider();
+const local = await createDecider({ model: process.env.MODEL });
 const vecs = new Map<string, number[]>();
 async function embed(texts: string[]) {
   const fresh = [...new Set(texts.filter((t) => !vecs.has(t)))];
@@ -82,7 +84,7 @@ const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 const results: { race: string; won: boolean; hops: number; path: string[]; ms: number }[] = [];
 for (const [start, goal] of RACES) {
   const target = await summary(goal);
-  const [q] = await embed([target.about]);
+  const [q, qt] = await embed([target.about, target.title]);
   const path = [start];
   let ms = 0;
   while (path.length <= MAX_HOPS) {
@@ -95,7 +97,7 @@ for (const [start, goal] of RACES) {
     let next = options.find((l) => same(l, target.title));
     const t0 = performance.now();
     if (!next) {
-      const sims = (await embed(options)).map((v) => dot(q, v));
+      const sims = (await embed(options)).map((v) => STRATEGY === "both" ? Math.max(dot(q, v), dot(qt, v)) : dot(q, v));
       const ranked = options.map((l, i) => [l, sims[i]] as const).sort((a, b) => b[1] - a[1]);
       next = ranked[0][0];
       if (rerank) {
@@ -122,6 +124,6 @@ for (const [start, goal] of RACES) {
 }
 
 const wins = results.filter((r) => r.won), hops = wins.map((r) => r.hops).sort((a, b) => a - b);
-const line = { strategy: STRATEGY, date: new Date().toISOString().slice(0, 10), wins: wins.length, races: results.length, medianHops: hops[Math.floor(hops.length / 2)] ?? null, ms: results.reduce((s, r) => s + r.ms, 0), results };
+const line = { strategy: STRATEGY, model: local.model, date: new Date().toISOString().slice(0, 10), wins: wins.length, races: results.length, medianHops: hops[Math.floor(hops.length / 2)] ?? null, ms: results.reduce((s, r) => s + r.ms, 0), results };
 console.log(`${STRATEGY}: won ${wins.length}/${results.length}, median ${line.medianHops} hops, ${line.ms} ms deciding`);
 await appendFile(new URL("./results-wikirace.jsonl", import.meta.url), JSON.stringify(line) + "\n");

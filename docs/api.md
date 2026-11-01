@@ -35,11 +35,11 @@ const r = await d.decide("my card never arrived", ["card_arrival", "refund", "ot
 
 | Option | Type | Default | What it does |
 |---|---|---|---|
-| `model` | `string` | `"Xenova/all-MiniLM-L6-v2"` | Hugging Face id of a sentence-embedding model with ONNX weights. |
+| `model` | `string` | `"Xenova/bge-small-en-v1.5"` | Hugging Face id of a sentence-embedding model with ONNX weights. Before this release the default was `"Xenova/all-MiniLM-L6-v2"`: pass it to keep using heads trained on it. |
 | `device` | `"wasm" \| "webgpu" \| "cpu"` | transformers.js' choice (wasm in browsers, cpu in Node) | Where the encoder runs. |
 | `dtype` | `"q8" \| "fp16" \| "fp32"` | `"q8"` | Weight precision of the encoder. |
 | `onProgress` | `(p: { file: string; loaded: number; total: number }) => void` | none | Called as model files download. Only fires on a download, so not on cached loads. |
-| `temperature` | `number` | `0.05` | Softmax temperature for zero-shot similarities. Has no effect on trained heads, which carry their own. |
+| `temperature` | `number` | `0.03` for bge-small, `0.05` for other models (`0.05` for all models before this release) | Softmax temperature for zero-shot similarities. Has no effect on trained heads, which carry their own. |
 
 The returned `model` is the model id in use. Trained heads record it, and `decide()` refuses a head trained on a
 different model.
@@ -296,7 +296,7 @@ Reads examples, trains a head and writes it with `saveHead()`.
   needs a header row with `text` and `label` columns (other columns are ignored); fields can be quoted with `"`, and
   `""` inside quotes is a literal quote.
 - `-o, --out <file>`: where to write the head. Default `head.json`.
-- `--model <id>`: encoder to train on. Default `Xenova/all-MiniLM-L6-v2`.
+- `--model <id>`: encoder to train on. Default `Xenova/bge-small-en-v1.5` (`Xenova/all-MiniLM-L6-v2` before this release).
 - `--no-label-names`: same as `labelNames: false`.
 - `--types`: also write `<out without .json>.labels.ts`:
 

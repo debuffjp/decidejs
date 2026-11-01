@@ -2,7 +2,7 @@
 
 [switch](https://github.com/osolmaz/switch) is a harness for decision models: code works out the options at each
 step of a task, and the model picks one. `decidejs/switch` turns a decidejs decider into a switch decider, so a switch
-domain can run on a 23 MB model on your machine, free, with no API key.
+domain can run on a 34 MB model on your machine, free, with no API key.
 
 ```ts
 import { createDecider } from "decidejs";

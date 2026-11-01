@@ -43,7 +43,7 @@ let local = 0, sent = 0, total = 0, labelled = 0, right = 0, firstLocal = 0, aga
 let lessons = 0, retrains = 0, flashAt = -1e9;
 const recent: number[] = [];
 let last: { text: string; top: [Label, number][]; confidence: number } | null = null;
-let status = "Loading the model (first visit: about 36 MB)...", liveFailed = false;
+let status = "Loading the model (first visit: about 34 MB of model)...", liveFailed = false;
 
 function path(x0: number, y0: number, x1: number, y1: number, dur: number, bend = 0): Path {
   const nx = -(y1 - y0), ny = x1 - x0, len = Math.hypot(nx, ny) || 1;

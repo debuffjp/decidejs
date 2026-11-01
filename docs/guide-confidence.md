@@ -86,8 +86,10 @@ head's labels, so it always counts as wrong when answered) and check how much of
 ## Zero-shot confidence
 
 Zero-shot `decide()` (a label array or a record of descriptions) has no examples to fit a temperature on. It uses a
-fixed one, 0.05 by default (`createDecider({ temperature })`). On BANKING77 and CLINC150 that came out close to
-calibrated, ECE 0.005-0.045 with 2 to 150 options. That was measured on two intent datasets only. Your labels or
+fixed one per model (`createDecider({ temperature })`): 0.03 for the default bge-small, 0.05 for all-MiniLM-L6-v2 and
+other models. Before this release it was 0.05 for every model. On the BANKING77 and CLINC150 dev splits these came out
+close to calibrated, ECE 0.03-0.04 for bge-small (MiniLM at 0.05: 0.005-0.045 with 2 to 150 options). Describing your
+labels also raises accuracy: see [how-it-works.md](how-it-works.md#describe-your-labels). That was measured on two intent datasets only. Your labels or
 descriptions may be scored sharper or flatter, so check zero-shot confidence on some labelled text of your own before
 putting a threshold on it, or train a head.
 
@@ -97,7 +99,8 @@ Two ways to handle text that fits none of your labels.
 
 **A threshold.** Train on your real labels only and set `minConfidence`. Off-topic text tends to score low on every
 label, so it comes back `null`. On CLINC150, trained on in-scope examples only, a threshold of 0.93 picked on the
-validation split returned `null` for 86.3% of the 1,000 out-of-scope test queries. The cost: 82.9% of in-scope queries
+validation split returned `null` for 89.9% of the 1,000 out-of-scope test queries with the shipped bge-small head (86.3% with
+all-MiniLM-L6-v2). The cost: 82.9% of in-scope queries
 were answered and right, against 94.0% right with no threshold, because some correct answers also fall below 0.93.
 
 This needs enough examples per label to mean something. With 3 examples per label, a head gave "hello" a confidence of

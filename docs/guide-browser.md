@@ -52,12 +52,16 @@ Cross-Origin-Embedder-Policy: credentialless
 ```
 
 They make the page cross-origin isolated, which lets onnxruntime's wasm use several threads. In headless Chrome with
-BANKING77 (`bench/results.json`):
+BANKING77 (16 threads, 2026-11-01):
 
 | | Median per decision | p95 per decision |
 |---|---|---|
-| Cross-origin isolated | 3-5 ms | 6-8 ms |
-| Not isolated | | 14.3 ms |
+| Cross-origin isolated, bge-small (default) | 7.7 ms | 13.8 ms |
+| Cross-origin isolated, all-MiniLM-L6-v2 | 4.2 ms | 7.7 ms |
+| Not isolated, all-MiniLM-L6-v2 (`bench/results.json`) | | 14.3 ms |
+
+Not isolated has only been measured with all-MiniLM-L6-v2. Training BANKING77 in a worker took 228 s with bge-small,
+and the page never stalled for more than 18 ms.
 
 `credentialless` lets the page keep loading cross-origin images and scripts without credentials and without each
 server opting in. Check that third-party embeds you rely on (sign-in pop-ups, payment frames) still work with
@@ -69,14 +73,15 @@ Header config for Vite, webpack and Next.js is in [bundlers.md](bundlers.md).
 
 | File | Size |
 |---|---|
-| Model, all-MiniLM-L6-v2 at q8 | 23.7 MB |
+| Model, bge-small-en-v1.5 at q8 (default) | 34 MB |
+| Model, all-MiniLM-L6-v2 at q8 (pre-release default) | 23.7 MB |
 | onnxruntime wasm | 23.6 MB (5.8 MB gzipped) |
 | onnxruntime wasm with the alias below | 12.9 MB (3.3 MB gzipped) |
 | A head, 77 labels | 156 KB |
 | A head, 150 labels | 303 KB |
 
-With the alias, the first visit downloads about 36 MB. Everything is cached after that. bge-small is 34 MB in place
-of the 23.7 MB model.
+With the alias, the first visit downloads the 34 MB model plus 12.9 MB of wasm (3.3 MB gzipped). Everything is cached
+after that. With all-MiniLM-L6-v2 the first visit was about 36 MB.
 
 The alias swaps onnxruntime's WebGPU build for its plain wasm build, which decidejs uses by default:
 

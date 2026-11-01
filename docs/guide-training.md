@@ -27,7 +27,16 @@ by the people who will type into your app beats text you make up, because it has
 
 ## How many per label
 
-Accuracy on each dataset's test split, mean of 3 seeds, default model (all-MiniLM-L6-v2 at q8):
+Accuracy on each dataset's test split, mean of 3 seeds, default model (bge-small-en-v1.5 at q8):
+
+| Examples per label | 5 | 10 | 25 | all |
+|---|---|---|---|---|
+| BANKING77 (77 labels) | 82.3% | 83.8% | 88.7% | 90.7% |
+| CLINC150 (150 labels) | 89.6% | 92.0% | 93.4% | 94.4% |
+| Calibration error (ECE), BANKING77 | 0.071 | 0.029 | 0.011 | 0.017 |
+| Calibration error (ECE), CLINC150 | 0.028 | 0.010 | 0.015 | 0.008 |
+
+Source: `eval/results-bge-small.json`. With all-MiniLM-L6-v2, the pre-release default (`eval/results.json`):
 
 | Examples per label | 5 | 10 | 25 | all |
 |---|---|---|---|---|
@@ -35,8 +44,7 @@ Accuracy on each dataset's test split, mean of 3 seeds, default model (all-MiniL
 | CLINC150 (150 labels) | 87.3% | 89.8% | 92.8% | 94.0% |
 | Calibration error (ECE), BANKING77 | 0.065 | 0.048 | 0.025 | 0.019 |
 | Calibration error (ECE), CLINC150 | 0.029 | 0.013 | 0.012 | 0.012 |
-
-Source: `eval/results.json`. BANKING77's labels are close together (many card and transfer intents), so it needs more
+ BANKING77's labels are close together (many card and transfer intents), so it needs more
 examples than CLINC150, whose 150 intents spread over 10 domains.
 
 Small tasks need fewer. On 60 tasks per size with 2 to 10 labels sampled from CLINC150, scored on its validation
@@ -163,19 +171,21 @@ check it against the file.
 
 Two encoders have been measured. Both are English.
 
-| | all-MiniLM-L6-v2 (default) | bge-small-en-v1.5 |
+| | all-MiniLM-L6-v2 | bge-small-en-v1.5 (default) |
 |---|---|---|
 | Model id | `Xenova/all-MiniLM-L6-v2` | `Xenova/bge-small-en-v1.5` |
-| Download | 23.7 MB at q8 | 34 MB |
+| Download | 23.7 MB at q8 | 34 MB at q8 |
 | 5 per label, BANKING77 | 78.7% | 82.3% |
 | 5 per label, CLINC150 | 87.3% | 89.6% |
 | All data, BANKING77 | 90.6% | 90.7% |
 | All data, CLINC150 | 94.0% | 94.4% |
-| Time per decision | 1x | about 2x |
+| Time per decision, Chrome median | 4.2 ms | 7.7 ms |
 | Label names | help | slightly hurt; pass `labelNames: false` |
 
 The bge-small numbers are without label names (`eval/results-bge-small.json`). With only a handful of examples per label,
-bge-small is the better start. With plenty of data the two are close, and MiniLM is smaller and faster.
+bge-small is the better start, which is why it became the default. Pre-release builds defaulted to all-MiniLM-L6-v2.
+With plenty of data the two are close, and MiniLM is smaller and faster. Heads trained on MiniLM need
+`createDecider({ model: "Xenova/all-MiniLM-L6-v2" })`.
 
 ```ts
 const d = await createDecider({ model: "Xenova/bge-small-en-v1.5" });

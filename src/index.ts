@@ -10,8 +10,8 @@ export interface Decision<L extends string, C extends L | null = L> {
   choice: C;
   /**
    * Probability of `choice`, 0 to 1. Trained heads fit it on held-out examples. Zero-shot uses a fixed temperature
-   * (0.05), which measured close to calibrated on two intent datasets (error 0.005-0.045 with 2 to 150 options);
-   * check it on your own options before thresholding.
+   * per model (0.03 for the default bge-small, 0.05 for all-MiniLM-L6-v2), which measured close to calibrated on two
+   * intent datasets (error 0.03-0.04 on their dev splits); check it on your own options before thresholding.
    */
   confidence: number;
   /** Probability of every option; sums to 1. */
@@ -80,7 +80,11 @@ export interface TrainOptions<L extends string = string> {
 }
 
 export interface DeciderOptions {
-  /** A Hugging Face sentence-embedding model with ONNX weights. Default `Xenova/all-MiniLM-L6-v2` (23.7 MB at q8). */
+  /**
+   * A Hugging Face sentence-embedding model with ONNX weights. Default `Xenova/bge-small-en-v1.5` (34 MB at q8).
+   * Pre-release builds defaulted to `Xenova/all-MiniLM-L6-v2` (23 MB): smaller and 1.6x faster, 3 to 5 points less
+   * accurate. Pass it to keep using heads trained on it.
+   */
   model?: string;
   /** Defaults to transformers.js' choice: wasm in browsers, cpu in Node. */
   device?: "wasm" | "webgpu" | "cpu";
@@ -88,12 +92,15 @@ export interface DeciderOptions {
   dtype?: "q8" | "fp16" | "fp32";
   /** Called as model files download (first load only; later loads come from cache). */
   onProgress?: (progress: { file: string; loaded: number; total: number }) => void;
-  /** Softmax temperature for zero-shot similarities. Default 0.05. */
+  /** Softmax temperature for zero-shot similarities. Default 0.03 for bge-small, 0.05 for other models. */
   temperature?: number;
 }
 
 const BATCH = 64;
 const LABEL_NAME_WEIGHT = 3;
+// Zero-shot temperatures that measured calibrated on the BANKING77 and CLINC150 dev splits (eval/gains.ts). Models
+// differ in how spread out their similarities are: at 0.05, bge-small answered only 3% of texts at 0.9 confidence.
+const TEMPERATURES: Record<string, number> = { "Xenova/bge-small-en-v1.5": 0.03, "Xenova/all-MiniLM-L6-v2": 0.05 };
 
 function toDecision<L extends string>(labels: readonly L[], p: number[]): Decision<L> {
   let best = 0;
@@ -107,7 +114,7 @@ function toDecision<L extends string>(labels: readonly L[], p: number[]): Decisi
  * `train()`. In a browser, prefer `createWorkerDecider()` from `decidejs/browser`: the encoder blocks the thread
  * it runs on.
  */
-export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device, dtype = "q8", temperature = 0.05, onProgress }: DeciderOptions = {}) {
+export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device, dtype = "q8", temperature = TEMPERATURES[model] ?? 0.05, onProgress }: DeciderOptions = {}) {
   const embed: FeatureExtractionPipeline = await (pipeline as any)("feature-extraction", model, {
     device, dtype,
     progress_callback: onProgress && ((p: any) => p.status === "progress" && onProgress({ file: p.file, loaded: p.loaded, total: p.total })),
@@ -134,12 +141,14 @@ export async function createDecider({ model = "Xenova/all-MiniLM-L6-v2", device,
       const labels = (Array.isArray(using) ? using : Object.keys(using)) as L[];
       if (labels.length < 2) throw new Error(`decidejs: decide() needs at least 2 options, got ${labels.length}`);
       // Bare labels are compared as readable text ("card_arrival" as "card arrival"): 2.6 points better on CLINC150's
-      // dev split. Descriptions are compared as given.
-      const texts = Array.isArray(using) ? labels.map(readable) : labels.map((l) => (using as Record<L, string>)[l]);
+      // dev split. A described label scores by the better of its name and its description: on the dev splits that
+      // beat the description alone by 0.5 (BANKING77) and 3.1 points (CLINC150), and names alone by 7 and 10.
+      const texts = Array.isArray(using) ? labels.map(readable) : labels.flatMap((l) => [readable(l), (using as Record<L, string>)[l]]);
       const key = texts.join("\u0000");
       let opts = optionCache.get(key);
       if (!opts) optionCache.set(key, (opts = await vectors(texts)));
-      const sims = opts.map((o) => o.reduce((s, x, i) => s + x * q[i], 0));
+      const all = opts.map((o) => o.reduce((s, x, i) => s + x * q[i], 0));
+      const sims = Array.isArray(using) ? all : labels.map((_, c) => Math.max(all[2 * c], all[2 * c + 1]));
       d = toDecision(labels, softmax(sims, temperature));
     }
     return minConfidence !== undefined && d.confidence < minConfidence ? { ...d, choice: null } : d;
