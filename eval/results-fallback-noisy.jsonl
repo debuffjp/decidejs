@@ -1,0 +1,9 @@
+{"config":"NOISE=0","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":1,"examples":679,"sentToFallback":0.679,"answeredRight":0.989,"localPrecision":0.966,"headDevAccuracy":0.725,"learnedWrong":0}
+{"config":"NOISE=0","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":5,"examples":1623,"sentToFallback":0.205,"answeredRight":0.997,"localPrecision":0.996,"headDevAccuracy":0.941,"learnedWrong":0}
+{"config":"NOISE=0","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":10,"examples":2430,"sentToFallback":0.157,"answeredRight":0.991,"localPrecision":0.989,"headDevAccuracy":0.953,"learnedWrong":0}
+{"config":"NOISE=0.2","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":1,"examples":679,"sentToFallback":0.679,"answeredRight":0.858,"localPrecision":0.966,"headDevAccuracy":0.725,"learnedWrong":0.193}
+{"config":"NOISE=0.2","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":5,"examples":3182,"sentToFallback":0.677,"answeredRight":0.856,"localPrecision":0.991,"headDevAccuracy":0.868,"learnedWrong":0.206}
+{"config":"NOISE=0.2","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":10,"examples":5887,"sentToFallback":0.522,"answeredRight":0.888,"localPrecision":0.994,"headDevAccuracy":0.932,"learnedWrong":0.207}
+{"config":"NOISE=0.2 TOPK=3","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":1,"examples":587,"sentToFallback":0.679,"answeredRight":0.858,"localPrecision":0.966,"headDevAccuracy":0.725,"learnedWrong":0.223}
+{"config":"NOISE=0.2 TOPK=3","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":5,"examples":2623,"sentToFallback":0.449,"answeredRight":0.914,"localPrecision":0.995,"headDevAccuracy":0.883,"learnedWrong":0.225}
+{"config":"NOISE=0.2 TOPK=3","model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","round":10,"examples":5323,"sentToFallback":0.544,"answeredRight":0.876,"localPrecision":0.985,"headDevAccuracy":0.899,"learnedWrong":0.225}
