@@ -1,7 +1,7 @@
 {
   "name": "decidejs",
   "version": "0.1.0",
-  "description": "In-browser decision model with calibrated confidence and a typed API. Learns from an LLM when it isn't sure.",
+  "description": "A System One model in the browser: typed, calibrated text decisions on the user's device. Learns from an LLM when it isn't sure.",
   "license": "MIT",
   "repository": "github:debuffjp/decidejs",
   "keywords": [
@@ -14,7 +14,11 @@
     "llm",
     "embeddings",
     "browser",
-    "typescript"
+    "typescript",
+    "text classification",
+    "transformers.js",
+    "on-device",
+    "llm fallback"
   ],
   "type": "module",
   "exports": {
