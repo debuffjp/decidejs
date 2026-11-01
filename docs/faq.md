@@ -99,7 +99,7 @@ Sentiment, emotion and toxicity are limits of the encoder, which was trained on 
 barely help. Toxicity is the worst case, because rare labels make it worse: always answering "not toxic" would be
 right 92% of the time. Telling the head how rare toxic text is ([eval/prior-shift.ts](../eval/prior-shift.ts)) only
 made it answer "not toxic" to nearly everything. A 4 times larger encoder, bge-base (`model: "Xenova/bge-base-en-v1.5"`),
-helped little: 54.6% on emotion, 68.5% on toxicity, 62.0% on tweet sentiment at 32 per label, and 90.6% on HWU64.
+helped little: 54.6% on emotion, 64.2% on toxicity (lower), 62.0% on tweet sentiment at 32 per label, and 90.6% on HWU64.
 Use an LLM or a dedicated classifier for these for now.
 
 ## Why not fine-tune the encoder?
