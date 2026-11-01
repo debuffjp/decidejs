@@ -16,6 +16,11 @@ export interface Decision<L extends string, C extends L | null = L> {
   confidence: number;
   /** Probability of every option; sums to 1. */
   probs: Record<L, number>;
+  /**
+   * Zero-shot only: the best cosine similarity between the text and any option's name or description. Low means the
+   * text is about none of them (with bge-small, off-topic text was mostly under 0.5 and in-scope text over 0.7).
+   */
+  similarity?: number;
 }
 
 /** A trained head: row-major weights (labels × dim), biases and the fitted temperature. */
@@ -165,7 +170,7 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
       const all = opts.map((o) => o.reduce((s, x, i) => s + x * q[i], 0));
       const sims = Array.isArray(using) ? all : labels.map((_, c) => Math.max(all[2 * c], all[2 * c + 1]));
       const [names, described] = temperature !== undefined ? [temperature, temperature] : TEMPERATURES[model] ?? [0.05, 0.05];
-      d = toDecision(labels, softmax(sims, Array.isArray(using) ? names : described));
+      d = { ...toDecision(labels, softmax(sims, Array.isArray(using) ? names : described)), similarity: Math.max(...sims) };
     }
     return minConfidence !== undefined && d.confidence < minConfidence ? { ...d, choice: null } : d;
   }

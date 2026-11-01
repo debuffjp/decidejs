@@ -29,11 +29,18 @@ export interface FallbackOptions<L extends string> {
    * cost on in-scope text (eval/none-label.ts).
    */
   learnNone?: boolean;
+  /**
+   * Learn a `null` answer as `NONE` only when the text's zero-shot `similarity` to every label is below this. LLMs also
+   * answer `null` for ambiguous texts that do belong to a label, and those sit close to the labels. Default 0.6, set
+   * for bge-small; `0` turns the check off. With Llama 3.1 8B on 12 BANKING77 labels it cut sends (20.7% to 19.1%) and
+   * raised in-scope answers right locally (81.3% to 83.3%) against learning every `null` (eval/real-stream.ts).
+   */
+  noneBelow?: number;
   /** Retrain on its own after this many new answers. Default: only when you call `retrain()`. */
   retrainEvery?: number;
   /**
    * Passed to `train()` when retraining. Starting from labels, `calibrateOn` defaults to the texts zero-shot answered
-   * locally (up to 4 per label, once there are 50): they fit the head's temperature better than the LLM's answers,
+   * locally (up to 4 per label, or 50 divided by the number of labels if that is more, once there are 50): they fit the head's temperature better than the LLM's answers,
    * which are sometimes wrong. Pass your own `calibrateOn` to replace them.
    */
   trainOptions?: Omit<TrainOptions<L>, "labels">;
@@ -57,15 +64,17 @@ const isHead = (c: unknown): c is Head => typeof c === "object" && c !== null &&
  *   `retrainEvery`) trains the first head from the answers. Labels with no answers yet start from their names.
  */
 export function withFallback<const L extends string>(decider: Trainable, using: Choices<L>, options: FallbackOptions<L>) {
-  const { minConfidence = 0.9, ask, retrainEvery, trainOptions, learnNone = true } = options;
+  const { minConfidence = 0.9, ask, retrainEvery, trainOptions, learnNone = true, noneBelow = 0.6 } = options;
   const labels: readonly L[] = isHead(using) ? (using.labels as readonly L[]) : Array.isArray(using) ? using : (Object.keys(using) as L[]);
+  const zeroShotChoices: Choices<L> = isHead(using) ? labels : using;
   const examples = options.examples ?? (isHead(using) ? undefined : []);
   const learned: Example<L>[] = [];
   let current: Choices<L> = using;
   let retraining: Promise<Head<L>> | undefined;
   let sinceRetrain = 0;
   // Zero-shot's confident answers: right about 93% of the time on BANKING77, and enough to calibrate on (eval/long-stream.ts).
-  const confident: Example<L>[] = [], perLabel = new Map<L, number>();
+  // 4 per label, or more with few labels so the set can reach 50 (12 labels capped at 4 never did).
+  const confident: Example<L>[] = [], perLabel = new Map<L, number>(), perLabelCap = Math.max(4, Math.ceil(50 / labels.length));
 
   function retrain(): Promise<Head<L>> {
     if (!examples) return Promise.reject(new Error("decidejs: withFallback() needs `examples` to retrain a head"));
@@ -82,7 +91,7 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
   async function route(text: string): Promise<RoutedDecision<L>> {
     const local = await decider.decide(text, current);
     if (local.confidence >= minConfidence) {
-      if (!isHead(current) && (perLabel.get(local.choice) ?? 0) < 4) {
+      if (!isHead(current) && (perLabel.get(local.choice) ?? 0) < perLabelCap) {
         perLabel.set(local.choice, (perLabel.get(local.choice) ?? 0) + 1);
         confident.push({ text, label: local.choice });
       }
@@ -90,7 +99,8 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
     }
     const answer = await ask(text, labels, local);
     const choice = answer !== null && labels.includes(answer) ? answer : null;
-    if (examples && (choice !== null || (answer === null && learnNone))) {
+    const learnAsNone = examples && answer === null && learnNone && (!noneBelow || ((await decider.decide(text, zeroShotChoices)).similarity ?? 0) < noneBelow);
+    if (examples && (choice !== null || learnAsNone)) {
       learned.push({ text, label: choice ?? (NONE as L) });
       if (retrainEvery && ++sinceRetrain >= retrainEvery) {
         sinceRetrain = 0;

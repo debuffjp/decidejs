@@ -82,7 +82,7 @@ examples. The head still gets more accurate, but it also fits its temperature (h
 answers, so it learns to doubt itself: its confidence rarely reaches `minConfidence` and it keeps asking.
 
 Started from labels, `withFallback()` handles this itself. While it is still zero-shot, it keeps up to 4 texts per
-label that zero-shot answered locally (about 93% right on BANKING77) and, once it has 50, fits each new head's
+label (more with fewer than 13 labels, so it can reach 50; before that fix, 12 labels never did) that zero-shot answered locally (about 93% right on BANKING77) and, once it has 50, fits each new head's
 temperature on those instead of on the LLM's answers. Nothing to set up.
 
 With your own examples, or to do better than that, pass `calibrateOn`: a few
@@ -148,6 +148,24 @@ out-of-scope queries and the in-scope test set:
 | In-scope sent to the LLM | 25.9% | 24.7% |
 | In-scope wrongly answered `null` | 0% | 0.6% |
 
+LLMs also answer `null` for texts that do belong to a label but are ambiguous: Llama 3.1 8B did for 6.6% of
+in-scope messages on the lanes demo's 12 BANKING77 labels. Those sit close to the labels (median similarity 0.77,
+against 0.46 for off-topic text), so a `null` is learned as `NONE` only when the text's zero-shot `similarity` is below
+`noneBelow` (default 0.6, set for bge-small; `0` learns every `null`).
+
+With real Llama 3.1 8B answers ([eval/real-stream.ts](../eval/real-stream.ts): the 12 labels' 1,662 training messages
+plus 70 off-topic queries, 5 orders, retraining every 100; scored on the labels' test messages and 200 held-out
+off-topic queries):
+
+| | Sent, 2nd half | In-scope right locally | In-scope wrong locally | Off-topic given a label | Off-topic `null` locally |
+|---|---|---|---|---|---|
+| No calibration fix, nulls dropped | 24.6% | 78.3% | 1.5% | 6.7% | 0% |
+| Calibration fix, nulls dropped | 23.0% | 85.0% | 2.6% | 20.3% | 0% |
+| Every null learned (`noneBelow: 0`) | 20.7% | 81.3% | 3.6% | 0.8% | 91.9% |
+| Default (`noneBelow: 0.6`) | 19.1% | 83.3% | 2.8% | 2.4% | 76.6% |
+
+The calibration fix alone made off-topic text worse; with `NONE` learned it is the best of both.
+
 Before this default, `null` answers were dropped. `route.head.labels` and `route.learned` now include `NONE` once
 `ask` has returned `null`; `probs` has a `none_of_these` entry. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
@@ -162,6 +180,7 @@ on the lanes demo's messages.
 | `retrainEvery` | none | Retrain in the background after this many new answers. Needs `examples` or labels. |
 | `trainOptions` | `{}` | Passed to `train()` on retrain. Starting from labels, `calibrateOn` defaults to texts zero-shot answered confidently. |
 | `learnNone` | `true` | Learn `null` answers as the label `NONE`, so the head can answer `null` itself. |
+| `noneBelow` | `0.6` | Learn a `null` as `NONE` only when the text's zero-shot similarity to every label is below this. `0` learns every `null`. |
 
 The returned function also has:
 

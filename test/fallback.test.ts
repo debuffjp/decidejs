@@ -13,7 +13,8 @@ function fake() {
       const head = { labels };
       const probs = Object.fromEntries(head.labels.map((l, i) => [l, i === 0 ? confidence : (1 - confidence) / (head.labels.length - 1)])) as Record<L, number>;
       const named = text.split(" ")[1] as L;
-      return { choice: labels.includes(named) ? named : head.labels[0], confidence, probs };
+      const similarity = Number(text.match(/sim=([\d.]+)/)?.[1] ?? 0);
+      return { choice: labels.includes(named) ? named : head.labels[0], confidence, probs, similarity };
     },
     async train<L extends string>(examples: readonly Example<L>[], options?: TrainOptions<L>) {
       trained.push([...examples]);
@@ -85,16 +86,22 @@ test("starting from labels, calibrates on zero-shot's confident answers once the
   for (let i = 0; i < 3; i++) await route(`0.95 sure ${i}`);
   await route.retrain();
   assert.equal(trainOpts[0].calibrateOn, undefined); // 3 is under 50
+  // With 2 labels the cap per label is 25, so 50 confident answers on both labels are enough.
+  const few = withFallback(decider, ["a", "b"], { ask: () => "b" });
+  for (let i = 0; i < 60; i++) await few(`0.95 ${i % 2 ? "a" : "b"} ${i}`);
+  await few("0.3 unsure");
+  await few.retrain();
+  assert.equal(trainOpts[1].calibrateOn?.length, 50);
   const many = withFallback(decider, Array.from({ length: 20 }, (_, i) => `l${i}`), { ask: () => "l1" });
   for (let i = 0; i < 100; i++) await many(`0.95 l${i % 20} ${i}`);
   await many("0.3 unsure");
   await many.retrain();
-  assert.equal(trainOpts[1].calibrateOn?.length, 80); // 4 per label
+  assert.equal(trainOpts[2].calibrateOn?.length, 80); // 4 per label
   const own = [{ text: "x", label: "a" as const }];
   const mine = withFallback(decider, ["a", "b"], { ask: () => "b", trainOptions: { calibrateOn: own } });
   await mine("0.3 unsure");
   await mine.retrain();
-  assert.equal(trainOpts[2].calibrateOn, own);
+  assert.equal(trainOpts[3].calibrateOn, own);
 });
 
 test("learns null answers as NONE and answers null locally when sure it's none", async () => {
@@ -114,4 +121,11 @@ test("learnNone: false keeps null answers out", async () => {
   const route = withFallback(fake().decider, ["a", "b"], { ask: () => null, learnNone: false });
   await route("0.3 off-topic");
   assert.equal(route.learned.length, 0);
+});
+
+test("a null answer close to the labels is not learned as NONE", async () => {
+  const route = withFallback(fake().decider, ["a", "b"], { ask: () => null });
+  await route("0.3 ambiguous sim=0.8");
+  await route("0.3 off-topic sim=0.4");
+  assert.deepEqual(route.learned.map((e) => e.text), ["0.3 off-topic sim=0.4"]);
 });

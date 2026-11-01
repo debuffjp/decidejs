@@ -246,8 +246,12 @@ interface Decision<L extends string, C extends L | null = L> {
   choice: C;                 // the most likely option; null when below minConfidence
   confidence: number;        // probability of the top option, 0 to 1
   probs: Record<L, number>;  // probability of every option, sums to 1
+  similarity?: number;       // zero-shot only: best cosine similarity to any option's name or description
 }
 ```
+
+`similarity` is low when the text is about none of the options: with bge-small, off-topic text was mostly under 0.5
+and in-scope text over 0.7.
 
 `confidence` is the top option's probability even when `choice` is `null`.
 
