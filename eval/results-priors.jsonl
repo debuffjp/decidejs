@@ -1,0 +1,35 @@
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":1,"idea":"none","accuracy":0.5805}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":1,"idea":"names w1","accuracy":0.7263}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":1,"idea":"names w3","accuracy":0.717}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":1,"idea":"descriptions w3","accuracy":0.7431}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":1,"idea":"names+descriptions w3","accuracy":0.7345}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":1,"idea":"names w3 scale 33","accuracy":0.717}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":1,"idea":"descriptions w3 scale 33","accuracy":0.7431}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":5,"idea":"none","accuracy":0.8083}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":5,"idea":"names w1","accuracy":0.8179}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":5,"idea":"names w3","accuracy":0.7931}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":5,"idea":"descriptions w3","accuracy":0.8064}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":5,"idea":"names+descriptions w3","accuracy":0.7844}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":5,"idea":"names w3 scale 33","accuracy":0.8041}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":5,"idea":"descriptions w3 scale 33","accuracy":0.8126}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":10,"idea":"none","accuracy":0.8374}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":10,"idea":"names w1","accuracy":0.8397}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":10,"idea":"names w3","accuracy":0.8442}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":10,"idea":"descriptions w3","accuracy":0.8437}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":10,"idea":"names+descriptions w3","accuracy":0.8324}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":10,"idea":"names w3 scale 33","accuracy":0.8446}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","perLabel":10,"idea":"descriptions w3 scale 33","accuracy":0.8426}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":1,"idea":"none","accuracy":0.6948}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":1,"idea":"names w1","accuracy":0.8383}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":1,"idea":"names w3","accuracy":0.8136}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":1,"idea":"descriptions w3","accuracy":0.8667}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":1,"idea":"names+descriptions w3","accuracy":0.868}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":1,"idea":"names w3 scale 33","accuracy":0.8136}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":1,"idea":"descriptions w3 scale 33","accuracy":0.8667}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"none","accuracy":0.904}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"names w1","accuracy":0.9142}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"names w3","accuracy":0.9048}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"descriptions w3","accuracy":0.9231}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"names+descriptions w3","accuracy":0.9149}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"names w3 scale 33","accuracy":0.9098}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","perLabel":5,"idea":"descriptions w3 scale 33","accuracy":0.927}

@@ -2,7 +2,9 @@
 // queries as traffic in rounds, let the true label stand in for the LLM below the threshold, retrain after each
 // round. Reports the share sent to the fallback and the head's own accuracy on the validation split. Uses the hill
 // embedding cache (npm run eval:hill once first). COLD=1 starts from labels alone: zero-shot until the first retrain,
-// labels without answers starting from their names. Usage: [COLD=1] [MODEL=id] node --experimental-strip-types eval/fallback.ts [threshold]
+// labels without answers starting from their names. NOISE=0.2 makes the stand-in LLM wrong that often, answering a
+// label the head finds close (Llama 3.1 8B agreed with BANKING77 80.5% of the time). TOPK=3 learns an LLM answer only
+// when it is among the head's top 3. Usage: [COLD=1] [MODEL=id] [NOISE=p] [TOPK=k] node --experimental-strip-types eval/fallback.ts [threshold]
 import { readFile } from "node:fs/promises";
 import { fitHead, logits, softmax } from "../src/head.ts";
 import { createDecider } from "../src/index.ts";
@@ -26,8 +28,12 @@ const decide = (head: Fitted | null, text: string) => {
   const x = cache[text];
   const p = head ? softmax(logits(head, x), head.temperature) : softmax(names.map((n) => n.reduce((s, v, i) => s + v * x[i], 0)), decider.model.includes("bge-small") ? 0.03 : 0.05);
   const best = p.indexOf(Math.max(...p));
-  return { choice: labels[best], confidence: p[best] };
+  return { choice: labels[best], confidence: p[best], ranked: p.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0]).map(([, i]) => labels[i]) };
 };
+const noise = Number(process.env.NOISE ?? 0), topk = Number(process.env.TOPK ?? 0);
+const teacher = seeded(13);
+// A wrong teacher is wrong in a plausible way: it picks the head's best guess that isn't the true label.
+const ask = (q: (typeof base)[number], ranked: string[]) => teacher() < noise ? ranked.find((l) => l !== q.label)! : q.label;
 
 let head: Fitted | null = cold ? null : await fit(base);
 const learned: typeof base = [];
@@ -42,15 +48,16 @@ for (let r = 0; r * ROUND < traffic.length && r < 10; r++) {
       if (d.choice === q.label) { right++; localRight++; }
     } else {
       sent++;
-      right++; // the stand-in LLM is always right
-      learned.push(q);
+      const answer = ask(q, d.ranked);
+      if (answer === q.label) right++;
+      if (!topk || d.ranked.slice(0, topk).includes(answer)) learned.push({ text: q.text, label: answer });
     }
   }
   const dev = clinc.val.filter((q) => decide(head, q.text).choice === q.label).length / clinc.val.length;
   console.log(JSON.stringify({
     round: r + 1, examples: base.length + learned.length, sentToFallback: +(sent / batch.length).toFixed(3),
     answeredRight: +(right / batch.length).toFixed(3), localPrecision: +(localRight / Math.max(1, local)).toFixed(3),
-    headDevAccuracy: +dev.toFixed(3),
+    headDevAccuracy: +dev.toFixed(3), learnedWrong: +(learned.filter((l) => clinc.train.find((t) => t.text === l.text)?.label !== l.label).length / Math.max(1, learned.length)).toFixed(3),
   }));
   head = await fit([...base, ...learned]);
 }

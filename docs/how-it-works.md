@@ -45,7 +45,19 @@ const r = await d.decide(text, {
 
 Write each description the way a user would say it. On the dev splits, descriptions plus names reached 72.4% on
 BANKING77 and 83.1% on CLINC150 with bge-small (68.2% and 79.4% with MiniLM), against 66.2% and 72.8% for names alone.
-An LLM can write them once at setup from your label names; check a few by hand.
+An LLM can write them once at setup from your label names; check a few by hand. `describeLabels()` does that with any
+LLM you pass it:
+
+```ts
+import { describeLabels } from "decidejs";
+
+const described = await describeLabels(["card_arrival", "refund", "lost_card"], (prompt) => myLlm(prompt), {
+  context: "message to a bank's support chat",
+});
+// Save `described` and reuse it; decide(text, described) from then on.
+```
+
+Each label is scored by the better of its readable name and its description, so a weak description costs little.
 
 ## The head
 

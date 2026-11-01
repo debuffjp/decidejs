@@ -97,7 +97,7 @@ export interface DeciderOptions {
 }
 
 const BATCH = 64;
-const LABEL_NAME_WEIGHT = 3;
+const LABEL_NAME_WEIGHT = 1;
 // Zero-shot temperatures that measured calibrated on the BANKING77 and CLINC150 dev splits (eval/gains.ts). Models
 // differ in how spread out their similarities are: at 0.05, bge-small answered only 3% of texts at 0.9 confidence.
 const TEMPERATURES: Record<string, number> = { "Xenova/bge-small-en-v1.5": 0.03, "Xenova/all-MiniLM-L6-v2": 0.05 };
@@ -197,8 +197,9 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
     trainCache = cache;
     const X = examples.map((e) => cache.get(e.text)!);
 
-    // Each label's readable name counts as 3 extra examples in the starting point: +1.2 to +1.5 points at 5 examples
-    // per label on the dev splits, level with all the data.
+    // Each label's readable name counts as 1 extra example in the starting point. With bge-small that beat no prior
+    // by 1 to 14 points at 1 to 5 examples per label on the dev splits, and beat weight 3 (the MiniLM setting) by 0.9
+    // to 2.5 points (eval/priors.ts).
     const priors = opts.labelNames === false ? undefined : await vectors(labels.map(readable));
     return { model, ...(await fitHead(X, y, labels, opts, priors, LABEL_NAME_WEIGHT)) };
   }
@@ -212,3 +213,4 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
 
 export { saveHead, loadHead } from "./head-io.ts";
 export { withFallback, type FallbackOptions, type RoutedDecision, type Trainable } from "./fallback.ts";
+export { describeLabels, describePrompt, parseDescriptions, type DescribeOptions } from "./describe.ts";

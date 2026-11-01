@@ -66,9 +66,11 @@ The CLI warns when a label has fewer than 3 examples. Thresholds on `confidence`
 
 ## Label names
 
-By default each label's name is used as a hint: `card_arrival` is read as "card arrival" and counted as 3 extra
-examples at the starting point of training. At 5 examples per label it raised test accuracy from 77.4% to 78.7% on
-BANKING77 and from 86.0% to 87.3% on CLINC150.
+By default each label's name is used as a hint: `card_arrival` is read as "card arrival" and counted as 1 extra
+example at the starting point of training. With bge-small at 5 examples per label it raised dev accuracy from 80.8% to
+81.8% on BANKING77 and from 90.4% to 91.4% on CLINC150; with 1 example per label, from 58% to 73% and 69% to 84%.
+Pre-release builds (all-MiniLM-L6-v2) counted the name as 3 examples: there it raised test accuracy at 5 per label from
+77.4% to 78.7% on BANKING77 and from 86.0% to 87.3% on CLINC150.
 
 Turn it off with `{ labelNames: false }` (CLI: `--no-label-names`) when:
 

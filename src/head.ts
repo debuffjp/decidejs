@@ -60,7 +60,7 @@ function batchGradient(ids: number[], X: Float64Array, y: number[], W: Float32Ar
 }
 
 /** Fits weights, biases and temperature to embeddings `X` with label indices `y`. */
-export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}, priors?: ArrayLike<number>[], priorWeight = 1) {
+export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}, priors?: ArrayLike<number>[], priorWeight = 1, centroidScale = CENTROID_SCALE) {
   const { epochs = 60, learningRate = 2, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
   const dim = X[0].length, C = labels.length;
   // One flat buffer, so the inner loops read typed memory instead of an array of arrays.
@@ -82,7 +82,7 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
     for (let c = 0; c < C; c++) {
       const row = head.weights.subarray(c * dim, (c + 1) * dim);
       const norm = Math.hypot(...row) || 1;
-      for (let j = 0; j < dim; j++) row[j] = (row[j] / norm) * CENTROID_SCALE;
+      for (let j = 0; j < dim; j++) row[j] = (row[j] / norm) * centroidScale;
     }
     const acc = () => check!.filter((i) => { const z = logits(head, X[i]); return z.indexOf(Math.max(...z)) === y[i]; }).length / check!.length;
     let best = { acc: check ? acc() : 0, weights: head.weights.slice(), bias: head.bias.slice(), epochs: 0 };

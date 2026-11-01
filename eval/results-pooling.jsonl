@@ -1,0 +1,16 @@
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","pooling":"mean","idea":"zero-shot name+description","temperature":0.02,"accuracy":0.7231,"ece":0.0974}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","pooling":"mean","idea":"zero-shot name+description","temperature":0.03,"accuracy":0.7231,"ece":0.0314}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","pooling":"mean","idea":"zero-shot name+description","temperature":0.05,"accuracy":0.7231,"ece":0.25}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","pooling":"mean","idea":"5-shot head, names w1","accuracy":0.8171}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","pooling":"cls","idea":"zero-shot name+description","temperature":0.02,"accuracy":0.7281,"ece":0.0567}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","pooling":"cls","idea":"zero-shot name+description","temperature":0.03,"accuracy":0.7281,"ece":0.0854}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","pooling":"cls","idea":"zero-shot name+description","temperature":0.05,"accuracy":0.7281,"ece":0.344}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"banking77","pooling":"cls","idea":"5-shot head, names w1","accuracy":0.8171}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","pooling":"mean","idea":"zero-shot name+description","temperature":0.02,"accuracy":0.8303,"ece":0.0346}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","pooling":"mean","idea":"zero-shot name+description","temperature":0.03,"accuracy":0.8303,"ece":0.0672}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","pooling":"mean","idea":"zero-shot name+description","temperature":0.05,"accuracy":0.8303,"ece":0.3127}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","pooling":"mean","idea":"5-shot head, names w1","accuracy":0.9137}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","pooling":"cls","idea":"zero-shot name+description","temperature":0.02,"accuracy":0.8217,"ece":0.0146}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","pooling":"cls","idea":"zero-shot name+description","temperature":0.03,"accuracy":0.8217,"ece":0.1208}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","pooling":"cls","idea":"zero-shot name+description","temperature":0.05,"accuracy":0.8217,"ece":0.4057}
+{"model":"Xenova/bge-small-en-v1.5","date":"2026-11-01","dataset":"clinc150","pooling":"cls","idea":"5-shot head, names w1","accuracy":0.9093}

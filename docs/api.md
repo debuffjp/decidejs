@@ -125,7 +125,7 @@ const head = await d.train([
 
 | Option | Type | Default | What it does |
 |---|---|---|---|
-| `labelNames` | `boolean` | `true` | Use each label's readable name as a hint at the starting point (it counts as 3 extra examples). Turn off for opaque ids like `c17`. |
+| `labelNames` | `boolean` | `true` | Use each label's readable name as a hint at the starting point (it counts as 1 extra example; 3 before the switch to bge-small). Turn off for opaque ids like `c17`. |
 | `epochs` | `number` | `60` | Most passes over the examples. The best epoch on held-out examples is kept. |
 | `learningRate` | `number` | `2` | Gradient descent step size. |
 | `l2` | `number` | `1e-4` | Weight decay. |
@@ -188,6 +188,16 @@ const d = await createWorkerDecider({
 });
 const r = await d.decide(input.value, ["question", "bug_report", "praise"]);
 ```
+
+## describeLabels(labels, complete, options?)
+
+Asks an LLM once for a one-sentence description of each label, written as a typical message under it, and returns a
+`Record<L, string>` to pass to `decide()`. `complete(prompt)` is your LLM call; it should return the reply text.
+Labels the reply misses get their readable name. `options.context` says what the texts are ("message to a bank's
+support chat"). On the dev splits, descriptions raised zero-shot accuracy by 6 to 10 points.
+
+`describePrompt(labels, options?)` returns the prompt and `parseDescriptions(labels, reply)` reads a reply, for when
+you'd rather run the LLM call yourself (a batch job, a different process).
 
 ## saveHead(head)
 
