@@ -66,6 +66,8 @@ for (const lang of LANGS) {
     date: "2026-11-01", model: MODEL, prefix: PREFIX || undefined, lang, test: tX.length,
     zeroShot: acc((x) => top(names.map((n) => n.reduce((s, v, i) => s + v * x[i], 0)))),
     tenPerLabel: headAcc(fewHead), full: headAcc(fullHead), englishHead: headAcc(enHead),
+    temperature: fullHead.temperature,
+    fullMeanConf: +(tX.reduce((a, x) => a + Math.max(...softmax(logits(fullHead, x), fullHead.temperature)), 0) / tX.length).toFixed(3),
     fullEce: +ece(tX.map((x, i) => { const p = softmax(logits(fullHead, x), fullHead.temperature); return { right: top(p) === tY[i], c: Math.max(...p) }; })).toFixed(3),
   };
   console.log(JSON.stringify(line));

@@ -1,0 +1,4 @@
+{"date":"2026-11-01","lang":"en","zeroShotTemperature":0.0108,"zeroShotEce":0.044,"tinyHeadEceByFloor":{"0.02":0.312,"0.05":0.304,"0.1":0.286,"0.15":0.25,"0.2":0.209}}
+{"date":"2026-11-01","lang":"ja","zeroShotTemperature":0.0104,"zeroShotEce":0.027,"tinyHeadEceByFloor":{"0.02":0.273,"0.05":0.26,"0.1":0.236,"0.15":0.211,"0.2":0.185}}
+{"date":"2026-11-01","lang":"en","zeroShotTemperature":0.0108,"zeroShotEce":0.044,"tinyHeadEceByFloor":{"0.3":0.104,"0.5":0.121,"0.8":0.246,"1.2":0.321}}
+{"date":"2026-11-01","lang":"ja","zeroShotTemperature":0.0104,"zeroShotEce":0.027,"tinyHeadEceByFloor":{"0.3":0.12,"0.5":0.096,"0.8":0.189,"1.2":0.261}}

@@ -128,9 +128,12 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
   const head = await run(idx, foldEpochs.sort((a, b) => a - b)[foldEpochs.length >> 1]);
   const fitOn = calibration ? calibration.X.map((x, i) => ({ z: logits(head, x), y: calibration.y[i] })) : heldOut;
   let temperature = 1, bestNll = Infinity;
-  for (let t = 0.2; t <= 5; t += 0.05) {
+  // Log-spaced from 0.01 to 10: encoders whose similarities sit close together (multilingual-e5) need far lower
+  // temperatures than bge; a grid starting at 0.2 left their heads at about half the confidence they earned.
+  for (let k = 0; k <= 120; k++) {
+    const t = 0.01 * 1000 ** (k / 120);
     const nll = fitOn.reduce((sum, h) => sum - Math.log(softmax(h.z, t)[h.y] + 1e-12), 0);
-    if (nll < bestNll) { bestNll = nll; temperature = Number(t.toFixed(2)); }
+    if (nll < bestNll) { bestNll = nll; temperature = Number(t.toPrecision(3)); }
   }
   // Under 50 answers, a perfect score pulls the temperature to its floor and every answer to confidence 1.0 (seen
   // with 6 examples). Never sharpen past the floor on that little evidence.

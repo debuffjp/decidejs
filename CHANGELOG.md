@@ -14,6 +14,8 @@ The first release. Numbers are on public test splits unless noted; the scripts t
 - `minConfidence` returns `null` below a threshold. `decideMany()` for batches.
 - Default encoder: `Xenova/bge-small-en-v1.5` at 8-bit (34 MB). Any transformers.js feature-extraction model can be
   passed as `model`.
+- Supported encoders with measured settings: `Xenova/bge-small-en-v1.5` (default) and `Xenova/multilingual-e5-small`.
+  The temperature fit now searches 0.01 to 10, so encoders with close similarities calibrate.
 - `describeLabels()` asks an LLM once to write label descriptions (7 to 10 points better zero-shot on the dev splits).
 
 ### Training
@@ -47,5 +49,6 @@ The first release. Numbers are on public test splits unless noted; the scripts t
 
 ### Known limits
 
-- English only with the default encoder.
+- The default encoder reads English. `Xenova/multilingual-e5-small` is supported for other languages (76% on Japanese
+  and Chinese MASSIVE intents, calibrated), but `withFallback`'s off-topic gate doesn't fire with it.
 - Weak at tone: 61% on tweet sentiment and 49% on emotion with 32 examples per label. See the FAQ.

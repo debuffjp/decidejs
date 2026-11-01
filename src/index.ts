@@ -119,8 +119,12 @@ const LABEL_NAME_WEIGHT = 1;
 // Small heads (under 50 held-out answers) can't fit a trustworthy temperature, so it has a floor. On bge-small a floor
 // of 1 left them underconfident (calibration error 0.09 to 0.13; only 43 to 69% of texts at 0.9, nearly all right);
 // 0.5 gave 0.009 to 0.017. MiniLM's similarities are spread differently and keep 1 (eval/small-floor.ts).
-const SMALL_HEAD_FLOOR: Record<string, number> = { "Xenova/bge-small-en-v1.5": 0.5 };
-const TEMPERATURES: Record<string, [names: number, described: number]> = { "Xenova/bge-small-en-v1.5": [0.03, 0.025], "Xenova/all-MiniLM-L6-v2": [0.05, 0.05] };
+// multilingual-e5-small's similarities sit close together, so it needs far lower temperatures: on MASSIVE in English
+// and Japanese, 0.0105 for label names (calibration error 0.03 to 0.04; descriptions not yet measured) and a floor of
+// 0.4 (eval/e5-settings.ts). It also expects "query: " before every text.
+const SMALL_HEAD_FLOOR: Record<string, number> = { "Xenova/bge-small-en-v1.5": 0.5, "Xenova/multilingual-e5-small": 0.4 };
+const TEMPERATURES: Record<string, [names: number, described: number]> = { "Xenova/bge-small-en-v1.5": [0.03, 0.025], "Xenova/all-MiniLM-L6-v2": [0.05, 0.05], "Xenova/multilingual-e5-small": [0.0105, 0.0105] };
+const PREFIX: Record<string, string> = { "Xenova/multilingual-e5-small": "query: " };
 
 function toDecision<L extends string>(labels: readonly L[], p: number[]): Decision<L> {
   let best = 0;
@@ -139,14 +143,14 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
     device, dtype,
     progress_callback: onProgress && ((p: any) => p.status === "progress" && onProgress({ file: p.file, loaded: p.loaded, total: p.total })),
   });
-  const optionCache = new Map<string, number[][]>();
+  const optionCache = new Map<string, number[][]>(), prefix = PREFIX[model] ?? "";
   // The last training set's embeddings, so retraining after adding or fixing a few examples only encodes those.
   let trainCache = new Map<string, number[]>();
 
   async function vectors(texts: readonly string[]): Promise<number[][]> {
     const out: number[][] = [];
     for (let i = 0; i < texts.length; i += BATCH) {
-      const t = await embed(texts.slice(i, i + BATCH) as string[], { pooling: "mean", normalize: true });
+      const t = await embed(texts.slice(i, i + BATCH).map((x) => prefix + x), { pooling: "mean", normalize: true });
       out.push(...(t.tolist() as number[][]));
     }
     return out;

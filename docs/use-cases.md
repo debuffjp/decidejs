@@ -56,8 +56,8 @@ error?" Small decisions an app makes thousands of times.
 - **Long documents.** The encoder reads 128 to 256 tokens (about a paragraph) and ignores the rest.
 - **Reasoning over facts.** "Is this refund allowed under our policy?" needs the policy, which a sentence encoder
   can't read alongside the text.
-- **Languages other than English** with the default model. A multilingual encoder can be passed as `model`, but we
-  haven't measured one yet.
+- **Languages other than English** with the default model. Pass `model: "Xenova/multilingual-e5-small"` instead:
+  76% on Japanese and Chinese intents against 55% and 40% ([FAQ](faq.md#which-languages-does-it-support)).
 - **Tone: sentiment, emotion, toxicity.** The default encoder reads what a text is about better than how it feels:
   61% on tweet sentiment, 49% on emotion with 32 examples per label ([FAQ](faq.md#what-kinds-of-decisions-is-it-good-at)).
 - **Labels you can't give examples for**, when accuracy matters. Zero-shot got 61-70% on our intent benchmarks against

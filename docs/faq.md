@@ -2,9 +2,30 @@
 
 ## Which languages does it support?
 
-English, with the default model and with bge-small-en-v1.5. You can pass a multilingual sentence-embedding model as
-`model` to `createDecider()` (any Hugging Face model with ONNX weights), but none has been measured yet, so check
-accuracy on your own data first.
+English with the default model. For other languages, use `multilingual-e5-small`:
+
+```ts
+const d = await createDecider({ model: "Xenova/multilingual-e5-small" });
+```
+
+decidejs knows its settings (the "query: " prefix it expects, its temperatures), so confidence stays calibrated. It
+downloads about 118 MB against 34 MB. On MASSIVE (60 intents, labels named in English, 2,000 test messages per
+language, eval/multilingual.ts):
+
+| | Default model, Japanese | e5, Japanese | e5, Chinese | e5, German | e5, English | Default model, English |
+|---|---|---|---|---|---|---|
+| Zero-shot | 6.4% | 43.5% | 38.5% | 40.0% | 51.4% | 61.9% |
+| 10 examples per label | 30.8% | 68.4% | 69.5% | 60.4% | 70.2% | 76.1% |
+| All training data | 55.0% | 76.5% | 76.5% | 71.6% | 78.6% | 85.6% |
+| Trained on English examples only | 9.0% | 70.1% | 65.3% | 60.8% | | |
+
+The last row means one head trained on English examples works in other languages, at some cost. Calibration error of
+the trained e5 heads is about 0.03. For English text, keep the default model: it is 7 points more accurate.
+
+Two settings are tuned for the default model only: the off-topic gate in `withFallback` (`noneBelow`) never fires with
+e5, whose similarities sit around 0.8 even for unrelated text, so it won't learn "none of these"; and the label
+description temperature hasn't been measured for e5. Any other Hugging Face model with ONNX weights can be passed as
+`model` too, unmeasured.
 
 ## Can it read long texts?
 

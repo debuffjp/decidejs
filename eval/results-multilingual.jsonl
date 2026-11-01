@@ -8,3 +8,6 @@
 {"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"de","test":2000,"zeroShot":0.4,"tenPerLabel":0.604,"full":0.716,"englishHead":0.608,"fullEce":0.268}
 {"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"es","test":2000,"zeroShot":0.418,"tenPerLabel":0.656,"full":0.752,"englishHead":0.664,"fullEce":0.29}
 {"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"zh-CN","test":2000,"zeroShot":0.385,"tenPerLabel":0.695,"full":0.765,"englishHead":0.653,"fullEce":0.327}
+{"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"ja","test":2000,"zeroShot":0.435,"tenPerLabel":0.684,"full":0.765,"englishHead":0.701,"temperature":0.2,"fullMeanConf":0.508,"fullEce":0.257}
+{"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"ja","test":2000,"zeroShot":0.435,"tenPerLabel":0.684,"full":0.765,"englishHead":0.701,"temperature":0.106,"fullMeanConf":0.751,"fullEce":0.032}
+{"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"en","test":2000,"zeroShot":0.514,"tenPerLabel":0.702,"full":0.786,"englishHead":0.786,"temperature":0.119,"fullMeanConf":0.77,"fullEce":0.033}

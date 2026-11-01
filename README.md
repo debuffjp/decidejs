@@ -213,7 +213,7 @@ issue template for them. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Status
 
-0.1. English only with the default model; short texts (about a paragraph). Not done yet: WebGPU in the worker, a
+0.1. English with the default model, other languages with `multilingual-e5-small` ([FAQ](docs/faq.md#which-languages-does-it-support)); short texts (about a paragraph). Not done yet: WebGPU in the worker, a
 fallback to a hosted model below the threshold, and fine-tuning the encoder (the likely route past about 91%).
 
 Made by the [debuff](https://debuff.jp) team. MIT.
