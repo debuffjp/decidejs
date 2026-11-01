@@ -91,6 +91,22 @@ Real LLMs are sometimes wrong, and `withFallback()` is built for that: it sets i
 rather than the LLM's, and learns the LLM's "none of these" (`null`) as a label, `NONE`, so it can say `null` itself
 for off-topic text. Details and numbers: [docs/guide-fallback.md](docs/guide-fallback.md).
 
+## Coming from Jev
+
+`decidejs/typesafe` has the shape of TypeSafe's SDK, for Choice questions:
+
+```ts
+import { choice, typesafeClient } from "decidejs/typesafe";
+
+const client = typesafeClient(await createDecider());
+const { answers } = await client.systemOne({
+  state: "I was charged twice",
+  questions: { category: choice("What is this about?", { billing: null, technical: null, other: null }) },
+});
+```
+
+The [guide](docs/guide-typesafe.md) covers what differs, including what `confidence` means.
+
 ## switch
 
 `decidejs/switch` makes decidejs a decision model for [switch](https://github.com/osolmaz/switch), the harness that

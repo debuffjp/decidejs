@@ -41,6 +41,8 @@ The first release. Numbers are on public test splits unless noted; the scripts t
 
 ### Browser and tools
 
+- `decidejs/typesafe`: `typesafeClient()` gives a decider the shape of TypeSafe's SDK (`systemOne({ state, questions })`,
+  `choice()`, `probabilities`, their `confidence` formula). Choice questions only.
 - `decidejs/browser`: `createWorkerDecider()` runs the encoder in a Web Worker (training BANKING77 froze the page for
   171 s on the main thread; the longest stall in a worker was 18 ms).
 - `decidejs/react`: `useDecider()` and `useDecision()`.

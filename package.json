@@ -37,6 +37,10 @@
     "./switch": {
       "types": "./dist/switch.d.ts",
       "default": "./dist/switch.js"
+    },
+    "./typesafe": {
+      "types": "./dist/typesafe.d.ts",
+      "default": "./dist/typesafe.js"
     }
   },
   "files": [

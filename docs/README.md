@@ -10,6 +10,7 @@ Start with the [main README](../README.md) for a five-line example and the headl
 - [Falling back to an LLM](guide-fallback.md): `withFallback()`, learning from the fallback, measured savings.
 - [React](guide-react.md): `useDecider()` and `useDecision()`.
 - [Other languages](faq.md#which-languages-does-it-support): `multilingual-e5-small`, measured on Japanese, Chinese, German and Spanish.
+- [Coming from Jev](guide-typesafe.md): TypeSafe's client shape on a local decider, what differs and using Jev as the fallback.
 - [Bundlers](bundlers.md): Vite, webpack and Next.js config.
 - [switch](guide-switch.md): decidejs as a decision model in the switch harness, with trained heads and a teacher, and WikiRace results.
 - [Use cases](use-cases.md): good fits, poor fits and example code.
