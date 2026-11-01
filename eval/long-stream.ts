@@ -7,14 +7,17 @@
 // the same for zero-shot alone, plus the final head on the BANKING77 test set. CAL=k sets aside k correctly labelled
 // examples per label (kept out of the stream) and fits each head's temperature on them, as train()'s calibrateOn does.
 // SELF=k needs no labels: it keeps up to k stream messages per label that zero-shot answered with confidence 0.9 or
-// more, labelled with zero-shot's answer, and calibrates on those.
+// more, labelled with zero-shot's answer, and calibrates on those. HARD=1 makes mistakes depend on difficulty: a text's
+// chance of a wrong answer is NOISE times (1 - zero-shot's confidence) over its stream average, capped at 0.9, so NOISE
+// stays the error rate over all texts and the ones Decide sends get more (as with Llama 3.1 8B: 90% right overall, 62.5%
+// on texts Decide found hard).
 //   NOISE=0.3 [CAL=2] node --experimental-strip-types eval/long-stream.ts
 import { appendFile, readFile } from "node:fs/promises";
 import { createDecider } from "../src/index.ts";
 import { fitHead, logits, softmax } from "../src/head.ts";
 import { kShot, loadData, seeded } from "./data.ts";
 
-const noise = Number(process.env.NOISE ?? 0), cal = Number(process.env.CAL ?? 0), self = Number(process.env.SELF ?? 0), ROUND = 1000;
+const noise = Number(process.env.NOISE ?? 0), cal = Number(process.env.CAL ?? 0), self = Number(process.env.SELF ?? 0), hard = process.env.HARD === "1", ROUND = 1000;
 const { banking } = await loadData();
 const labels = [...new Set(banking.train.map((r) => r.label))].sort();
 const descriptions: Record<string, string> = JSON.parse(await readFile("eval/descriptions-banking77.json", "utf8"));
@@ -35,6 +38,8 @@ const calSet = cal ? kShot(banking.train, cal, 9) : [];
 const inCal = new Set(calSet.map((r) => r.text));
 const stream = banking.train.filter((r) => !inCal.has(r.text)).sort(() => rand() - 0.5);
 const learned: { x: number[]; y: number }[] = [];
+const doubt = (x: number[]) => 1 - Math.max(...zeroShot(x));
+const meanDoubt = stream.reduce((s, r) => s + doubt(cache[r.text]), 0) / stream.length;
 let head: Head | null = null, wrong = 0;
 const selfSet: { x: number[]; y: number; right: boolean }[] = [], perLabel = new Array(labels.length).fill(0);
 for (let r = 0; r * ROUND < stream.length; r++) {
@@ -43,7 +48,7 @@ for (let r = 0; r * ROUND < stream.length; r++) {
     const x = cache[q.text], truth = labels.indexOf(q.label);
     const z = zeroShot(x), p = predict(head, x);
     const ask = () => {
-      if (teacher() >= noise) return truth;
+      if (teacher() >= (hard ? Math.min(0.9, (noise * (1 - z[top(z)])) / meanDoubt) : noise)) return truth;
       return z.map((v, c) => [v, c]).sort((a, b) => b[0] - a[0]).find(([, c]) => c !== truth)![1];
     };
     // Zero-shot alone, against a teacher with the same error rate.
@@ -56,7 +61,7 @@ for (let r = 0; r * ROUND < stream.length; r++) {
     learned.push({ x, y });
   }
   const n = Math.min(ROUND, stream.length - r * ROUND);
-  const line = { date: "2026-11-01", noise, cal, self, selfSet: selfSet.length, selfWrong: +(selfSet.filter((e) => !e.right).length / Math.max(1, selfSet.length)).toFixed(3), round: r + 1, learned: learned.length, learnedWrong: +(wrong / Math.max(1, learned.length)).toFixed(3), sent: +(sent / n).toFixed(3), right: +(right / n).toFixed(3), zeroShotSent: +(zSent / n).toFixed(3), zeroShotRight: +(zRight / n).toFixed(3) };
+  const line = { date: "2026-11-01", noise, hard, cal, self, selfSet: selfSet.length, selfWrong: +(selfSet.filter((e) => !e.right).length / Math.max(1, selfSet.length)).toFixed(3), round: r + 1, learned: learned.length, learnedWrong: +(wrong / Math.max(1, learned.length)).toFixed(3), sent: +(sent / n).toFixed(3), right: +(right / n).toFixed(3), zeroShotSent: +(zSent / n).toFixed(3), zeroShotRight: +(zRight / n).toFixed(3) };
   console.log(JSON.stringify(line));
   await appendFile("eval/results-long-stream.jsonl", JSON.stringify(line) + "\n");
   const calibration = cal ? { X: calSet.map((r) => cache[r.text]), y: calSet.map((r) => labels.indexOf(r.label)) }
@@ -64,6 +69,6 @@ for (let r = 0; r * ROUND < stream.length; r++) {
   head = await fitHead(learned.map((l) => l.x), learned.map((l) => l.y), labels, { seed: 7 }, names, 1, undefined, 0.5, calibration);
 }
 const test = (h: Head | null) => +(banking.test.filter((q) => top(predict(h, cache[q.text])) === labels.indexOf(q.label)).length / banking.test.length).toFixed(3);
-const line = { date: "2026-11-01", noise, cal, self, final: true, headOnTest: test(head), zeroShotOnTest: test(null) };
+const line = { date: "2026-11-01", noise, hard, cal, self, final: true, headOnTest: test(head), zeroShotOnTest: test(null) };
 console.log(JSON.stringify(line));
 await appendFile("eval/results-long-stream.jsonl", JSON.stringify(line) + "\n");

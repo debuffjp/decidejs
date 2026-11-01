@@ -112,7 +112,12 @@ are for the last 1,000 messages ([eval/results-long-stream.jsonl](../eval/result
 Zero-shot alone, never learning, sent 59% and answered 97%, 87% and 80% right at 0%, 15% and 30% wrong; it scores
 74% on the test set. At 15% wrong, `calibrateOn` brought the share sent down to what a perfect LLM gave. At 30% it beat not learning at
 all, which plain learning didn't. "automatic" is the default described above (`SELF=4` in the script, last 4 rounds
-averaged); with a perfect LLM it sends a few points more, with a real one far less. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
+averaged); with a perfect LLM it sends a few points more, with a real one far less.
+
+Real LLM mistakes cluster on hard texts, which are the ones `withFallback()` sends. With `HARD=1` the chance of a
+wrong answer grows as zero-shot's confidence falls, keeping 10% wrong over all texts (13 to 16% of what was sent).
+Last 4 rounds, sent and answered right: plain 47% and 92.5%, automatic 33% and 93%, 2 checked per label 23% and
+93.5%; zero-shot alone 58% and 87%. The order holds. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
 
 ## Options
