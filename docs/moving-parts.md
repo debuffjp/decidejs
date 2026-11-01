@@ -72,7 +72,8 @@ answer becomes a training example; with `retrainEvery` it retrains on its own.
 
 **Numbers:** on CLINC150 from label names alone, the share sent to the LLM fell from 68% to 16% over ten retrains
 with a perfect teacher. A real teacher matters: a teacher wrong 20% of the time left it at 52%. On all 77 BANKING77 labels, a teacher
-wrong 15% of the time kept sends at 64% until `calibrateOn` (2 correct examples per label) brought them to 24%. Give the LLM the
+wrong 15% of the time kept sends at 64% until `calibrateOn` (2 correct examples per label) brought them to 24%.
+Started from labels, it now calibrates on zero-shot's own confident answers by default (31%). Give the LLM the
 same label descriptions (Llama 3.1 8B: 84% to 90%) and list labels in a stable, grouped order.
 
 **Read more:** [guide-fallback.md](guide-fallback.md).

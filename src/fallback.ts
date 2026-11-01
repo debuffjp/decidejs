@@ -24,7 +24,11 @@ export interface FallbackOptions<L extends string> {
   examples?: readonly Example<L>[];
   /** Retrain on its own after this many new answers. Default: only when you call `retrain()`. */
   retrainEvery?: number;
-  /** Passed to `train()` when retraining. */
+  /**
+   * Passed to `train()` when retraining. Starting from labels, `calibrateOn` defaults to the texts zero-shot answered
+   * locally (up to 4 per label, once there are 50): they fit the head's temperature better than the LLM's answers,
+   * which are sometimes wrong. Pass your own `calibrateOn` to replace them.
+   */
   trainOptions?: Omit<TrainOptions<L>, "labels">;
 }
 
@@ -50,11 +54,14 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
   let current: Choices<L> = using;
   let retraining: Promise<Head<L>> | undefined;
   let sinceRetrain = 0;
+  // Zero-shot's confident answers: right about 93% of the time on BANKING77, and enough to calibrate on (eval/long-stream.ts).
+  const confident: Example<L>[] = [], perLabel = new Map<L, number>();
 
   function retrain(): Promise<Head<L>> {
     if (!examples) return Promise.reject(new Error("decidejs: withFallback() needs `examples` to retrain a head"));
     if (!examples.length && !learned.length) return Promise.reject(new Error("decidejs: nothing to train on yet: no answers from `ask`"));
-    retraining ??= decider.train<L>([...examples, ...learned], { ...trainOptions, labels }).then((h) => {
+    const calibrateOn = trainOptions?.calibrateOn ?? (confident.length >= 50 ? confident : undefined);
+    retraining ??= decider.train<L>([...examples, ...learned], { ...trainOptions, labels, calibrateOn }).then((h) => {
       current = h;
       return h;
     }).finally(() => (retraining = undefined));
@@ -63,7 +70,13 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
 
   async function route(text: string): Promise<RoutedDecision<L>> {
     const local = await decider.decide(text, current);
-    if (local.confidence >= minConfidence) return { ...local, source: "local" };
+    if (local.confidence >= minConfidence) {
+      if (!isHead(current) && (perLabel.get(local.choice) ?? 0) < 4) {
+        perLabel.set(local.choice, (perLabel.get(local.choice) ?? 0) + 1);
+        confident.push({ text, label: local.choice });
+      }
+      return { ...local, source: "local" };
+    }
     const answer = await ask(text, labels, local);
     const choice = answer !== null && labels.includes(answer) ? answer : null;
     if (examples && choice !== null) {

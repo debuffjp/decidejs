@@ -81,8 +81,12 @@ A real LLM gets some answers wrong, and more of the hard texts the head sends it
 examples. The head still gets more accurate, but it also fits its temperature (how far it trusts itself) on those
 answers, so it learns to doubt itself: its confidence rarely reaches `minConfidence` and it keeps asking.
 
-Fix it with `calibrateOn`: a few examples you know are right, 2 per label is enough. The temperature is then fitted on
-those, not on the LLM's answers:
+Started from labels, `withFallback()` handles this itself. While it is still zero-shot, it keeps up to 4 texts per
+label that zero-shot answered locally (about 93% right on BANKING77) and, once it has 50, fits each new head's
+temperature on those instead of on the LLM's answers. Nothing to set up.
+
+With your own examples, or to do better than that, pass `calibrateOn`: a few
+examples you know are right, 2 per label is enough. It replaces the automatic set:
 
 ```ts
 const checked = [{ text: "where is my new card", label: "card_arrival" }, /* 2 per label */];
@@ -97,14 +101,18 @@ are for the last 1,000 messages ([eval/results-long-stream.jsonl](../eval/result
 | LLM wrong | `calibrateOn` | Sent to the LLM | Answered right | Head on the test set |
 |---|---|---|---|---|
 | 0% | no | 23% | 98% | 92.0% |
+| 0% | automatic | 31% | 99% | 91.9% |
 | 15% | no | 64% | 90% | 90.2% |
 | 15% | 2 per label | 24% | 95% | 90.1% |
+| 15% | automatic | 31% | 93.5% | 90.4% |
 | 30% | no | 86% | 71% | 85.6% |
 | 30% | 2 per label | 34% | 86% | 86.2% |
+| 30% | automatic | 36% | 85% | 86.1% |
 
 Zero-shot alone, never learning, sent 59% and answered 97%, 87% and 80% right at 0%, 15% and 30% wrong; it scores
 74% on the test set. At 15% wrong, `calibrateOn` brought the share sent down to what a perfect LLM gave. At 30% it beat not learning at
-all, which plain learning didn't. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
+all, which plain learning didn't. "automatic" is the default described above (`SELF=4` in the script, last 4 rounds
+averaged); with a perfect LLM it sends a few points more, with a real one far less. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
 
 ## Options
