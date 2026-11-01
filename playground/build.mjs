@@ -9,6 +9,7 @@ await build({
   alias: { "onnxruntime-web/webgpu": "onnxruntime-web/wasm" },
 });
 await cp(new URL("./index.html", import.meta.url), new URL("index.html", out));
+await cp(new URL("./ui.css", import.meta.url), new URL("ui.css", out));
 await cp(new URL("./lanes/index.html", import.meta.url), new URL("lanes/index.html", out));
 for (const h of ["banking77", "clinc150"]) await cp(new URL(`../heads/${h}.head.json`, import.meta.url), new URL(`heads/${h}.head.json`, out));
 console.log("built playground/dist");

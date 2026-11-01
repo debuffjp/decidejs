@@ -1,1 +1,1177 @@
-[{"text":"My card still hasn't arrived after 2 weeks. Is it lost?","label":"card_arrival"},{"text":"What is the difference between standard and express delivery?","label":"card_delivery_estimate"},{"text":"My card is lost! What can I do?","label":"lost_or_stolen_card"},{"text":"I have a card payment that was declined, but why?","label":"declined_card_payment"},{"text":"How do I know why my card isn't working?","label":"card_not_working"},{"text":"Is there a way to know when my card will arrive?","label":"card_arrival"},{"text":"Can it be delivered by a specific date?","label":"card_delivery_estimate"},{"text":"My card appears to be broken how can I fix it?","label":"card_not_working"},{"text":"I need my card quickly","label":"card_delivery_estimate"},{"text":"When would my card be charged an extra fee for a transaction?","label":"card_payment_fee_charged"},{"text":"I payed with a card and was charged an extra fee","label":"card_payment_fee_charged"},{"text":"My latest payment was declined, I was told everything was back to working order. What happened?","label":"declined_card_payment"},{"text":"my card was not in the mail again can you advise?","label":"card_delivery_estimate"},{"text":"Is there a reason I was charged a fee for using my card as payment? I've never had an extra fee before.","label":"card_payment_fee_charged"},{"text":"I made a card payment and a fee is showing up?","label":"card_payment_fee_charged"},{"text":"May I choose when it's delivered?","label":"card_delivery_estimate"},{"text":"Help.  I have a stolen card!","label":"lost_or_stolen_card"},{"text":"Why was my card payment declined?","label":"declined_card_payment"},{"text":"I've been waiting longer than expected for my card.","label":"card_arrival"},{"text":"Someone stole my card. I need to report it stolen. I made a police report already, but how do I report it with you?","label":"lost_or_stolen_card"},{"text":"I've tried my card a bunch of times and it never worked.","label":"card_not_working"},{"text":"I am still waiting for my card after 1 week.  Is this ok?","label":"card_arrival"},{"text":"How long will it take to get to me?","label":"card_delivery_estimate"},{"text":"How do I report my card stolen?","label":"lost_or_stolen_card"},{"text":"Why doesn't the card payment work","label":"declined_card_payment"},{"text":"Help me.  My card doesn't work.","label":"card_not_working"},{"text":"Can you freeze my card it was stolen","label":"lost_or_stolen_card"},{"text":"How do I unblock my card using the app?","label":"card_not_working"},{"text":"How long will it take for the card to arrive?","label":"card_delivery_estimate"},{"text":"I got a fee for an ATM withdrawal.","label":"cash_withdrawal_charge"},{"text":"My transfer is still pending and I know the account numbers are correct.  Please help.","label":"pending_transfer"},{"text":"Why did the app deny my top up?","label":"top_up_failed"},{"text":"Can you look at my account ans see why my card was declined","label":"declined_card_payment"},{"text":"My top-up isn't working.","label":"top_up_failed"},{"text":"My funding to my card didn't go through.","label":"top_up_failed"},{"text":"My credit card was declined.","label":"declined_card_payment"},{"text":"How do I locate my card?","label":"card_arrival"},{"text":"Do you have a list of exchange rates?","label":"exchange_rate"},{"text":"Please advise what is the exchange rate","label":"exchange_rate"},{"text":"How long can an EU transfer take?","label":"pending_transfer"},{"text":"I still have not received my new card, I ordered over a week ago.","label":"card_arrival"},{"text":"Does delivery to the US take long?","label":"card_delivery_estimate"},{"text":"How long does a transfer stay pending?","label":"pending_transfer"},{"text":"Can a card stop working?","label":"card_not_working"},{"text":"What is the fee on my card payment?","label":"card_payment_fee_charged"},{"text":"The new card that was just sent to me was declined multiple times yesterday when I tried to use it at a restaurant to pay for my dinner.  I am really disappointed  and embarrassed that my card was denied when I tried to use it to pay for my friend's birthday dinner.","label":"declined_card_payment"},{"text":"Why are you declining my payment? Everything was fine.","label":"declined_card_payment"},{"text":"Will I get a curreng foreign exchange rate?","label":"exchange_rate"},{"text":"I was out today looking forward to pay with my new card, turns out the payment just kept getting declined. This is really sad, what's going on?","label":"declined_card_payment"},{"text":"I submitted my transfer but it has been pending for quite a while and I was wondering what takes so long? why hasn't it completed","label":"pending_transfer"},{"text":"How do I deal with a stolen card?","label":"lost_or_stolen_card"},{"text":"Can you explain your exchange rate policy to me?","label":"exchange_rate"},{"text":"I topped up but the app did not accept it.","label":"top_up_failed"},{"text":"I used my card for a purchase and was charged a fee","label":"card_payment_fee_charged"},{"text":"What is the fee charged with this card payment?","label":"card_payment_fee_charged"},{"text":"Something is wrong with my payment account since it has been declined","label":"declined_card_payment"},{"text":"How do I find the exchange rate?","label":"exchange_rate"},{"text":"How long for money transfer to show?","label":"pending_transfer"},{"text":"My card isn't working anymore.","label":"card_not_working"},{"text":"im not sure what this charge is for","label":"card_payment_fee_charged"},{"text":"I have a top up that didn't go through.  Why?","label":"top_up_failed"},{"text":"I need to know why my credit card was declined for top up? What is the deal here and why did it not go through?","label":"top_up_failed"},{"text":"There is an unauthorized fee.","label":"card_payment_fee_charged"},{"text":"Heyy I tried to top up with my card today but it failed! I just got the couple days before but it has worked last time. What's going on, can you double check please?","label":"top_up_failed"},{"text":"I would appreciate that someone let me know when there is an extra charge for payments. I was checking the app earlier and saying a charge on one of my payments that was additional that no one made me aware of before.","label":"card_payment_fee_charged"},{"text":"still waiting on that card","label":"card_arrival"},{"text":"Help!  I can't find my card.","label":"lost_or_stolen_card"},{"text":"Can I have my card delivered on a specific day?","label":"card_delivery_estimate"},{"text":"i need my card quick","label":"card_delivery_estimate"},{"text":"I see some fees for cash withdraw.","label":"cash_withdrawal_charge"},{"text":"i have not received my card","label":"card_arrival"},{"text":"How do I track my card?","label":"card_arrival"},{"text":"So, I tried topping up my card for the today. Unfortunately, it failed. A couple of days back I used it and it works fine. Can you double check and tell me what's going on?","label":"top_up_failed"},{"text":"So the transfer finally worked but now it's been pending for quite a long time. How long do you expect me to wait for it? It's quite urgent","label":"pending_transfer"},{"text":"Is a copy of the police report necessary for completing the report process?","label":"lost_or_stolen_card"},{"text":"I need help with a lost card","label":"lost_or_stolen_card"},{"text":"How long does it take to get my card? Can I choose when to receive it?","label":"card_delivery_estimate"},{"text":"I'm just wondering when my card will get here.","label":"card_delivery_estimate"},{"text":"When will the transfer go through?","label":"pending_transfer"},{"text":"Why hasn't my card been delivered?","label":"card_arrival"},{"text":"Why was my top-up unsuccessful?","label":"top_up_failed"},{"text":"How can I speed up a transfer?  Mine is pending.","label":"pending_transfer"},{"text":"When can I expect my card to be delivered to the US?","label":"card_delivery_estimate"},{"text":"still waiting on my new card","label":"card_arrival"},{"text":"My card does not work","label":"card_not_working"},{"text":"I have been waiting longer than expected for my bank card, could you provide information on when it will arrive?","label":"card_arrival"},{"text":"My card was declined today when eating and I need to know what's wrong.","label":"card_not_working"},{"text":"I ordered a card but it has not arrived. Help please!","label":"card_arrival"},{"text":"Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.","label":"cash_withdrawal_charge"},{"text":"I transferred money yesterday, but it still isn't available?","label":"pending_transfer"},{"text":"Why did my cash get charged a fee that should not be there.","label":"cash_withdrawal_charge"},{"text":"I need help activating my new card.","label":"activate_my_card"},{"text":"Is it a good time to exchange?","label":"exchange_rate"},{"text":"Would like to use my card and need to activate it first.  Can you help me do this?","label":"activate_my_card"},{"text":"The app denied my topped up.","label":"top_up_failed"},{"text":"I'm really stuck. I don't know why but my card payment has not gone through.","label":"declined_card_payment"},{"text":"My card doesn't work.","label":"card_not_working"},{"text":"I still don't have my card after 2 weeks.  What should I do?","label":"card_arrival"},{"text":"I think my card is broken","label":"card_not_working"},{"text":"Help! Someone stole my card!","label":"lost_or_stolen_card"},{"text":"I know I have enough funds in my account but my card payment hasn't worked for some reason. What do I do?","label":"declined_card_payment"},{"text":"I can't get my card to work.","label":"card_not_working"},{"text":"Can you please identify the problem with my bank card?","label":"card_not_working"},{"text":"Can someone assist me by explaining why my card is not working?","label":"card_not_working"},{"text":"My card declined","label":"declined_card_payment"},{"text":"Why caused my top up to not work?","label":"top_up_failed"},{"text":"My top up failed.","label":"top_up_failed"},{"text":"I believe my card has been stolen, what can I do about this situation? It's urgent.","label":"lost_or_stolen_card"},{"text":"I want to set a new PIN","label":"change_pin"},{"text":"I lost my wallet today with all my credit cards. Will you please block the card and send a replacement?","label":"lost_or_stolen_card"},{"text":"How can I resolve a problem where my card won't go through at all?","label":"card_not_working"},{"text":"Why was I charged a fee for withdrawing cash?","label":"cash_withdrawal_charge"},{"text":"Why isn't my card working?","label":"card_not_working"},{"text":"My card broke.","label":"card_not_working"},{"text":"Why was a transaction on my card declined?","label":"declined_card_payment"},{"text":"Why did I have to pay extra because I paid with card?","label":"card_payment_fee_charged"},{"text":"A fee was charged for my recent withdrawal.","label":"cash_withdrawal_charge"},{"text":"card is lost, please help","label":"lost_or_stolen_card"},{"text":"Is there a location near me that i can change my PIN?","label":"change_pin"},{"text":"I just got my card and want to use it, how do I activate my card?","label":"activate_my_card"},{"text":"How can I get my physical card to work?","label":"card_not_working"},{"text":"Please, activate my card","label":"activate_my_card"},{"text":"I was trying to purchase something at the store today and my card has been declined.  Why has this happened?","label":"declined_card_payment"},{"text":"Why did I have to pay more when I do it with my card?","label":"card_payment_fee_charged"},{"text":"I show another charge on my card from when I used it, why?","label":"card_payment_fee_charged"},{"text":"My new card keeps getting declined. I was very excited to use it for the first time today. Why is this doing this?","label":"declined_card_payment"},{"text":"Can you get me my card fast?","label":"card_delivery_estimate"},{"text":"How do I update my PIN to a new number?","label":"change_pin"},{"text":"Why was I charged for card payment?","label":"card_payment_fee_charged"},{"text":"When will I get my card?","label":"card_arrival"},{"text":"Why would I be charged a fee for card payment?","label":"card_payment_fee_charged"},{"text":"I want to choose a different PIN.","label":"change_pin"},{"text":"Why did I have to pay a fee when I got cash?","label":"cash_withdrawal_charge"},{"text":"I was charged a fee after using my card and I shouldn't have been.","label":"card_payment_fee_charged"},{"text":"I lost my card","label":"lost_or_stolen_card"},{"text":"How long will it take to arrive?","label":"card_delivery_estimate"},{"text":"I cant find my card, it's gone.","label":"lost_or_stolen_card"},{"text":"I need a new Pin how do I go about that?","label":"change_pin"},{"text":"Is the bank the only place I can change my PIN>","label":"change_pin"},{"text":"What should I do if I lost my card?","label":"lost_or_stolen_card"},{"text":"I live in the US, how long will it take for delivery?","label":"card_delivery_estimate"},{"text":"How might  I change my PIN?","label":"change_pin"},{"text":"How come I was charged extra when I withdrew cash?","label":"cash_withdrawal_charge"},{"text":"I have been charged a fee for paying with card","label":"card_payment_fee_charged"},{"text":"how to activate card?","label":"activate_my_card"},{"text":"Why is there an extra charge for money that was withdrawn?","label":"cash_withdrawal_charge"},{"text":"I'm trying to transfer money to another country. It's just pending and not sending. My account details are correct. Please help me.","label":"pending_transfer"},{"text":"I have a transfer that's pending and wanted to know how long it is going to take to process?","label":"pending_transfer"},{"text":"what are exchange rates based on","label":"exchange_rate"},{"text":"Oh no!  I lost my card!  Help!","label":"lost_or_stolen_card"},{"text":"Why did it decline my payment?","label":"declined_card_payment"},{"text":"I need my card now!","label":"card_delivery_estimate"},{"text":"When should I expect my card?","label":"card_delivery_estimate"},{"text":"My card won't work.","label":"card_not_working"},{"text":"Do you know if there is a tracking number for the new card you sent me?","label":"card_arrival"},{"text":"Where is my new card? I have been waiting a week!","label":"card_arrival"},{"text":"Could you please activate my card","label":"activate_my_card"},{"text":"Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?","label":"cash_withdrawal_charge"},{"text":"Why did my top up not work?","label":"top_up_failed"},{"text":"My card is gone I think it was stolen","label":"lost_or_stolen_card"},{"text":"I need to know your exchange rates.","label":"exchange_rate"},{"text":"Why am I being charged when I withdraw cash?","label":"cash_withdrawal_charge"},{"text":"How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee","label":"cash_withdrawal_charge"},{"text":"Why is my card not working?","label":"card_not_working"},{"text":"What reason did my top-up fail for?","label":"top_up_failed"},{"text":"What is the process of card activation?","label":"activate_my_card"},{"text":"How long will it take to deliver something to US?","label":"card_delivery_estimate"},{"text":"I received my new card, how is it activated?","label":"activate_my_card"},{"text":"What are your international exchange rates?","label":"exchange_rate"},{"text":"Where do you get your exchange rates from?","label":"exchange_rate"},{"text":"How long do transfer pend for?","label":"pending_transfer"},{"text":"How long does a card delivery take?","label":"card_arrival"},{"text":"What is the reason for this fee I got after a simple cash withdrawal?","label":"cash_withdrawal_charge"},{"text":"Do you know why my card payment did not work?","label":"declined_card_payment"},{"text":"How often do your exchange rates change","label":"exchange_rate"},{"text":"It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?","label":"cash_withdrawal_charge"},{"text":"How are exchange rates calculated?","label":"exchange_rate"},{"text":"I can't find my card and think it may have been stolen.","label":"lost_or_stolen_card"},{"text":"I need it delivered on a certain date.","label":"card_delivery_estimate"},{"text":"What is this charge on my account for a cash withdrawl?","label":"cash_withdrawal_charge"},{"text":"Why would my topup not go through?","label":"top_up_failed"},{"text":"What currencies is an exchange rate calculated in?","label":"exchange_rate"},{"text":"Why are there fees for card usage?","label":"card_payment_fee_charged"},{"text":"I got my new card where do I go to activate it?","label":"activate_my_card"},{"text":"My card has not arrived yet.","label":"card_arrival"},{"text":"What kind of cash machines would allow me to change my PIN?","label":"change_pin"},{"text":"How did you come up with your exchange rates?","label":"exchange_rate"},{"text":"Is it normal to have to wait over a week for my new card?","label":"card_arrival"},{"text":"Did you start charging for cash withdrawals? I thought it was free so far but noticed suddendly there is a fee. How much do I need to pay?","label":"cash_withdrawal_charge"},{"text":"What do I need to do to activate my new card?","label":"activate_my_card"},{"text":"i transfered however its still pending","label":"pending_transfer"},{"text":"Why was I charged an extra fee when paying with my card?","label":"card_payment_fee_charged"},{"text":"My card was declined in a shop","label":"declined_card_payment"},{"text":"How can I activate my card so I can start using it?","label":"activate_my_card"},{"text":"My payment has been declined, I thought this issue was fixed!","label":"declined_card_payment"},{"text":"Why hasn't my transfer gone through yet?","label":"pending_transfer"},{"text":"Where do I change my PIN?","label":"change_pin"},{"text":"Why do I get charged additional fees on some payments, but not others?","label":"card_payment_fee_charged"},{"text":"If I am overseas, how do I change my pin?","label":"change_pin"},{"text":"Why did I get a fee?","label":"cash_withdrawal_charge"},{"text":"I would like to change my card PIN.","label":"change_pin"},{"text":"I would like to change my pin.","label":"change_pin"},{"text":"My new pin needs to be set.","label":"change_pin"},{"text":"What are the most current exchange rates?","label":"exchange_rate"},{"text":"what are exchange rates","label":"exchange_rate"},{"text":"I need to activate my card can you do that now?","label":"activate_my_card"},{"text":"Tell me how to go about activating my new card?","label":"activate_my_card"},{"text":"What's the right way to activate my card?","label":"activate_my_card"},{"text":"Hi, I am calling about a recent transaction that has happened on my account.  I recently went to the ATM, and tried to make a withdrawal on my account.  I just happened to check my transaction slip and noticed a fee for my withdrawal.  How can I resolve this, I didn't know fees were charged for this type of action.","label":"cash_withdrawal_charge"},{"text":"I attempted to top up but the app denied it.","label":"top_up_failed"},{"text":"WHAT CAN I DO AFTER THE CARD MISSING","label":"activate_my_card"},{"text":"Is there a fee for withdrawing cash?","label":"cash_withdrawal_charge"},{"text":"My transfer is still coming up as pending.","label":"pending_transfer"},{"text":"Why can't I activate my card?","label":"activate_my_card"},{"text":"Where do you guys acquire your exchange rate?","label":"exchange_rate"},{"text":"I've notice I was charged for withdrawing cash, can you explain why?","label":"cash_withdrawal_charge"},{"text":"My top up didn't work.","label":"top_up_failed"},{"text":"I desperately need to change my PIN, but I'm overseas on vacation right now. How can I do this?","label":"change_pin"},{"text":"What is the exchange rate like on this app?","label":"exchange_rate"},{"text":"I tried activating my bill of fare and it didn't workplace","label":"activate_my_card"},{"text":"I have a pending transfer","label":"pending_transfer"},{"text":"I am waiting for a pending money transfer to process.","label":"pending_transfer"},{"text":"How can I check to see if my top-up worked?","label":"top_up_failed"},{"text":"How can I change my Tholepin ?","label":"change_pin"},{"text":"How do I set a new pin?","label":"change_pin"},{"text":"I'd like to make a new PIN selection.","label":"change_pin"},{"text":"Why didn`t my topup go through?","label":"top_up_failed"},{"text":"Can you tell me where you get your exchange rates?","label":"exchange_rate"},{"text":"In what ATM can I change my pin?","label":"change_pin"},{"text":"How long will it take to activate my new card?","label":"activate_my_card"},{"text":"I would like to change my PIN but I am not currently in the country.","label":"change_pin"},{"text":"Is there a way my new card can be renewed?","label":"activate_my_card"},{"text":"please tell me why my top-up failed.","label":"top_up_failed"},{"text":"Why is my transfer not done yet?","label":"pending_transfer"},{"text":"I had made a transfer but its still pending.","label":"pending_transfer"},{"text":"Can i change my PIN at the ATM?","label":"change_pin"},{"text":"What exchange rates do you offer?","label":"exchange_rate"},{"text":"I did transfer, why is it pending","label":"pending_transfer"},{"text":"How do I activate a card I received?","label":"activate_my_card"},{"text":"My entire gym bag, including my wallet, was stolen out of my locker today. Everything in my wallet is gone - how do I block the card to make it can't be used?","label":"lost_or_stolen_card"}]
+[
+ {
+  "text": "My card still hasn't arrived after 2 weeks. Is it lost?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "What is the difference between standard and express delivery?",
+  "label": "card_delivery_estimate",
+  "llm": null
+ },
+ {
+  "text": "My card is lost! What can I do?",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "I have a card payment that was declined, but why?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "How do I know why my card isn't working?",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Is there a way to know when my card will arrive?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Can it be delivered by a specific date?",
+  "label": "card_delivery_estimate",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "My card appears to be broken how can I fix it?",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "I need my card quickly",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "When would my card be charged an extra fee for a transaction?",
+  "label": "card_payment_fee_charged",
+  "llm": "card_payment_fee_charged"
+ },
+ {
+  "text": "I payed with a card and was charged an extra fee",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "My latest payment was declined, I was told everything was back to working order. What happened?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "my card was not in the mail again can you advise?",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Is there a reason I was charged a fee for using my card as payment? I've never had an extra fee before.",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I made a card payment and a fee is showing up?",
+  "label": "card_payment_fee_charged",
+  "llm": "card_payment_fee_charged"
+ },
+ {
+  "text": "May I choose when it's delivered?",
+  "label": "card_delivery_estimate",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "Help.  I have a stolen card!",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "Why was my card payment declined?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I've been waiting longer than expected for my card.",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Someone stole my card. I need to report it stolen. I made a police report already, but how do I report it with you?",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "I've tried my card a bunch of times and it never worked.",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "I am still waiting for my card after 1 week.  Is this ok?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "How long will it take to get to me?",
+  "label": "card_delivery_estimate",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "How do I report my card stolen?",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "Why doesn't the card payment work",
+  "label": "declined_card_payment",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Help me.  My card doesn't work.",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Can you freeze my card it was stolen",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "How do I unblock my card using the app?",
+  "label": "card_not_working",
+  "llm": null
+ },
+ {
+  "text": "How long will it take for the card to arrive?",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "I got a fee for an ATM withdrawal.",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "My transfer is still pending and I know the account numbers are correct.  Please help.",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "Why did the app deny my top up?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "Can you look at my account ans see why my card was declined",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "My top-up isn't working.",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "My funding to my card didn't go through.",
+  "label": "top_up_failed",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "My credit card was declined.",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "How do I locate my card?",
+  "label": "card_arrival",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "Do you have a list of exchange rates?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "Please advise what is the exchange rate",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "How long can an EU transfer take?",
+  "label": "pending_transfer",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "I still have not received my new card, I ordered over a week ago.",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Does delivery to the US take long?",
+  "label": "card_delivery_estimate",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "How long does a transfer stay pending?",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "Can a card stop working?",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "What is the fee on my card payment?",
+  "label": "card_payment_fee_charged",
+  "llm": "card_payment_fee_charged"
+ },
+ {
+  "text": "The new card that was just sent to me was declined multiple times yesterday when I tried to use it at a restaurant to pay for my dinner.  I am really disappointed  and embarrassed that my card was denied when I tried to use it to pay for my friend's birthday dinner.",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "Why are you declining my payment? Everything was fine.",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "Will I get a curreng foreign exchange rate?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "I was out today looking forward to pay with my new card, turns out the payment just kept getting declined. This is really sad, what's going on?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I submitted my transfer but it has been pending for quite a while and I was wondering what takes so long? why hasn't it completed",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "How do I deal with a stolen card?",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "Can you explain your exchange rate policy to me?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "I topped up but the app did not accept it.",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "I used my card for a purchase and was charged a fee",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "What is the fee charged with this card payment?",
+  "label": "card_payment_fee_charged",
+  "llm": "card_payment_fee_charged"
+ },
+ {
+  "text": "Something is wrong with my payment account since it has been declined",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "How do I find the exchange rate?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "How long for money transfer to show?",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "My card isn't working anymore.",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "im not sure what this charge is for",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I have a top up that didn't go through.  Why?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "I need to know why my credit card was declined for top up? What is the deal here and why did it not go through?",
+  "label": "top_up_failed",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "There is an unauthorized fee.",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "Heyy I tried to top up with my card today but it failed! I just got the couple days before but it has worked last time. What's going on, can you double check please?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "I would appreciate that someone let me know when there is an extra charge for payments. I was checking the app earlier and saying a charge on one of my payments that was additional that no one made me aware of before.",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "still waiting on that card",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Help!  I can't find my card.",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "Can I have my card delivered on a specific day?",
+  "label": "card_delivery_estimate",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "i need my card quick",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "I see some fees for cash withdraw.",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "i have not received my card",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "How do I track my card?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "So, I tried topping up my card for the today. Unfortunately, it failed. A couple of days back I used it and it works fine. Can you double check and tell me what's going on?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "So the transfer finally worked but now it's been pending for quite a long time. How long do you expect me to wait for it? It's quite urgent",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "Is a copy of the police report necessary for completing the report process?",
+  "label": "lost_or_stolen_card",
+  "llm": null
+ },
+ {
+  "text": "I need help with a lost card",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "How long does it take to get my card? Can I choose when to receive it?",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "I'm just wondering when my card will get here.",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "When will the transfer go through?",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "Why hasn't my card been delivered?",
+  "label": "card_arrival",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "Why was my top-up unsuccessful?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "How can I speed up a transfer?  Mine is pending.",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "When can I expect my card to be delivered to the US?",
+  "label": "card_delivery_estimate",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "still waiting on my new card",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "My card does not work",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "I have been waiting longer than expected for my bank card, could you provide information on when it will arrive?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "My card was declined today when eating and I need to know what's wrong.",
+  "label": "card_not_working",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I ordered a card but it has not arrived. Help please!",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Why are fees charged on cash withdrawals? I went to withdraw some money earlier today after shopping. There's a fee that wasn't there before.",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "I transferred money yesterday, but it still isn't available?",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "Why did my cash get charged a fee that should not be there.",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "I need help activating my new card.",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "Is it a good time to exchange?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "Would like to use my card and need to activate it first.  Can you help me do this?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "The app denied my topped up.",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "I'm really stuck. I don't know why but my card payment has not gone through.",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "My card doesn't work.",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "I still don't have my card after 2 weeks.  What should I do?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "I think my card is broken",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Help! Someone stole my card!",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "I know I have enough funds in my account but my card payment hasn't worked for some reason. What do I do?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I can't get my card to work.",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Can you please identify the problem with my bank card?",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Can someone assist me by explaining why my card is not working?",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "My card declined",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "Why caused my top up to not work?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "My top up failed.",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "I believe my card has been stolen, what can I do about this situation? It's urgent.",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "I want to set a new PIN",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "I lost my wallet today with all my credit cards. Will you please block the card and send a replacement?",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "How can I resolve a problem where my card won't go through at all?",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Why was I charged a fee for withdrawing cash?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "Why isn't my card working?",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "My card broke.",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Why was a transaction on my card declined?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "Why did I have to pay extra because I paid with card?",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "A fee was charged for my recent withdrawal.",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "card is lost, please help",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "Is there a location near me that i can change my PIN?",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "I just got my card and want to use it, how do I activate my card?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "How can I get my physical card to work?",
+  "label": "card_not_working",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Please, activate my card",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "I was trying to purchase something at the store today and my card has been declined.  Why has this happened?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "Why did I have to pay more when I do it with my card?",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I show another charge on my card from when I used it, why?",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "My new card keeps getting declined. I was very excited to use it for the first time today. Why is this doing this?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "Can you get me my card fast?",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "How do I update my PIN to a new number?",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "Why was I charged for card payment?",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "When will I get my card?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Why would I be charged a fee for card payment?",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I want to choose a different PIN.",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "Why did I have to pay a fee when I got cash?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "I was charged a fee after using my card and I shouldn't have been.",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I lost my card",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "How long will it take to arrive?",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "I cant find my card, it's gone.",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "I need a new Pin how do I go about that?",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "Is the bank the only place I can change my PIN>",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "What should I do if I lost my card?",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "I live in the US, how long will it take for delivery?",
+  "label": "card_delivery_estimate",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "How might  I change my PIN?",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "How come I was charged extra when I withdrew cash?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "I have been charged a fee for paying with card",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "how to activate card?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "Why is there an extra charge for money that was withdrawn?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "I'm trying to transfer money to another country. It's just pending and not sending. My account details are correct. Please help me.",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "I have a transfer that's pending and wanted to know how long it is going to take to process?",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "what are exchange rates based on",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "Oh no!  I lost my card!  Help!",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "Why did it decline my payment?",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I need my card now!",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "When should I expect my card?",
+  "label": "card_delivery_estimate",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "My card won't work.",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "Do you know if there is a tracking number for the new card you sent me?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Where is my new card? I have been waiting a week!",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Could you please activate my card",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "Do ATM cash withdrawals carry a charge now? They've been free in the past, but all of a sudden I have to pay to make ATM withdrawals?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "Why did my top up not work?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "My card is gone I think it was stolen",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "I need to know your exchange rates.",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "Why am I being charged when I withdraw cash?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "How come you charge for cash withdrawals? I withdrew cash after buying groceries today, and there seems to be a new fee",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "Why is my card not working?",
+  "label": "card_not_working",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "What reason did my top-up fail for?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "What is the process of card activation?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "How long will it take to deliver something to US?",
+  "label": "card_delivery_estimate",
+  "llm": null
+ },
+ {
+  "text": "I received my new card, how is it activated?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "What are your international exchange rates?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "Where do you get your exchange rates from?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "How long do transfer pend for?",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "How long does a card delivery take?",
+  "label": "card_arrival",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "What is the reason for this fee I got after a simple cash withdrawal?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "Do you know why my card payment did not work?",
+  "label": "declined_card_payment",
+  "llm": "card_not_working"
+ },
+ {
+  "text": "How often do your exchange rates change",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "It looks like I was charged a withdrawal fee for going to my ATM. Why is that because I haven't been charged previously for doing so?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "How are exchange rates calculated?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "I can't find my card and think it may have been stolen.",
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "I need it delivered on a certain date.",
+  "label": "card_delivery_estimate",
+  "llm": "card_delivery_estimate"
+ },
+ {
+  "text": "What is this charge on my account for a cash withdrawl?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "Why would my topup not go through?",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "What currencies is an exchange rate calculated in?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "Why are there fees for card usage?",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "I got my new card where do I go to activate it?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "My card has not arrived yet.",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "What kind of cash machines would allow me to change my PIN?",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "How did you come up with your exchange rates?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "Is it normal to have to wait over a week for my new card?",
+  "label": "card_arrival",
+  "llm": "card_arrival"
+ },
+ {
+  "text": "Did you start charging for cash withdrawals? I thought it was free so far but noticed suddendly there is a fee. How much do I need to pay?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "What do I need to do to activate my new card?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "i transfered however its still pending",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "Why was I charged an extra fee when paying with my card?",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "My card was declined in a shop",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "How can I activate my card so I can start using it?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "My payment has been declined, I thought this issue was fixed!",
+  "label": "declined_card_payment",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "Why hasn't my transfer gone through yet?",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "Where do I change my PIN?",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "Why do I get charged additional fees on some payments, but not others?",
+  "label": "card_payment_fee_charged",
+  "llm": "declined_card_payment"
+ },
+ {
+  "text": "If I am overseas, how do I change my pin?",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "Why did I get a fee?",
+  "label": "cash_withdrawal_charge",
+  "llm": "card_payment_fee_charged"
+ },
+ {
+  "text": "I would like to change my card PIN.",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "I would like to change my pin.",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "My new pin needs to be set.",
+  "label": "change_pin",
+  "llm": "change_pin"
+ },
+ {
+  "text": "What are the most current exchange rates?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "what are exchange rates",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "I need to activate my card can you do that now?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "Tell me how to go about activating my new card?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "What's the right way to activate my card?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "Hi, I am calling about a recent transaction that has happened on my account.  I recently went to the ATM, and tried to make a withdrawal on my account.  I just happened to check my transaction slip and noticed a fee for my withdrawal.  How can I resolve this, I didn't know fees were charged for this type of action.",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "I attempted to top up but the app denied it.",
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
+ },
+ {
+  "text": "WHAT CAN I DO AFTER THE CARD MISSING",
+  "label": "activate_my_card",
+  "llm": "lost_or_stolen_card"
+ },
+ {
+  "text": "Is there a fee for withdrawing cash?",
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
+ },
+ {
+  "text": "My transfer is still coming up as pending.",
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
+ },
+ {
+  "text": "Why can't I activate my card?",
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
+ },
+ {
+  "text": "Where do you guys acquire your exchange rate?",
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
+ },
+ {
+  "text": "I've notice I was charged for withdrawing cash, can you explain why?",
+  "label": "cash_withdrawal_charge"
+ },
+ {
+  "text": "My top up didn't work.",
+  "label": "top_up_failed"
+ },
+ {
+  "text": "I desperately need to change my PIN, but I'm overseas on vacation right now. How can I do this?",
+  "label": "change_pin"
+ },
+ {
+  "text": "What is the exchange rate like on this app?",
+  "label": "exchange_rate"
+ },
+ {
+  "text": "I tried activating my bill of fare and it didn't workplace",
+  "label": "activate_my_card"
+ },
+ {
+  "text": "I have a pending transfer",
+  "label": "pending_transfer"
+ },
+ {
+  "text": "I am waiting for a pending money transfer to process.",
+  "label": "pending_transfer"
+ },
+ {
+  "text": "How can I check to see if my top-up worked?",
+  "label": "top_up_failed"
+ },
+ {
+  "text": "How can I change my Tholepin ?",
+  "label": "change_pin"
+ },
+ {
+  "text": "How do I set a new pin?",
+  "label": "change_pin"
+ },
+ {
+  "text": "I'd like to make a new PIN selection.",
+  "label": "change_pin"
+ },
+ {
+  "text": "Why didn`t my topup go through?",
+  "label": "top_up_failed"
+ },
+ {
+  "text": "Can you tell me where you get your exchange rates?",
+  "label": "exchange_rate"
+ },
+ {
+  "text": "In what ATM can I change my pin?",
+  "label": "change_pin"
+ },
+ {
+  "text": "How long will it take to activate my new card?",
+  "label": "activate_my_card"
+ },
+ {
+  "text": "I would like to change my PIN but I am not currently in the country.",
+  "label": "change_pin"
+ },
+ {
+  "text": "Is there a way my new card can be renewed?",
+  "label": "activate_my_card"
+ },
+ {
+  "text": "please tell me why my top-up failed.",
+  "label": "top_up_failed"
+ },
+ {
+  "text": "Why is my transfer not done yet?",
+  "label": "pending_transfer"
+ },
+ {
+  "text": "I had made a transfer but its still pending.",
+  "label": "pending_transfer"
+ },
+ {
+  "text": "Can i change my PIN at the ATM?",
+  "label": "change_pin"
+ },
+ {
+  "text": "What exchange rates do you offer?",
+  "label": "exchange_rate"
+ },
+ {
+  "text": "I did transfer, why is it pending",
+  "label": "pending_transfer"
+ },
+ {
+  "text": "How do I activate a card I received?",
+  "label": "activate_my_card"
+ },
+ {
+  "text": "My entire gym bag, including my wallet, was stolen out of my locker today. Everything in my wallet is gone - how do I block the card to make it can't be used?",
+  "label": "lost_or_stolen_card"
+ }
+]
