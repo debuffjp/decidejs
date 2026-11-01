@@ -15,6 +15,7 @@ Start with the [main README](../README.md) for a five-line example and the headl
 
 - [API reference](api.md): every export of `decidejs` and `decidejs/browser`, and the CLI.
 - [How it works](how-it-works.md): the encoder, the head and each training step, with the numbers behind them.
+- [Moving parts](moving-parts.md): every piece on one page (encoder, scoring, heads, calibration, fallback, worker, isolation, bundlers, caching, head files), where it lives and the numbers behind it.
 - [FAQ](faq.md).
 - [Ready-made heads](../heads/README.md): BANKING77 and CLINC150 heads to try before collecting examples.
 - [Falling back to an LLM](guide-fallback.md): `withFallback()`, learning from the fallback, measured savings.
