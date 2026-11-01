@@ -1,7 +1,7 @@
 // "Two lanes": decidejs answers what it's sure of in milliseconds, sends the rest to a slow LLM, and learns from
 // every answer it gets back. Drawn with spryte. Messages are BANKING77 test queries (CC BY 4.0, PolyAI): twelve card
 // intents close enough to each other that a gut feeling needs help at first. The LLM's answers to them were recorded
-// once from the live endpoint (`llm` in messages.json); only messages typed into the page ask it live.
+// once (`llm` in messages.json), so the page never calls an LLM.
 import { createRenderer } from "spryte";
 import { createWorkerDecider, withFallback, type Head } from "../../src/browser.ts";
 import messages from "./messages.json" with { type: "json" };
@@ -59,7 +59,7 @@ let local = 0, sent = 0, total = 0, labelled = 0, right = 0, firstLocal = 0, aga
 let lessons = 0, retrains = 0, flashAt = -1e9;
 const recent: number[] = [];
 let last: { text: string; top: [Label, number][]; confidence: number } | null = null;
-let status = "Loading the model (first visit: about 34 MB of model)...", liveFailed = false;
+let status = "Loading the model (first visit: about 34 MB of model)...";
 
 function path(x0: number, y0: number, x1: number, y1: number, dur: number, bend = 0): Path {
   const nx = -(y1 - y0), ny = x1 - x0, len = Math.hypot(nx, ny) || 1;
@@ -76,22 +76,12 @@ const topOf = (probs: Record<Label, number>) => (Object.entries(probs) as [Label
 
 // Called by withFallback when decidejs isn't sure. The dot learns its answer as soon as it's known, but the promise
 // resolves only when the lesson chip reaches decidejs, so the retrain lands on screen when the lesson does.
-async function ask(text: string, labels: readonly Label[], localDecision: { probs: Record<Label, number>; confidence: number }) {
+async function ask(text: string, _labels: readonly Label[], localDecision: { probs: Record<Label, number>; confidence: number }) {
   const dot = inFlight.get(text)!;
   dot.via = "llm";
   last = { text, top: topOf(localDecision.probs).slice(0, 3), confidence: localDecision.confidence };
   const lands = wait(3000);
-  if (dot.m.llm !== undefined) dot.choice = dot.m.llm;
-  else {
-    try {
-      const r = await fetch("/api/decidejs/ask", { method: "POST", body: JSON.stringify({ text, labels, descriptions: DESCRIPTIONS }) });
-      if (!r.ok) throw new Error(String(r.status));
-      dot.choice = (await r.json()).label;
-    } catch {
-      liveFailed = true;
-      dot.choice = null;
-    }
-  }
+  dot.choice = dot.m.llm ?? null;
   await lands;
   return dot.choice ?? null;
 }
@@ -117,17 +107,6 @@ function depart(dot: Dot) {
 }
 
 // --- input -----------------------------------------------------------------------------------------------------
-document.getElementById("say")!.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const input = document.getElementById("msg") as HTMLInputElement;
-  const text = input.value.trim();
-  input.value = "";
-  if (!text || inFlight.has(text)) return;
-  // Typed messages jump the queue.
-  const first = dots.findIndex((d) => d.phase === "queued");
-  const dot: Dot = { m: { text, label: null }, idx: -1, again: false, x: QUEUE.x, y: QUEUE.y - 60, colour: C.muted, phase: "queued" };
-  dots.splice(first < 0 ? dots.length : first, 0, dot);
-});
 document.getElementById("speed")!.addEventListener("click", (e) => {
   speed = speed === 1 ? 3 : 1;
   (e.target as HTMLButtonElement).textContent = speed === 1 ? "Faster" : "Slower";
@@ -406,7 +385,6 @@ function render() {
     draw.text(`${Math.round((100 * right) / labelled)}%`, BIN.x, cy + 14, { font: F.big, color: C.text, baseline: "middle" });
     draw.text("on device and LLM answers together", BIN.x, cy + 42, { font: F.m, color: C.muted, baseline: "middle" });
   }
-  if (liveFailed) draw.text("The live LLM isn't reachable from here, so typed messages get no answer", W / 2, H - 8, { font: F.s, color: C.llm, align: "center", baseline: "middle" });
   if (status) draw.text(status, W / 2, H / 2, { font: "15px Geist", color: C.text, align: "center", baseline: "middle" });
   draw.end();
 }

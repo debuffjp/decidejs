@@ -16,12 +16,10 @@
     LLM and learns from the answer: every eight answers it retrains. It starts out knowing only the names of twelve
     card-banking intents.</p>
   <div class="card flush"><canvas id="c"></canvas></div>
-  <form id="say" class="row">
-    <input id="msg" maxlength="200" placeholder="Ask your own card question, like “the ATM ate my card”" autocomplete="off">
-    <button class="primary">Send</button>
+  <div class="row">
     <button type="button" id="pause">Pause</button>
     <button type="button" id="speed">Faster</button>
-  </form>
+  </div>
   <div class="legend">
     <span><i style="background:#cffb2d"></i>answered on device</span>
     <span><i style="background:#ff5c5c"></i>answered on device, disagrees with BANKING77</span>
@@ -30,7 +28,7 @@
   <p class="fine">Messages: BANKING77 test set (PolyAI, CC BY 4.0). The LLM is Llama 3.1 8B on Cloudflare Workers AI, given
     the same one-sentence label descriptions decidejs uses; its answers to these messages were recorded once, so the
     replay is the same for everyone and costs nothing. It agrees with BANKING77's labels on about 89% of them, and
-    decidejs learns its mistakes too. Messages you type ask it live.
+    decidejs learns its mistakes too.
     <a href="https://github.com/debuffjp/decidejs/blob/main/docs/guide-fallback.md">How to do this in your app</a></p>
 </main>
 <script type="module" src="lanes.js"></script>
