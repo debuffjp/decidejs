@@ -2,6 +2,8 @@
 
 A decision model for the browser and Node: it picks one of your labels for a piece of text, with confidence you can trust, and learns from an LLM when it isn't sure. Your labels are the type. No server, no API key.
 
+A System One model in the browser: like TypeSafe's Jev, but on the user's device, so each decision is free, private and a few milliseconds. Jev leaves unsure cases to your code; decidejs can ask an LLM about them and learn from the answers.
+
 ```ts
 import { createDecider } from "decidejs";
 
