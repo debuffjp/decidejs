@@ -1,17 +1,20 @@
 {
   "name": "decidejs",
   "version": "0.1.0",
-  "description": "Typed, calibrated decisions in the browser or Node. Your options are the type; no server, no API key.",
+  "description": "In-browser decision model with calibrated confidence and a typed API. Learns from an LLM when it isn't sure.",
   "license": "MIT",
   "repository": "github:debuffjp/decidejs",
   "keywords": [
+    "decision model",
+    "system one",
     "classification",
     "intent",
     "zero-shot",
+    "calibration",
+    "llm",
     "embeddings",
     "browser",
-    "typescript",
-    "system one"
+    "typescript"
   ],
   "type": "module",
   "exports": {
@@ -64,7 +67,7 @@
   "engines": {
     "node": ">=22.18"
   },
-  "homepage": "https://github.com/debuffjp/decidejs#readme",
+  "homepage": "https://debuff.jp/decidejs/",
   "bugs": "https://github.com/debuffjp/decidejs/issues",
   "bin": {
     "decidejs": "./dist/cli.js"

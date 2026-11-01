@@ -1,6 +1,6 @@
 # decidejs
 
-Typed, calibrated text decisions in the browser or Node. Your labels are the type. No server, no API key.
+A decision model for the browser and Node: it picks one of your labels for a piece of text, with confidence you can trust, and learns from an LLM when it isn't sure. Your labels are the type. No server, no API key.
 
 ```ts
 import { createDecider } from "decidejs";

@@ -68,7 +68,17 @@ target, so it walks into near-misses such as "Pony (disambiguation)"; reading th
 ## Where it falls short
 
 Zero-shot decidejs ranks options by closeness in meaning to one text. It has no plan and no memory of where it has
-been, so in a search it takes near-misses and loops. Trained heads fix this for questions that repeat; for searches,
-the next steps are a reranker that reads the target and the option together, looking one step ahead (decidejs is
-local, so peeking at each candidate's links is cheap) and a teacher. Reports and ideas are welcome in
+been, so in a search it takes near-misses and loops. Trained heads fix this for questions that repeat. For searches,
+we tried two fixes on 20 WikiRace races ([eval/wikirace-strategies.ts](../eval/wikirace-strategies.ts)):
+
+| Strategy | Won | Median hops | Time deciding |
+| --- | --- | --- | --- |
+| Closest link (what `decide()` does) | 17/20 | 5 | 22 s |
+| Cross-encoder rerank of the top 20 | 12/20 | 7 | 35 s |
+| Look one step ahead from the top 5 | 19/20 | 3 | 172 s |
+
+The reranker reads the target and each link together, and still did worse: it was trained on search queries, not on
+Wikipedia titles. Looking ahead (score each of the top five links by its own closeness or its best link's, a little
+discounted) won the most races in the fewest hops. It costs more embedding, which is free on device. To do this with
+switch, ask a question per candidate or wrap the domain so the state carries each candidate's links. Reports and ideas are welcome in
 [Discussions](https://github.com/debuffjp/decidejs/discussions).
