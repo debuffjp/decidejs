@@ -231,11 +231,6 @@ and offline apps, and text that can't leave the device. Details, code and poor f
 | MediaPipe text classifier | yes | no, offline | no | no |
 | LLM structured output (AI SDK `Output.choice`) | no, API | n/a | yes | no |
 
-jimothy reports 92.4% on BANKING77, above our 90.7%. Pick it if you train in Node and want the higher number. Pick
-decidekit if training has to happen in the page, from the user's own data.
-
-[system-one](https://github.com/lukeramsden/system-one) is a different kind of tool: a typed client for hosted System One models (Jev and Laya). It runs no model itself.
-
 ## Docs
 
 [debuff.jp/decide/docs](https://debuff.jp/decide/docs/) (also in [docs/README.md](docs/README.md)) indexes the guides (training, confidence and thresholds, the browser), the
