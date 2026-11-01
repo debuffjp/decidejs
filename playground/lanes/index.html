@@ -11,6 +11,7 @@
   h1 { font-size: 1.3rem; margin: 0 0 4px; } p { color: #a5a8b0; margin: 0 0 12px; }
   canvas { width: 100%; display: block; border-radius: 10px; }
   .row { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+  input { font: inherit; color: inherit; background: #1a1c21; border: 1px solid #2a2d34; border-radius: 6px; padding: 6px 10px; flex: 1; min-width: 200px; }
   button { font: inherit; color: inherit; background: #1a1c21; border: 1px solid #2a2d34; border-radius: 6px; padding: 6px 14px; cursor: pointer; }
   small { color: #8a8d96; } a { color: #cffb2d; }
 </style>
@@ -19,6 +20,7 @@
   <p>decidejs answers what it's sure of in milliseconds, on your device. When it isn't sure, it asks a slow LLM, and
     learns from the answer. It starts knowing only the names of twelve card-banking intents.</p>
   <canvas id="c"></canvas>
+  <form id="say" class="row"><input id="msg" maxlength="200" placeholder="Ask your own card question, e.g. my card got eaten by the ATM" autocomplete="off"><button>Send</button></form>
   <div class="row"><button id="pause">Pause</button><button id="speed">Faster</button></div>
   <small>Green: answered on device and right. Red: answered on device and wrong. Pink: sent to the LLM. Messages from
     BANKING77 (PolyAI, CC BY 4.0). <a href="../">Playground</a> · <a href="https://github.com/debuffjp/decidejs">decidejs</a></small>
