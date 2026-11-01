@@ -296,7 +296,7 @@ function render() {
 
   // decidekit, ringed by the lessons since its last retrain
   const flash = Math.max(0, 1 - (clock - flashAt) / 1000);
-  node(GUT.x, GUT.y, GUT.r, C.gut, "decidekit", "~5 ms · free", flash);
+  node(GUT.x, GUT.y, GUT.r, C.gut, "Decide", "~5 ms · free", flash);
   const pendingLessons = Math.max(0, Math.min(EVERY, lessons - retrains * EVERY));
   for (let i = 0; i < EVERY; i++) {
     const a = -Math.PI / 2 + (i / EVERY) * Math.PI * 2;
@@ -309,7 +309,7 @@ function render() {
   const thinking = dots.some((d) => d.phase === "thinking");
   node(LLM.x, LLM.y, LLM.r, C.llm, "LLM", "~1 s · paid", thinking ? (Math.sin(clock / 140) + 1) / 2 : 0);
   draw.text("unsure? ask", GUT.x + 8, (GUT.y + LLM.y) / 2, { font: F.s, color: hex(C.llm, 0.8), baseline: "middle" });
-  draw.text("answers teach decidekit", LLM.x - 22, (GUT.y + LLM.y) / 2 + 12, { font: F.s, color: hex(C.gut, 0.7), align: "right", baseline: "middle" });
+  draw.text("answers teach Decide", LLM.x - 22, (GUT.y + LLM.y) / 2 + 12, { font: F.s, color: hex(C.gut, 0.7), align: "right", baseline: "middle" });
 
   // bins
   LABELS.forEach((l, i) => {
@@ -342,7 +342,7 @@ function render() {
   // the gut's last call
   if (last) {
     const x = 16, y = 300, w = 236;
-    draw.text("How sure decidekit was", x, y, { font: F.s, color: C.muted, baseline: "middle" });
+    draw.text("How sure Decide was", x, y, { font: F.s, color: C.muted, baseline: "middle" });
     wrap(`“${last.text}”`, F.m, w, 2).forEach((l, i) => draw.text(l, x, y + 18 + i * 16, { font: F.m, color: C.text, baseline: "middle" }));
     const sure = last.confidence >= THRESHOLD;
     last.top.forEach(([l, p], i) => {
