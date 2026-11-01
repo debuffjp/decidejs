@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>decidejs: two lanes</title>
+<style>
+  body { margin: 0; background: #101114; color: #e8e8ea; font: 15px/1.5 system-ui, sans-serif; }
+  main { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; } p { color: #a5a8b0; margin: 0 0 12px; }
+  canvas { width: 100%; display: block; border-radius: 10px; }
+  .row { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+  button { font: inherit; color: inherit; background: #1a1c21; border: 1px solid #2a2d34; border-radius: 6px; padding: 6px 14px; cursor: pointer; }
+  small { color: #8a8d96; } a { color: #cffb2d; }
+</style>
+<main>
+  <h1>A gut feeling that knows when to ask</h1>
+  <p>decidejs answers what it's sure of in milliseconds, on your device. When it isn't sure, it asks a slow LLM, and
+    learns from the answer. It starts knowing only the names of twelve card-banking intents.</p>
+  <canvas id="c"></canvas>
+  <div class="row"><button id="pause">Pause</button><button id="speed">Faster</button></div>
+  <small>Green: answered on device and right. Red: answered on device and wrong. Pink: sent to the LLM. Messages from
+    BANKING77 (PolyAI, CC BY 4.0). <a href="../">Playground</a> · <a href="https://github.com/debuffjp/decidejs">decidejs</a></small>
+</main>
+<script type="module" src="lanes.js"></script>
+</html>
