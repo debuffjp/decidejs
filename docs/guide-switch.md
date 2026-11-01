@@ -75,10 +75,10 @@ we tried two fixes on 20 WikiRace races ([eval/wikirace-strategies.ts](../eval/w
 | --- | --- | --- | --- |
 | Closest link (what `decide()` does) | 17/20 | 5 | 22 s |
 | Cross-encoder rerank of the top 20 | 12/20 | 7 | 35 s |
-| Look one step ahead from the top 5 | 19/20 | 3 | 172 s |
+| Look one step ahead from the top 5 (reads unvisited pages, not allowed in the game) | 19/20 | 3 | 172 s |
 
 The reranker reads the target and each link together, and still did worse: it was trained on search queries, not on
-Wikipedia titles. Looking ahead (score each of the top five links by its own closeness or its best link's, a little
-discounted) won the most races in the fewest hops. It costs more embedding, which is free on device. To do this with
-switch, ask a question per candidate or wrap the domain so the state carries each candidate's links. Reports and ideas are welcome in
+Wikipedia titles. Looking ahead won the most races, but it reads the links of pages it hasn't visited, which neither a player nor
+switch's domain allows, so it isn't a fair comparison with Jev. It shows how much a better sense of "which page leads
+toward the target" is worth: the fair result to beat is 17/20. Reports and ideas are welcome in
 [Discussions](https://github.com/debuffjp/decidejs/discussions).
