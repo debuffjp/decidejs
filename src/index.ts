@@ -232,5 +232,5 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
 }
 
 export { saveHead, loadHead } from "./head-io.ts";
-export { withFallback, type FallbackOptions, type RoutedDecision, type Trainable } from "./fallback.ts";
+export { withFallback, NONE, type FallbackOptions, type RoutedDecision, type Trainable } from "./fallback.ts";
 export { describeLabels, describePrompt, parseDescriptions, type DescribeOptions } from "./describe.ts";

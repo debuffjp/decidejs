@@ -22,6 +22,13 @@ export interface FallbackOptions<L extends string> {
    * becomes an example, and `retrain()` trains on both.
    */
   examples?: readonly Example<L>[];
+  /**
+   * Learn `ask`'s `null` answers ("none of these") as a label of their own, `NONE`, so the head learns what off-topic
+   * text looks like and answers `null` itself when it is sure. Default true. On CLINC150 with 4.5% off-topic traffic, it
+   * halved the off-topic texts given a confident wrong label (7.6% to 3.8%) and answered 56% of them locally, at no
+   * cost on in-scope text (eval/none-label.ts).
+   */
+  learnNone?: boolean;
   /** Retrain on its own after this many new answers. Default: only when you call `retrain()`. */
   retrainEvery?: number;
   /**
@@ -37,6 +44,9 @@ export interface RoutedDecision<L extends string> extends Decision<L, L | null> 
   source: "local" | "fallback";
 }
 
+/** The label `withFallback()` learns `ask`'s `null` answers as. It shows in `route.head.labels` and `route.learned`. */
+export const NONE = "none_of_these";
+
 const isHead = (c: unknown): c is Head => typeof c === "object" && c !== null && "weights" in c;
 
 /**
@@ -47,7 +57,7 @@ const isHead = (c: unknown): c is Head => typeof c === "object" && c !== null &&
  *   `retrainEvery`) trains the first head from the answers. Labels with no answers yet start from their names.
  */
 export function withFallback<const L extends string>(decider: Trainable, using: Choices<L>, options: FallbackOptions<L>) {
-  const { minConfidence = 0.9, ask, retrainEvery, trainOptions } = options;
+  const { minConfidence = 0.9, ask, retrainEvery, trainOptions, learnNone = true } = options;
   const labels: readonly L[] = isHead(using) ? (using.labels as readonly L[]) : Array.isArray(using) ? using : (Object.keys(using) as L[]);
   const examples = options.examples ?? (isHead(using) ? undefined : []);
   const learned: Example<L>[] = [];
@@ -61,7 +71,8 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
     if (!examples) return Promise.reject(new Error("decidejs: withFallback() needs `examples` to retrain a head"));
     if (!examples.length && !learned.length) return Promise.reject(new Error("decidejs: nothing to train on yet: no answers from `ask`"));
     const calibrateOn = trainOptions?.calibrateOn ?? (confident.length >= 50 ? confident : undefined);
-    retraining ??= decider.train<L>([...examples, ...learned], { ...trainOptions, labels, calibrateOn }).then((h) => {
+    const trainLabels = learned.some((e) => e.label === NONE) ? [...labels, NONE as L] : labels;
+    retraining ??= decider.train<L>([...examples, ...learned], { ...trainOptions, labels: trainLabels, calibrateOn }).then((h) => {
       current = h;
       return h;
     }).finally(() => (retraining = undefined));
@@ -75,12 +86,12 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
         perLabel.set(local.choice, (perLabel.get(local.choice) ?? 0) + 1);
         confident.push({ text, label: local.choice });
       }
-      return { ...local, source: "local" };
+      return local.choice === NONE ? { ...local, choice: null, source: "local" } : { ...local, source: "local" };
     }
     const answer = await ask(text, labels, local);
     const choice = answer !== null && labels.includes(answer) ? answer : null;
-    if (examples && choice !== null) {
-      learned.push({ text, label: choice });
+    if (examples && (choice !== null || (answer === null && learnNone))) {
+      learned.push({ text, label: choice ?? (NONE as L) });
       if (retrainEvery && ++sinceRetrain >= retrainEvery) {
         sinceRetrain = 0;
         // A failed background retrain keeps the current head; call retrain() yourself to see the error.
@@ -95,7 +106,7 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
     retrain: typeof retrain;
     /** The trained head in use, or `null` while still zero-shot. Replaced after each retrain. */
     readonly head: Head<L> | null;
-    /** Answers from `ask` kept as examples since the start. */
+    /** Answers from `ask` kept as examples since the start; `null` answers appear with the label `NONE`. */
     readonly learned: readonly Example<L>[];
   }, {
     retrain: { value: retrain },

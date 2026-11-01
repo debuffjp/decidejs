@@ -1,6 +1,6 @@
 // The same decide() and train() as createDecider, running in a Web Worker so the page never freezes.
 export { saveHead, loadHead } from "./head-io.ts";
-export { withFallback, type FallbackOptions, type RoutedDecision, type Trainable } from "./fallback.ts";
+export { withFallback, NONE, type FallbackOptions, type RoutedDecision, type Trainable } from "./fallback.ts";
 export type { Choices, DecideOptions, DeciderOptions, Decision, Example, Head, TrainOptions } from "./index.ts";
 import type { Choices, DecideOptions, DeciderOptions, Decision, Example, Head, TrainOptions } from "./index.ts";
 

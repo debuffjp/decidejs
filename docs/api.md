@@ -340,7 +340,7 @@ Exit codes: 0 on success, 1 on an error (the message goes to stderr), 2 on a usa
 
 ## withFallback() and decidejs/react
 
-`withFallback(decider, head, options)` (from `decidejs` and `decidejs/browser`) is documented in
+`withFallback(decider, head, options)` and its `NONE` label (from `decidejs` and `decidejs/browser`) are documented in
 [guide-fallback.md](guide-fallback.md). `useDecider()` and `useDecision()` (from `decidejs/react`) are documented in
 [guide-react.md](guide-react.md).
 

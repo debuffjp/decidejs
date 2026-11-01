@@ -128,8 +128,28 @@ The cost is on text that fits none of the labels. A head that trusts itself more
 CLINC150's 1,000 out-of-scope test queries, the final heads answered 1.4% (plain), 9.7% (automatic) and 17.7% (2
 checked per label) locally with 0.9 or more, each one a wrong label; zero-shot answered 4.7%. The automatic default is
 about where a head trained on all of CLINC150 sits (10.1% at its best threshold, see
-[guide-confidence.md](guide-confidence.md#none-of-these)). If off-topic text is common in your traffic, add an `other`
-label or raise `minConfidence`. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
+[guide-confidence.md](guide-confidence.md#none-of-these)).
+
+## Off-topic text
+
+When `ask` returns `null` ("none of these"), `withFallback()` keeps the text as an example of a label of its own,
+`NONE` (`"none_of_these"`, exported). The next head learns what off-topic text looks like and answers `null` itself
+when it is sure, without calling `ask`. Turn it off with `learnNone: false`.
+
+Simulated with [eval/none-label.ts](../eval/none-label.ts): CLINC150 from labels with descriptions, 15,000 in-scope
+queries plus 700 out-of-scope ones (4.5%), the LLM wrong on 10% (more on hard texts), scored on 500 held-out
+out-of-scope queries and the in-scope test set:
+
+| | `learnNone: false` (before) | default |
+|---|---|---|
+| Off-topic given a confident wrong label | 7.6% | 3.8% |
+| Off-topic answered `null` locally | 0% | 56% |
+| Off-topic sent to the LLM | 92% | 40% |
+| In-scope sent to the LLM | 25.9% | 24.7% |
+| In-scope wrongly answered `null` | 0% | 0.6% |
+
+Before this default, `null` answers were dropped. `route.head.labels` and `route.learned` now include `NONE` once
+`ask` has returned `null`; `probs` has a `none_of_these` entry. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
 
 ## Options
@@ -140,7 +160,8 @@ on the lanes demo's messages.
 | `ask(text, labels, local)` | required | Returns one of `labels` or `null`; may be async. `local` is the head's own decision. Any other answer counts as `null`. |
 | `examples` | none | The head's training examples. With them, every non-null answer is kept as an example. |
 | `retrainEvery` | none | Retrain in the background after this many new answers. Needs `examples` or labels. |
-| `trainOptions` | `{}` | Passed to `train()` on retrain. |
+| `trainOptions` | `{}` | Passed to `train()` on retrain. Starting from labels, `calibrateOn` defaults to texts zero-shot answered confidently. |
+| `learnNone` | `true` | Learn `null` answers as the label `NONE`, so the head can answer `null` itself. |
 
 The returned function also has:
 

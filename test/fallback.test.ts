@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { withFallback, type Trainable } from "../src/fallback.ts";
+import { NONE, withFallback, type Trainable } from "../src/fallback.ts";
 import type { Choices, Decision, Example, Head, TrainOptions } from "../src/index.ts";
 
 // A decider whose confidence is whatever the text says ("0.95 ..."), so routing is easy to test.
@@ -95,4 +95,23 @@ test("starting from labels, calibrates on zero-shot's confident answers once the
   await mine("0.3 unsure");
   await mine.retrain();
   assert.equal(trainOpts[2].calibrateOn, own);
+});
+
+test("learns null answers as NONE and answers null locally when sure it's none", async () => {
+  const { decider, trained, trainLabels } = fake();
+  const route = withFallback(decider, ["a", "b"], { ask: () => null });
+  assert.equal((await route("0.3 off-topic")).choice, null);
+  assert.deepEqual(route.learned, [{ text: "0.3 off-topic", label: NONE }]);
+  await route.retrain();
+  assert.deepEqual(trainLabels[0], ["a", "b", NONE]);
+  assert.equal(trained[0][0].label, NONE);
+  const sure = await withFallback(decider, head(["a", NONE]), { ask: () => "a" })(`0.95 ${NONE}`);
+  assert.equal(sure.source, "local");
+  assert.equal(sure.choice, null);
+});
+
+test("learnNone: false keeps null answers out", async () => {
+  const route = withFallback(fake().decider, ["a", "b"], { ask: () => null, learnNone: false });
+  await route("0.3 off-topic");
+  assert.equal(route.learned.length, 0);
 });
