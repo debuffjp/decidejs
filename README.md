@@ -77,8 +77,13 @@ const r = await route(text); // r.source: "local" | "fallback"
 ```
 
 Below the threshold, `ask` answers and its answer becomes a training example. Simulated on CLINC150 from 5 examples
-per label, the share sent to the LLM fell from 41% to 14-17% over 10,000 queries while the head went from 86% to 94%. It can also start from labels alone, with no examples:
-[docs/guide-fallback.md](docs/guide-fallback.md).
+per label with an LLM that is always right, the share sent to the LLM fell from 41% to 14-17% over 10,000 queries
+while the head went from 86% to 94%. With real Llama 3.1 8B answers, starting from 12 described labels alone, it fell
+from 30% to 19%.
+
+Real LLMs are sometimes wrong, and `withFallback()` is built for that: it sets its confidence on its own sure answers
+rather than the LLM's, and learns the LLM's "none of these" (`null`) as a label, `NONE`, so it can say `null` itself
+for off-topic text. Details and numbers: [docs/guide-fallback.md](docs/guide-fallback.md).
 
 ## switch
 
