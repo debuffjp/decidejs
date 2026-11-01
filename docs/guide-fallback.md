@@ -117,7 +117,12 @@ averaged); with a perfect LLM it sends a few points more, with a real one far le
 Real LLM mistakes cluster on hard texts, which are the ones `withFallback()` sends. With `HARD=1` the chance of a
 wrong answer grows as zero-shot's confidence falls, keeping 10% wrong over all texts (13 to 16% of what was sent).
 Last 4 rounds, sent and answered right: plain 47% and 92.5%, automatic 33% and 93%, 2 checked per label 23% and
-93.5%; zero-shot alone 58% and 87%. The order holds. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
+93.5%; zero-shot alone 58% and 87%. The order holds.
+
+The same on CLINC150 (`DATASET=clinc150`: 15,000 queries, 150 labels, `HARD=1`, 10% wrong; last 4 rounds): plain
+43% sent and 93.4% right, automatic 21% and 95.4%, 2 checked per label 20% and 95.5%; zero-shot alone 44% and 89%.
+Here the automatic default matched hand-checked examples. Final heads on the test set: 93.3%, 91.8% and 93.6% (fewer
+answers sent means fewer learned). Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
 
 ## Options

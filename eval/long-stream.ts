@@ -4,7 +4,8 @@
 // small-head floor 0.5). The stand-in LLM is wrong on NOISE of the messages it is sent, answering zero-shot's best label
 // that isn't the true one (real Llama 3.1 8B mistakes were 97% in the head's top 3; on messages Decide found hard,
 // 8B with descriptions was right 62.5% of the time). Reports per round the share sent, accuracy of what was answered and
-// the same for zero-shot alone, plus the final head on the BANKING77 test set. CAL=k sets aside k correctly labelled
+// the same for zero-shot alone, plus the final head on the BANKING77 test set. DATASET=clinc150 streams CLINC150's
+// 15,000 training queries (150 labels) instead. CAL=k sets aside k correctly labelled
 // examples per label (kept out of the stream) and fits each head's temperature on them, as train()'s calibrateOn does.
 // SELF=k needs no labels: it keeps up to k stream messages per label that zero-shot answered with confidence 0.9 or
 // more, labelled with zero-shot's answer, and calibrates on those. HARD=1 makes mistakes depend on difficulty: a text's
@@ -18,9 +19,11 @@ import { fitHead, logits, softmax } from "../src/head.ts";
 import { kShot, loadData, seeded } from "./data.ts";
 
 const noise = Number(process.env.NOISE ?? 0), cal = Number(process.env.CAL ?? 0), self = Number(process.env.SELF ?? 0), hard = process.env.HARD === "1", ROUND = 1000;
-const { banking } = await loadData();
+const which = process.env.DATASET === "clinc150" ? "clinc150" : "banking77";
+const loaded = await loadData();
+const banking = which === "clinc150" ? loaded.clinc : loaded.banking;
 const labels = [...new Set(banking.train.map((r) => r.label))].sort();
-const descriptions: Record<string, string> = JSON.parse(await readFile("eval/descriptions-banking77.json", "utf8"));
+const descriptions: Record<string, string> = JSON.parse(await readFile(`eval/descriptions-${which}.json`, "utf8"));
 const d = await createDecider();
 const cache: Record<string, number[]> = JSON.parse(await readFile(`data/emb-${d.model.replace(/\W/g, "_")}.json`, "utf8"));
 const missing = [...banking.train, ...banking.test].map((r) => r.text).filter((t) => !cache[t]);
@@ -61,7 +64,7 @@ for (let r = 0; r * ROUND < stream.length; r++) {
     learned.push({ x, y });
   }
   const n = Math.min(ROUND, stream.length - r * ROUND);
-  const line = { date: "2026-11-01", noise, hard, cal, self, selfSet: selfSet.length, selfWrong: +(selfSet.filter((e) => !e.right).length / Math.max(1, selfSet.length)).toFixed(3), round: r + 1, learned: learned.length, learnedWrong: +(wrong / Math.max(1, learned.length)).toFixed(3), sent: +(sent / n).toFixed(3), right: +(right / n).toFixed(3), zeroShotSent: +(zSent / n).toFixed(3), zeroShotRight: +(zRight / n).toFixed(3) };
+  const line = { date: "2026-11-01", dataset: which, noise, hard, cal, self, selfSet: selfSet.length, selfWrong: +(selfSet.filter((e) => !e.right).length / Math.max(1, selfSet.length)).toFixed(3), round: r + 1, learned: learned.length, learnedWrong: +(wrong / Math.max(1, learned.length)).toFixed(3), sent: +(sent / n).toFixed(3), right: +(right / n).toFixed(3), zeroShotSent: +(zSent / n).toFixed(3), zeroShotRight: +(zRight / n).toFixed(3) };
   console.log(JSON.stringify(line));
   await appendFile("eval/results-long-stream.jsonl", JSON.stringify(line) + "\n");
   const calibration = cal ? { X: calSet.map((r) => cache[r.text]), y: calSet.map((r) => labels.indexOf(r.label)) }
@@ -69,6 +72,6 @@ for (let r = 0; r * ROUND < stream.length; r++) {
   head = await fitHead(learned.map((l) => l.x), learned.map((l) => l.y), labels, { seed: 7 }, names, 1, undefined, 0.5, calibration);
 }
 const test = (h: Head | null) => +(banking.test.filter((q) => top(predict(h, cache[q.text])) === labels.indexOf(q.label)).length / banking.test.length).toFixed(3);
-const line = { date: "2026-11-01", noise, hard, cal, self, final: true, headOnTest: test(head), zeroShotOnTest: test(null) };
+const line = { date: "2026-11-01", dataset: which, noise, hard, cal, self, final: true, headOnTest: test(head), zeroShotOnTest: test(null) };
 console.log(JSON.stringify(line));
 await appendFile("eval/results-long-stream.jsonl", JSON.stringify(line) + "\n");
