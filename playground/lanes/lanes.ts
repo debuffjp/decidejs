@@ -27,6 +27,7 @@ const sparks: { x: number; y: number; tx: number; ty: number; t: number }[] = []
 let local = 0, sent = 0, right = 0, total = 0, learned = 0, llmMode: "live" | "simulated" = "live";
 const recent: number[] = []; // 1 = sent to the LLM, per message, for the chart
 let status = "Loading the model (first visit: about 36 MB)...";
+let last1: { text: string; choice: string; confidence: number } | null = null;
 let speed = 1, next = 0, paused = false;
 
 // --- decisions -------------------------------------------------------------------------------------------------
@@ -60,6 +61,7 @@ async function decide(dot: Dot) {
   const t0 = performance.now();
   const r = await route(dot.text);
   total++;
+  last1 = { text: dot.text, choice: NAMES[(r.choice ?? dot.label) as Label] ?? "", confidence: r.confidence };
   const viaLlm = r.source === "fallback";
   recent.push(viaLlm ? 1 : 0);
   if (viaLlm) {
@@ -81,7 +83,7 @@ async function decide(dot: Dot) {
 
 // --- input -----------------------------------------------------------------------------------------------------
 function spawn(text: string, label: Label) {
-  const dot: Dot = { text, label, x: -40, y: 40 + Math.random() * 40, tx: GUT.x - 60, ty: GUT.y, speed: 0.08, phase: "in", colour: C.muted };
+  const dot: Dot = { text, label, x: -40, y: 40 + Math.random() * 40, tx: GUT.x - 140, ty: GUT.y, speed: 0.08, phase: "in", colour: C.muted };
   dots.push(dot);
 }
 let queue = 0;
@@ -93,6 +95,8 @@ document.getElementById("pause")!.addEventListener("click", (e) => {
   paused = !paused;
   (e.target as HTMLButtonElement).textContent = paused ? "Play" : "Pause";
 });
+
+await Promise.all(["400 12px Geist", "600 16px Geist", "12px 'Geist Mono'"].map((f) => document.fonts.load(f))).catch(() => {});
 
 // --- drawing ---------------------------------------------------------------------------------------------------
 const canvas = document.getElementById("c") as HTMLCanvasElement;
@@ -117,8 +121,8 @@ function box(x: number, y: number, title: string, sub: string, colour: string, p
   if (pulse) draw.circle(x, y, 58 + pulse * 6, colour + "22");
   draw.circle(x, y, 52, C.panel);
   draw.circle(x, y, 46, colour + "33");
-  draw.text(title, x, y - 8, { font: "600 16px system-ui", color: C.text, align: "center", baseline: "middle" });
-  draw.text(sub, x, y + 12, { font: "11px system-ui", color: C.muted, align: "center", baseline: "middle" });
+  draw.text(title, x, y - 8, { font: "600 16px Geist", color: C.text, align: "center", baseline: "middle" });
+  draw.text(sub, x, y + 12, { font: "11px Geist", color: C.muted, align: "center", baseline: "middle" });
 }
 
 let last = performance.now();
@@ -162,11 +166,23 @@ function frame(now: number) {
   const thinking = dots.some((d) => d.phase === "thinking");
   box(GUT.x, GUT.y, "decidejs", "gut: ~5 ms, free", C.gut);
   box(LLM.x, LLM.y, "LLM", "thinks: ~1 s, per call", C.llm, thinking ? (Math.sin(now / 120) + 1) / 2 : 0);
-  draw.text(`learned ${learned}`, GUT.x, GUT.y - 70, { font: "13px system-ui", color: C.gut, align: "center" });
+  draw.text(`learned ${learned}`, GUT.x, GUT.y - 70, { font: "13px Geist", color: C.gut, align: "center" });
+  // the gut's last call: how sure it was, against the line where it asks for help
+  if (last1) {
+    const gx = 40, gy = 250, gw = 200, sure = last1.confidence >= 0.9;
+    draw.text("last message", gx, gy, { font: "11px Geist", color: C.muted, baseline: "middle" });
+    draw.text(clip(last1.text, 30), gx, gy + 18, { font: "12px Geist", color: C.text, baseline: "middle" });
+    draw.text(`gut says: ${last1.choice}`, gx, gy + 36, { font: "12px Geist", color: sure ? C.gut : C.llm, baseline: "middle" });
+    draw.rect(gx, gy + 50, gw, 8, C.panel);
+    draw.rect(gx, gy + 50, gw * last1.confidence, 8, sure ? C.gut : C.llm);
+    draw.rect(gx + gw * 0.9, gy + 46, 2, 16, C.text);
+    draw.text(`${Math.round(last1.confidence * 100)}% sure`, gx, gy + 72, { font: "12px 'Geist Mono'", color: C.text, baseline: "middle" });
+    draw.text(sure ? "answers itself" : "below 90%: asks the LLM", gx + gw, gy + 72, { font: "11px Geist", color: sure ? C.gut : C.llm, align: "right", baseline: "middle" });
+  }
   // bins
   LABELS.forEach((l, i) => {
     const y = binY(i);
-    draw.text(NAMES[l], BIN_X, y - 9, { font: "12px system-ui", color: C.muted, baseline: "middle" });
+    draw.text(NAMES[l], BIN_X, y - 9, { font: "12px Geist", color: C.muted, baseline: "middle" });
     binned[i].slice(-30).forEach((b, j) => draw.circle(BIN_X + 5 + j * 10, y + 7, 4, b.colour));
   });
   // learning sparks, LLM to decidejs
@@ -177,23 +193,23 @@ function frame(now: number) {
   // messages
   for (const dot of dots) {
     if (dot.phase === "in" || dot.phase === "gut") {
-      const text = clip(dot.text, 26), w = draw.measure(text, "12px system-ui").w + 18;
+      const text = clip(dot.text, 26), w = draw.measure(text, "12px Geist").w + 18;
       pill(dot.x - w / 2, dot.y - 11, w, 22, C.panel);
-      draw.text(text, dot.x, dot.y, { font: "12px system-ui", color: C.text, align: "center", baseline: "middle" });
+      draw.text(text, dot.x, dot.y, { font: "12px Geist", color: C.text, align: "center", baseline: "middle" });
     } else draw.circle(dot.x, dot.y, 6, dot.colour);
   }
   // counters and chart
   const share = total ? Math.round((100 * sent) / total) : 0;
-  draw.text(`${total} messages · ${local} answered on device · ${sent} sent to the LLM (${share}%) · ${total ? Math.round((100 * right) / total) : 0}% right`, 20, 26, { font: "14px system-ui", color: C.text });
-  draw.text("Sent to the LLM, last 20 messages", 20, 462, { font: "12px system-ui", color: C.muted, baseline: "middle" });
+  draw.text(`${total} message${total === 1 ? "" : "s"} · ${local} answered on device · ${sent} sent to the LLM (${share}%) · ${total ? Math.round((100 * right) / total) : 0}% right`, 20, 26, { font: "14px Geist", color: C.text });
+  draw.text("Sent to the LLM, last 20 messages", 20, 462, { font: "12px Geist", color: C.muted, baseline: "middle" });
   draw.rect(20, 476, 220, 48, C.panel);
   const pts: number[] = [];
   for (let i = 20; i <= recent.length; i += 2) pts.push(recent.slice(i - 20, i).reduce((a, b) => a + b, 0) / 20);
   pts.slice(-55).forEach((p, i, a) => i && draw.line(20 + (i - 1) * 4, 520 - a[i - 1] * 40, 20 + i * 4, 520 - p * 40, 2, C.llm));
-  draw.text("100%", 244, 480, { font: "10px system-ui", color: C.muted, baseline: "middle" });
-  draw.text("0%", 244, 520, { font: "10px system-ui", color: C.muted, baseline: "middle" });
-  if (llmMode === "simulated") draw.text("LLM simulated here: the true label stands in", 20, 446, { font: "11px system-ui", color: C.llm, baseline: "middle" });
-  if (status) draw.text(status, W / 2, H / 2, { font: "16px system-ui", color: C.text, align: "center" });
+  draw.text("100%", 244, 480, { font: "10px Geist", color: C.muted, baseline: "middle" });
+  draw.text("0%", 244, 520, { font: "10px Geist", color: C.muted, baseline: "middle" });
+  if (llmMode === "simulated") draw.text("LLM simulated here: the true label stands in", 20, 48, { font: "11px Geist", color: C.llm, baseline: "middle" });
+  if (status) draw.text(status, W / 2, H / 2, { font: "16px Geist", color: C.text, align: "center" });
   draw.end();
   requestAnimationFrame(frame);
 }
