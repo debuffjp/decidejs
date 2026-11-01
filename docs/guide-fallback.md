@@ -170,6 +170,14 @@ Before this default, `null` answers were dropped. `route.head.labels` and `route
 `ask` has returned `null`; `probs` has a `none_of_these` entry. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
 
+On CLINC150's 150 labels (eval/none-label.ts, one seed, a stand-in LLM that says `null` only for off-topic text),
+the 0.6 gate keeps the safety gain: 4.4% of held-out off-topic texts got a confident wrong label, against 3.8% with
+no gate and 7.6% without `NONE`. It costs local "none" answers: 24% of off-topic texts against 56% ungated, because
+with many labels off-topic text sits closer to some label. Raising `noneBelow` to 0.65 or 0.7 brings that back to
+51 to 56% but sent 4 to 5 points more in-scope text. The stand-in never says `null` for in-scope text, which real
+LLMs do, so this measures only the gate's cost. With many labels and an LLM you trust to say `null` only for
+off-topic text, try `noneBelow: 0.7`.
+
 ## Options
 
 | Option | Default | |

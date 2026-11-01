@@ -7,6 +7,7 @@
 //   off   thrown away (withFallback today)
 //   label learned as an extra label; a confident "none" is answered locally as null
 //   ask   learned as an extra label, but a text whose best label is "none" is always sent
+// CUT learns a null only when the text's best similarity to any label is below it (withFallback's noneBelow).
 //   NONE=label node --experimental-strip-types eval/none-label.ts
 import { appendFile, readFile } from "node:fs/promises";
 import { createDecider } from "../src/index.ts";
@@ -14,7 +15,7 @@ import { fitHead, logits, softmax } from "../src/head.ts";
 import { seeded } from "./data.ts";
 
 type Row = { text: string; label: string };
-const mode = process.env.NONE ?? "off", ROUND = 1000, NOISE = 0.1;
+const mode = process.env.NONE ?? "off", ROUND = 1000, NOISE = 0.1, CUT = Number(process.env.CUT ?? 0);
 const raw = JSON.parse(await readFile("data/clinc150.json", "utf8"));
 const rows = (a: [string, string][]): Row[] => a.map(([text, label]) => ({ text, label }));
 const train = rows(raw.train), test = rows(raw.test), oosTest = rows(raw.oos_test);
@@ -29,6 +30,7 @@ const names = await d.embed(labels.map((l) => l.replace(/_/g, " ")));
 const descs = await d.embed(labels.map((l) => descriptions[l]));
 const [noneName] = await d.embed(["none of these, off topic"]);
 const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0);
+const nearest = (x: number[]) => Math.max(...labels.map((_, c) => Math.max(dot(names[c], x), dot(descs[c], x))));
 const zeroShot = (x: number[]) => softmax(labels.map((_, c) => Math.max(dot(names[c], x), dot(descs[c], x))), 0.025);
 type Head = Awaited<ReturnType<typeof fitHead>>;
 const NONE = labels.length; // index of the extra label when learning nulls
@@ -64,7 +66,7 @@ for (let r = 0; r * ROUND < stream.length; r++) {
       const errs = teacher() < Math.min(0.9, (NOISE * (1 - z[top(z)])) / meanDoubt);
       answer = !errs ? truth : z.map((v, c) => [v, c]).sort((a, b) => b[0] - a[0]).find(([, c]) => c !== truth)![1];
       if (answer >= 0) learned.push({ x, y: answer });
-      else if (mode !== "off") learned.push({ x, y: NONE });
+      else if (mode !== "off" && (!CUT || nearest(x) < CUT)) learned.push({ x, y: NONE });
     } else {
       if (q.oos && answer >= 0) oosLabelled++;
       if (!q.oos && answer === -1) inNone++;
@@ -88,6 +90,6 @@ const outcome = (rs: Row[], oos: boolean) => {
       : { rightLocally: +(ds.filter((x, i) => x.local && x.answer === labels.indexOf(rs[i].label)).length / rs.length).toFixed(3), noneLocally: +(local.filter((x) => x.answer === -1).length / rs.length).toFixed(3) }),
   };
 };
-const line = { date: "2026-11-01", mode, final: true, inScopeTest: outcome(test, false), heldOutOos: outcome(heldOos, true) };
+const line = { date: "2026-11-01", mode, cut: CUT || undefined, final: true, inScopeTest: outcome(test, false), heldOutOos: outcome(heldOos, true) };
 console.log(JSON.stringify(line));
 await appendFile("eval/results-none-label.jsonl", JSON.stringify(line) + "\n");
