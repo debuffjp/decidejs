@@ -2,7 +2,7 @@
 // temperature, prior weight, small-head floor) hold? Runs the public API end to end: zero-shot from label names, heads
 // on 1, 5 and 10 examples per label (3 seeds) and on all 8,954 training examples, scored on the 1,076 test queries.
 // Data: the DNNC/CPFT split (github.com/jianguoz/Few-Shot-Intent-Detection, Datasets/HWU64), saved under data/hwu64.
-//   node --experimental-strip-types eval/hwu64.ts
+//   [MODEL=id] node --experimental-strip-types eval/hwu64.ts
 import { appendFile, readFile } from "node:fs/promises";
 import { createDecider, type Example } from "../src/index.ts";
 import { kShot } from "./data.ts";
@@ -14,7 +14,7 @@ const split = async (s: string) => {
 };
 const train = await split("train"), test = await split("test");
 const labels = [...new Set(train.map((r) => r.label))].sort();
-const d = await createDecider();
+const d = await createDecider({ model: process.env.MODEL });
 
 const ece = (s: { right: boolean; confidence: number }[]) => {
   const bins = Array.from({ length: 15 }, () => ({ n: 0, conf: 0, right: 0 }));

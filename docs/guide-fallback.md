@@ -122,7 +122,14 @@ Last 4 rounds, sent and answered right: plain 47% and 92.5%, automatic 33% and 9
 The same on CLINC150 (`DATASET=clinc150`: 15,000 queries, 150 labels, `HARD=1`, 10% wrong; last 4 rounds): plain
 43% sent and 93.4% right, automatic 21% and 95.4%, 2 checked per label 20% and 95.5%; zero-shot alone 44% and 89%.
 Here the automatic default matched hand-checked examples. Final heads on the test set: 93.3%, 91.8% and 93.6% (fewer
-answers sent means fewer learned). Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
+answers sent means fewer learned).
+
+The cost is on text that fits none of the labels. A head that trusts itself more is also surer about those: of
+CLINC150's 1,000 out-of-scope test queries, the final heads answered 1.4% (plain), 9.7% (automatic) and 17.7% (2
+checked per label) locally with 0.9 or more, each one a wrong label; zero-shot answered 4.7%. The automatic default is
+about where a head trained on all of CLINC150 sits (10.1% at its best threshold, see
+[guide-confidence.md](guide-confidence.md#none-of-these)). If off-topic text is common in your traffic, add an `other`
+label or raise `minConfidence`. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
 
 ## Options

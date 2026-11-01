@@ -3,7 +3,7 @@
 // then heads on 8 and 32 examples per label (3 seeds each), scored on 2,000 seeded test rows. Rows come from the
 // Hugging Face datasets server and are cached under data/mteb. Not MTEB's own protocol (logistic regression on
 // undersampled training data), so the numbers are not comparable with its leaderboard.
-//   node --experimental-strip-types eval/mteb.ts emotion|toxic|tweet|agnews
+//   [MODEL=id] node --experimental-strip-types eval/mteb.ts emotion|toxic|tweet|agnews
 import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { createDecider, type Example } from "../src/index.ts";
 import { kShot, seeded } from "./data.ts";
@@ -48,7 +48,7 @@ async function rows(split: string): Promise<Example<string>[]> {
 
 const train = await rows("train"), test = (await rows("test")).slice(0, 2000);
 const labels = [...new Set([...train, ...test].map((r) => r.label))].sort();
-const d = await createDecider();
+const d = await createDecider({ model: process.env.MODEL });
 const ece = (s: { right: boolean; confidence: number }[]) => {
   const bins = Array.from({ length: 15 }, () => ({ n: 0, conf: 0, right: 0 }));
   for (const x of s) { const b = bins[Math.min(14, Math.floor(x.confidence * 15))]; b.n++; b.conf += x.confidence; b.right += x.right ? 1 : 0; }
