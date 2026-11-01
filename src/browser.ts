@@ -43,7 +43,7 @@ export async function createWorkerDecider({ onProgress, ...options }: DeciderOpt
       call<Head<L>>("train", { args: [examples, opts] }, (p) => onEpoch?.(p.epoch, p.accuracy)),
     terminate: () => {
       worker.terminate();
-      for (const p of pending.values()) p.reject(new Error("decidejs: the worker was terminated"));
+      for (const p of pending.values()) p.reject(new Error("decidekit: the worker was terminated"));
       pending.clear();
     },
   };

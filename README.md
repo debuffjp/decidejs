@@ -1,15 +1,15 @@
-# decidejs
+# decidekit
 
-[![npm](https://img.shields.io/npm/v/decidejs?color=cffb2d&labelColor=11140d)](https://www.npmjs.com/package/decidejs) [![ci](https://github.com/debuffjp/decidejs/actions/workflows/ci.yml/badge.svg)](https://github.com/debuffjp/decidejs/actions/workflows/ci.yml) [![MIT](https://img.shields.io/badge/licence-MIT-cffb2d?labelColor=11140d)](LICENSE) [![Discord](https://img.shields.io/badge/discord-debuff-a78bfa?labelColor=11140d)](https://discord.gg/jshbDHSpCY)
+[![npm](https://img.shields.io/npm/v/decidekit?color=cffb2d&labelColor=11140d)](https://www.npmjs.com/package/decidekit) [![ci](https://github.com/debuffjp/decidekit/actions/workflows/ci.yml/badge.svg)](https://github.com/debuffjp/decidekit/actions/workflows/ci.yml) [![MIT](https://img.shields.io/badge/licence-MIT-cffb2d?labelColor=11140d)](LICENSE) [![Discord](https://img.shields.io/badge/discord-debuff-a78bfa?labelColor=11140d)](https://discord.gg/jshbDHSpCY)
 
-**[Try it in your browser](https://debuff.jp/decidejs/playground/)** · [Watch it learn from an LLM](https://debuff.jp/decidejs/lanes/) · [Launch post](https://debuff.jp/blog/introducing-decidejs) · [Research: when the LLM is wrong](https://debuff.jp/research/learning-from-a-noisy-llm)
+**[Try it in your browser](https://debuff.jp/decidekit/playground/)** · [Watch it learn from an LLM](https://debuff.jp/decidekit/lanes/) · [Launch post](https://debuff.jp/blog/introducing-decidekit) · [Research: when the LLM is wrong](https://debuff.jp/research/learning-from-a-noisy-llm)
 
 A decision model for the browser and Node: it picks one of your labels for a piece of text, with confidence you can trust, and learns from an LLM when it isn't sure. Your labels are the type. No server, no API key.
 
-A System One model in the browser: like TypeSafe's Jev, but on the user's device, so each decision is free, private and a few milliseconds. Jev leaves unsure cases to your code; decidejs can ask an LLM about them and learn from the answers.
+A System One model in the browser: like TypeSafe's Jev, but on the user's device, so each decision is free, private and a few milliseconds. Jev leaves unsure cases to your code; decidekit can ask an LLM about them and learn from the answers. decidekit is an independent project, not affiliated with TypeSafe.
 
 ```ts
-import { createDecider } from "decidejs";
+import { createDecider } from "decidekit";
 
 const d = await createDecider();
 const r = await d.decide("my card never arrived", ["card_arrival", "refund", "other"]);
@@ -39,7 +39,7 @@ A head is a small layer trained on your examples: 156 KB for 77 labels. Train it
 file, or train it in the page.
 
 ```ts
-import { createDecider, saveHead, loadHead } from "decidejs";
+import { createDecider, saveHead, loadHead } from "decidekit";
 
 const d = await createDecider();
 const head = await d.train(examples); // { text, label }[]
@@ -57,8 +57,8 @@ so `confidence` is calibrated: of the answers given at 0.9, about 90% are right.
 Or train from the command line and ship the file:
 
 ```sh
-npx decidejs train examples.csv -o intent.head.json   # CSV with text,label columns, or JSONL
-npx decidejs decide intent.head.json "my card never arrived"
+npx decidekit train examples.csv -o intent.head.json   # CSV with text,label columns, or JSONL
+npx decidekit decide intent.head.json "my card never arrived"
 ```
 
 Add `--types` to also write `intent.head.labels.ts`, so `loadHead<Label>(json)` types the choice as your labels.
@@ -93,10 +93,10 @@ for off-topic text. Details and numbers: [docs/guide-fallback.md](docs/guide-fal
 
 ## Coming from Jev
 
-`decidejs/typesafe` has the shape of TypeSafe's SDK, for Choice questions:
+`decidekit/typesafe` has the shape of TypeSafe's SDK, for Choice questions:
 
 ```ts
-import { choice, typesafeClient } from "decidejs/typesafe";
+import { choice, typesafeClient } from "decidekit/typesafe";
 
 const client = typesafeClient(await createDecider());
 const { answers } = await client.systemOne({
@@ -109,13 +109,13 @@ The [guide](docs/guide-typesafe.md) covers what differs, including what `confide
 
 ## switch
 
-`decidejs/switch` makes decidejs a decision model for [switch](https://github.com/osolmaz/switch), the harness that
+`decidekit/switch` makes decidekit a decision model for [switch](https://github.com/osolmaz/switch), the harness that
 runs a decision model through a task. Zero-shot, it won two of the three WikiRace races from switch's example on a
 laptop CPU. See the [switch guide](docs/guide-switch.md).
 
 ## React
 
-`useDecider()` and `useDecision(decider, text, labels)` from `decidejs/react`: [docs/guide-react.md](docs/guide-react.md).
+`useDecider()` and `useDecision(decider, text, labels)` from `decidekit/react`: [docs/guide-react.md](docs/guide-react.md).
 
 ## In the browser
 
@@ -123,7 +123,7 @@ Use the worker version. The encoder blocks whatever thread it runs on (we measur
 on the main thread; in a worker the page's longest stall was 18 ms).
 
 ```ts
-import { createWorkerDecider, loadHead } from "decidejs/browser";
+import { createWorkerDecider, loadHead } from "decidekit/browser";
 
 const head = loadHead(await (await fetch("/intent.head.json")).text());
 const d = await createWorkerDecider({
@@ -132,7 +132,7 @@ const d = await createWorkerDecider({
 const r = await d.decide(text, head);
 ```
 
-Import `loadHead` from `decidejs/browser` too, not from `decidejs`: that keeps the encoder out of your page bundle.
+Import `loadHead` from `decidekit/browser` too, not from `decidekit`: that keeps the encoder out of your page bundle.
 
 Tested from npm in Vite 7, webpack 5 and Next.js 16 apps; see [docs/bundlers.md](docs/bundlers.md) for the config, including a one-line alias
 that halves the wasm download. Serve the page cross-origin isolated if you can:
@@ -192,9 +192,9 @@ Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run`
 
 ## Playground
 
-Try it at [debuff.jp/decidejs](https://debuff.jp/decidejs/). To run it locally: `npm run playground`, then serve `playground/dist` cross-origin isolated (`node bench/serve.mjs` style headers).
+Try it at [debuff.jp/decidekit](https://debuff.jp/decidekit/). To run it locally: `npm run playground`, then serve `playground/dist` cross-origin isolated (`node bench/serve.mjs` style headers).
 Try zero-shot labels, the ready-made heads, a head trained in the page and "none of these".
-[Two lanes](https://debuff.jp/decidejs/lanes/) shows `withFallback` live: decidejs starts from twelve label names,
+[Two lanes](https://debuff.jp/decidekit/lanes/) shows `withFallback` live: decidekit starts from twelve label names,
 asks a small LLM when it's unsure, learns from each answer, and replays the first 20 messages at the end.
 
 ## Ready-made heads
@@ -213,7 +213,7 @@ and offline apps, and text that can't leave the device. Details, code and poor f
 
 | | Runs in the browser | Trains in the browser | Typed result | Calibrated confidence |
 |---|---|---|---|---|
-| decidejs | yes (worker) | yes | yes | trained heads |
+| decidekit | yes (worker) | yes | yes | trained heads |
 | [jimothy](https://www.npmjs.com/package/jimothy) | inference (worker) | no, Node | yes | yes |
 | [Jev](https://typesafe.ai/) (TypeSafe) | no, API | no | yes | yes |
 | transformers.js zero-shot pipeline | yes | no | no | no |
@@ -221,7 +221,7 @@ and offline apps, and text that can't leave the device. Details, code and poor f
 | LLM structured output (AI SDK `Output.choice`) | no, API | n/a | yes | no |
 
 jimothy reports 92.4% on BANKING77, above our 90.7%. Pick it if you train in Node and want the higher number. Pick
-decidejs if training has to happen in the page, from the user's own data.
+decidekit if training has to happen in the page, from the user's own data.
 
 ## Docs
 
@@ -230,7 +230,7 @@ API reference, how it works and the FAQ.
 
 ## Community
 
-Questions and show-and-tell in [Discussions](https://github.com/debuffjp/decidejs/discussions), chat in the
+Questions and show-and-tell in [Discussions](https://github.com/debuffjp/decidekit/discussions), chat in the
 [debuff Discord](https://discord.gg/jshbDHSpCY). Results on your own data, good or bad, help most: there's an
 issue template for them. See [CONTRIBUTING.md](CONTRIBUTING.md).
 

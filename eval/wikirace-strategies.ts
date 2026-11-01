@@ -1,4 +1,4 @@
-// WikiRace strategies for decidejs: 20 races between Wikipedia articles, every link offered at each step, the
+// WikiRace strategies for decidekit: 20 races between Wikipedia articles, every link offered at each step, the
 // target's first sentences as the query. The first three are switch's WikiRace cases (github.com/osolmaz/switch), where
 // Jev took 6 hops, 3 hops and gave up. Pages are cached in data/wiki/, so runs repeat and only the first reads Wikipedia.
 //
@@ -24,7 +24,7 @@ const RACES: [string, string][] = [
 ];
 const STRATEGY = process.env.STRATEGY ?? "base";
 const MAX_HOPS = 15, RERANK = 20, LOOK = 5, DISCOUNT = 0.9;
-const HEADERS = { "user-agent": "decidejs-eval/0.1 (https://github.com/debuffjp/decidejs)" };
+const HEADERS = { "user-agent": "decidekit-eval/0.1 (https://github.com/debuffjp/decidekit)" };
 const CACHE = new URL("../data/wiki/", import.meta.url);
 await mkdir(CACHE, { recursive: true });
 

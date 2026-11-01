@@ -2,8 +2,8 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>decidejs: fast, typed decisions from text</title>
-<meta name="description" content="decidejs picks one of your labels for a piece of text in milliseconds, on the user's device, and learns from an LLM when it isn't sure. Open source.">
+<title>decidekit: fast, typed decisions from text</title>
+<meta name="description" content="decidekit picks one of your labels for a piece of text in milliseconds, on the user's device, and learns from an LLM when it isn't sure. Open source.">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&display=swap">
 <link rel="stylesheet" href="ui.css">
@@ -36,23 +36,23 @@
 </style>
 <body>
 <main>
-  <nav class="top"><b>decidejs</b>
+  <nav class="top"><b>decidekit</b>
     <a class="end" href="playground/">Playground</a><a class="end" href="lanes/">Two lanes</a>
-    <a class="end" href="https://github.com/debuffjp/decidejs/tree/main/docs">Docs</a><a class="end" href="https://github.com/debuffjp/decidejs">GitHub</a></nav>
+    <a class="end" href="https://github.com/debuffjp/decidekit/tree/main/docs">Docs</a><a class="end" href="https://github.com/debuffjp/decidekit">GitHub</a></nav>
 
   <div class="hero">
     <span class="eyebrow">Open source · runs in the browser and Node</span>
     <h1>A gut feeling for your app</h1>
-    <p class="lead">decidejs picks one of your labels for a piece of text in milliseconds, on the user's device, with a
+    <p class="lead">decidekit picks one of your labels for a piece of text in milliseconds, on the user's device, with a
       confidence you can trust. When it isn't sure, it can ask an LLM and learn from the answer, so it asks less every
       day.</p>
     <div class="cta">
       <a href="playground/"><button class="primary">Try it in your browser</button></a>
-      <a href="https://github.com/debuffjp/decidejs"><button>GitHub</button></a>
-      <a href="https://github.com/debuffjp/decidejs/tree/main/docs"><button>Docs</button></a>
+      <a href="https://github.com/debuffjp/decidekit"><button>GitHub</button></a>
+      <a href="https://github.com/debuffjp/decidekit/tree/main/docs"><button>Docs</button></a>
     </div>
     <div class="two">
-      <div class="card code"><pre><span class="k">import</span> { createDecider } <span class="k">from</span> <span class="s">"decidejs"</span>;
+      <div class="card code"><pre><span class="k">import</span> { createDecider } <span class="k">from</span> <span class="s">"decidekit"</span>;
 
 <span class="k">const</span> d = <span class="k">await</span> createDecider();
 <span class="k">const</span> { choice, confidence } = <span class="k">await</span> d.decide(
@@ -65,7 +65,7 @@
         <p class="lead" style="font-size:14.5px;margin:6px 0 0">Kahneman called fast, intuitive thinking System 1. A
           System One model works the same way: it doesn't write anything, it reads the text once and picks one of the
           options you give it. That makes it fast, cheap and safe to wire into code, because the answer is always one of
-          your labels. decidejs is a small one: a 34 MB sentence model that runs where your text already is.</p>
+          your labels. decidekit is a small one: a 34 MB sentence model that runs where your text already is.</p>
       </div>
     </div>
   </div>
@@ -74,7 +74,7 @@
     <h2>Watch it learn from an LLM</h2>
     <p class="lead">It starts out knowing only twelve label names. What it's sure of, it answers itself. What it isn't, it
       asks an LLM about, and every eight answers it retrains. Type your own message to try it.</p>
-    <div class="frame"><iframe id="lanes" src="lanes/?embed" title="decidejs two lanes demo" loading="lazy"></iframe></div>
+    <div class="frame"><iframe id="lanes" src="lanes/?embed" title="decidekit two lanes demo" loading="lazy"></iframe></div>
   </section>
 
   <section>
@@ -105,15 +105,15 @@
     <div class="cards">
       <a class="card" href="playground/"><h3>Playground</h3><p>Your own labels, ready-made banking and assistant heads, and a head you train in the page.</p></a>
       <a class="card" href="lanes/"><h3>Two lanes</h3><p>The learning demo, full screen.</p></a>
-      <a class="card" href="https://github.com/debuffjp/decidejs/blob/main/docs/guide-fallback.md"><h3>Learn from an LLM</h3><p>The <code>withFallback</code> guide.</p></a>
-      <a class="card" href="https://github.com/debuffjp/decidejs/blob/main/docs/guide-react.md"><h3>React</h3><p><code>useDecider</code> and <code>useDecision</code>.</p></a>
+      <a class="card" href="https://github.com/debuffjp/decidekit/blob/main/docs/guide-fallback.md"><h3>Learn from an LLM</h3><p>The <code>withFallback</code> guide.</p></a>
+      <a class="card" href="https://github.com/debuffjp/decidekit/blob/main/docs/guide-react.md"><h3>React</h3><p><code>useDecider</code> and <code>useDecision</code>.</p></a>
     </div>
   </section>
 
   <footer>
     <span>MIT licensed. Made by the <a href="https://debuff.jp">debuff</a> team.</span>
     <a href="https://discord.gg/jshbDHSpCY">Discord</a>
-    <a href="https://github.com/debuffjp/decidejs/discussions">Discussions</a>
+    <a href="https://github.com/debuffjp/decidekit/discussions">Discussions</a>
   </footer>
 </main>
 <script>

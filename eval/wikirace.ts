@@ -1,5 +1,5 @@
-// WikiRace with decidejs as the decision model, through the switch adapter: the race TypeSafe launched Jev with, and
-// one of switch's example domains. Each step is one switch choice question over the current article's links; decidejs
+// WikiRace with decidekit as the decision model, through the switch adapter: the race TypeSafe launched Jev with, and
+// one of switch's example domains. Each step is one switch choice question over the current article's links; decidekit
 // reads the target and its summary. Unlike Jev (255 answers at most), it sees every link of the article. Reads English Wikipedia's public API. Run: node --experimental-strip-types eval/wikirace.ts
 import { createDecider } from "../src/index.ts";
 import { switchDecider } from "../src/switch.ts";
@@ -11,7 +11,7 @@ const RACES = [
 ];
 const MAX_HOPS = 12;
 const API = "https://en.wikipedia.org/w/api.php";
-const HEADERS = { "user-agent": "decidejs-eval/0.1 (https://github.com/debuffjp/decidejs)" };
+const HEADERS = { "user-agent": "decidekit-eval/0.1 (https://github.com/debuffjp/decidekit)" };
 
 async function links(title: string): Promise<{ title: string; links: string[] }> {
   const out: string[] = [];

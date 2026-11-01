@@ -1,6 +1,6 @@
 # Accuracy push before release (2026-11-01)
 
-Goal: make decidejs as accurate as we can before it goes public, without cheating our own evals. Every idea was
+Goal: make decidekit as accurate as we can before it goes public, without cheating our own evals. Every idea was
 scored on dev splits (CLINC150 val, a seeded 20% of BANKING77 train) using cached embeddings, and only the winners
 were checked on test. Raw lines are in [results-gains.jsonl](results-gains.jsonl) and
 [results-wikirace.jsonl](results-wikirace.jsonl).

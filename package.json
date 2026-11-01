@@ -1,9 +1,9 @@
 {
-  "name": "decidejs",
+  "name": "decidekit",
   "version": "0.1.0",
   "description": "A System One model in the browser: typed, calibrated text decisions on the user's device. Learns from an LLM when it isn't sure.",
   "license": "MIT",
-  "repository": "github:debuffjp/decidejs",
+  "repository": "github:debuffjp/decidekit",
   "keywords": [
     "decision model",
     "system one",
@@ -77,10 +77,10 @@
   "engines": {
     "node": ">=22.18"
   },
-  "homepage": "https://debuff.jp/decidejs/",
-  "bugs": "https://github.com/debuffjp/decidejs/issues",
+  "homepage": "https://debuff.jp/decidekit/",
+  "bugs": "https://github.com/debuffjp/decidekit/issues",
   "bin": {
-    "decidejs": "./dist/cli.js"
+    "decidekit": "./dist/cli.js"
   },
   "peerDependencies": {
     "react": ">=18"

@@ -5,7 +5,7 @@ Answer what the head is sure about on the device and send the rest to something 
 examples, so the head learns from exactly the texts it was unsure about.
 
 ```ts
-import { createDecider, withFallback } from "decidejs";
+import { createDecider, withFallback } from "decidekit";
 
 const d = await createDecider();
 const head = await d.train(examples);
@@ -22,7 +22,7 @@ r.choice; // one of your labels, or null
 r.source; // "local" or "fallback"
 ```
 
-It works the same with `createWorkerDecider()` from `decidejs/browser`.
+It works the same with `createWorkerDecider()` from `decidekit/browser`.
 
 ## What it saved on CLINC150
 

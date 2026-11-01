@@ -1,6 +1,6 @@
 # Ready-made heads
 
-Heads trained on public datasets, so you can see decidejs work before collecting your own examples. Both use the
+Heads trained on public datasets, so you can see decidekit work before collecting your own examples. Both use the
 default model (`Xenova/bge-small-en-v1.5`, q8) and load with `loadHead()`. Heads shipped before this release were
 trained on `Xenova/all-MiniLM-L6-v2` (BANKING77 90.6%, CLINC150 94.2%).
 
@@ -10,7 +10,7 @@ trained on `Xenova/all-MiniLM-L6-v2` (BANKING77 90.6%, CLINC150 94.2%).
 | [clinc150.head.json](clinc150.head.json) | 150 assistant intents in 10 domains | CLINC150 train and val (18,000) | 95.0% (temperature 0.35) | 303 KB |
 
 ```ts
-import { createDecider, loadHead } from "decidejs";
+import { createDecider, loadHead } from "decidekit";
 
 const head = loadHead(await (await fetch("/heads/banking77.head.json")).text());
 const d = await createDecider();

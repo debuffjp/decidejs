@@ -1,6 +1,6 @@
 # Moving parts
 
-Every piece of decidejs on one page: what it does, where it lives, the numbers that shaped it and where to read more.
+Every piece of decidekit on one page: what it does, where it lives, the numbers that shaped it and where to read more.
 Read [how-it-works.md](how-it-works.md) for the maths and the guides for how to use each piece.
 
 ```
@@ -105,10 +105,10 @@ is cross-origin isolated and onnxruntime's wasm can use several threads.
 
 **What:** the worker starts with `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`, which
 Vite, webpack 5 and esbuild-based tools understand. An alias from `onnxruntime-web/webgpu` to `onnxruntime-web/wasm`
-drops the WebGPU build decidejs doesn't use by default.
+drops the WebGPU build decidekit doesn't use by default.
 
 **Numbers:** the alias halves the wasm (23.6 MB to 12.9 MB, 3.3 MB gzipped). First visit: the 34 MB model plus the
-wasm. decidejs adds 3.6 KB to the page bundle itself.
+wasm. decidekit adds 3.6 KB to the page bundle itself.
 
 **Read more:** [bundlers.md](bundlers.md).
 
@@ -130,8 +130,8 @@ a head from a different model.
 
 ## 11. React, the CLI and switch
 
-- `decidejs/react`: `useDecider()` and `useDecision()`, which decides as the user types and drops stale answers.
+- `decidekit/react`: `useDecider()` and `useDecision()`, which decides as the user types and drops stale answers.
   [guide-react.md](guide-react.md).
-- `decidejs` CLI: `train` a head from a CSV or JSONL file and `decide` from the shell. [api.md](api.md#cli).
-- `decidejs/switch`: a decider for the switch agent harness, answering choice, yes/no and score questions locally,
+- `decidekit` CLI: `train` a head from a CSV or JSONL file and `decide` from the shell. [api.md](api.md#cli).
+- `decidekit/switch`: a decider for the switch agent harness, answering choice, yes/no and score questions locally,
   optionally learning from a teacher. [guide-switch.md](guide-switch.md).

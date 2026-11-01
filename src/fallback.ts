@@ -84,8 +84,8 @@ export function withFallback<const L extends string>(decider: Trainable, using: 
   for (const e of confident) perLabel.set(e.label, (perLabel.get(e.label) ?? 0) + 1);
 
   function retrain(): Promise<Head<L>> {
-    if (!examples) return Promise.reject(new Error("decidejs: withFallback() needs `examples` to retrain a head"));
-    if (!examples.length && !learned.length) return Promise.reject(new Error("decidejs: nothing to train on yet: no answers from `ask`"));
+    if (!examples) return Promise.reject(new Error("decidekit: withFallback() needs `examples` to retrain a head"));
+    if (!examples.length && !learned.length) return Promise.reject(new Error("decidekit: nothing to train on yet: no answers from `ask`"));
     const calibrateOn = trainOptions?.calibrateOn ?? (confident.length >= 50 ? confident : undefined);
     const trainLabels = learned.some((e) => e.label === NONE) ? [...labels, NONE as L] : labels;
     retraining ??= decider.train<L>([...examples, ...learned], { ...trainOptions, labels: trainLabels, calibrateOn }).then((h) => {

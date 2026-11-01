@@ -39,7 +39,7 @@ test("answers choice, bool and score questions in switch's shapes", async () => 
   assert.equal(r.decisionAnswers.y.type === "bool" && r.decisionAnswers.y.probability, 0.99);
   assert.deepEqual(r.decisionAnswers.s, { type: "score", score: 1, confidence: 0.99 });
   assert.equal(r.decisionUsage?.cost.total, 0);
-  assert.equal(r.model, "decidejs/m");
+  assert.equal(r.model, "decidekit/m");
 });
 
 test("a single option is the answer, and errors come back as a failed result", async () => {
@@ -53,14 +53,14 @@ test("a single option is the answer, and errors come back as a failed result", a
   assert.equal(r.errorMessage, "boom");
 });
 
-test("text picks what decidejs reads; by default the instructions then the state as lines", async () => {
+test("text picks what decidekit reads; by default the instructions then the state as lines", async () => {
   assert.equal(textOf("Pick one.", { target: "Moon", path: ["A", "B"], at: { title: "NASA" } }), "Pick one.\ntarget: Moon\npath: A, B\ntitle: NASA");
   const { local, read } = fake();
   await ask(switchDecider(local, { text: (s) => String(s.target) }), { target: "moon", other: "x" }, { c: { type: "choice", instructions: "long", criteria: { a: "planet", b: "moon" } } });
   assert.deepEqual(read, ["moon"]);
 });
 
-test("unsure choices go to the teacher, which sees the same request and teaches decidejs", async () => {
+test("unsure choices go to the teacher, which sees the same request and teaches decidekit", async () => {
   const { local, trained } = fake();
   const seen: unknown[] = [];
   const teacher: SwitchDecider = {

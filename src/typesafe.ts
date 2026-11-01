@@ -10,7 +10,7 @@ export interface Decides {
 
 export interface ChoiceQuestion<L extends string = string> {
   type: "choice";
-  /** Kept for compatibility and ignored: decidejs compares the state with the options, it doesn't read a question. */
+  /** Kept for compatibility and ignored: decidekit compares the state with the options, it doesn't read a question. */
   instructions: string;
   /** Option names to descriptions (`null` for none), as in TypeSafe's API, or a trained head. */
   criteria: Readonly<Record<L, string | null>> | Head<L>;
@@ -21,7 +21,7 @@ export function choice<const L extends string>(instructions: string, criteria: R
 }
 
 const unsupported = (type: string) => (): never => {
-  throw new Error(`decidejs: ${type} questions aren't supported locally, only choice. Ask a yes/no as a choice between two described options.`);
+  throw new Error(`decidekit: ${type} questions aren't supported locally, only choice. Ask a yes/no as a choice between two described options.`);
 };
 export const noul = unsupported("noul") as (instructions: string) => never;
 export const score = unsupported("score") as (instructions: string, levels: unknown) => never;
@@ -40,7 +40,7 @@ function stateText(state: string | Readonly<Record<string, unknown>>): string {
   return Object.values(state).map((v) => {
     if (typeof v === "string") return v;
     if (typeof v === "number" || typeof v === "boolean") return String(v);
-    throw new Error("decidejs: state values must be text, numbers or booleans");
+    throw new Error("decidekit: state values must be text, numbers or booleans");
   }).join("\n");
 }
 
@@ -66,7 +66,7 @@ export function typesafeClient(decider: Decides) {
         const n = Object.keys(probabilities).length;
         answers[id] = { type: "choice", choice, confidence: Math.max(0, (n * confidence - 1) / (n - 1)), probabilities };
       }
-      return { model: "decidejs", answers: answers as { [K in keyof Q]: Q[K] extends ChoiceQuestion<infer L> ? ChoiceAnswer<L> : never } };
+      return { model: "decidekit", answers: answers as { [K in keyof Q]: Q[K] extends ChoiceQuestion<infer L> ? ChoiceAnswer<L> : never } };
     },
   };
 }

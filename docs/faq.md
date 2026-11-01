@@ -8,7 +8,7 @@ English with the default model. For other languages, use `multilingual-e5-small`
 const d = await createDecider({ model: "Xenova/multilingual-e5-small" });
 ```
 
-decidejs knows its settings (the "query: " prefix it expects, its temperatures), so confidence stays calibrated. It
+decidekit knows its settings (the "query: " prefix it expects, its temperatures), so confidence stays calibrated. It
 downloads about 118 MB against 34 MB. On MASSIVE (60 intents, labels named in English, 2,000 test messages per
 language, eval/multilingual.ts):
 
@@ -35,7 +35,7 @@ on the part that carries the meaning (a subject line, a title, the first paragra
 
 ## Does my users' text leave the device?
 
-No. In the browser, the model and the head run in the user's tab and training runs there too. decidejs makes no network
+No. In the browser, the model and the head run in the user's tab and training runs there too. decidekit makes no network
 requests of its own beyond downloading the model files (and whatever head file you fetch yourself).
 
 ## Does it work offline?
@@ -52,7 +52,7 @@ in Node with `decideMany()`. The pre-release default, all-MiniLM-L6-v2, needed a
 
 ## Should I use this or an LLM?
 
-Use decidejs when the answer is one of a fixed set of labels and you can collect examples. Use an LLM when the answer is
+Use decidekit when the answer is one of a fixed set of labels and you can collect examples. Use an LLM when the answer is
 open-ended, needs reasoning over facts the text doesn't contain, or when you have no examples and need more than the
 66-73% zero-shot reaches with label names (72-83% with one-sentence descriptions). LLM structured output gives a typed choice too, but needs an API, costs per call and its
 confidence isn't calibrated.
@@ -62,13 +62,13 @@ They combine: decide locally, and send only answers below `minConfidence` (where
 ## How does it compare with jimothy?
 
 [jimothy](https://www.npmjs.com/package/jimothy) (MIT) also builds typed local classifiers with calibrated confidence. It
-reports 92.4% on BANKING77, above decidejs' 90.7%. It trains in Node and runs inference in a worker. Pick jimothy if you
-train ahead of time in Node and want the higher number. Pick decidejs if training has to happen in the page, from the
+reports 92.4% on BANKING77, above decidekit' 90.7%. It trains in Node and runs inference in a worker. Pick jimothy if you
+train ahead of time in Node and want the higher number. Pick decidekit if training has to happen in the page, from the
 user's own data.
 
 ## And the transformers.js zero-shot pipeline?
 
-It is NLI-based, its result is untyped and its scores are not calibrated. decidejs' zero-shot compares embeddings, types
+It is NLI-based, its result is untyped and its scores are not calibrated. decidekit' zero-shot compares embeddings, types
 the choice as your labels and can move to a trained head with the same `decide()` call.
 
 ## Does it use WebGPU?
@@ -84,14 +84,14 @@ slower on a phone's CPU. Measure on the devices you care about before relying on
 
 ## Node or browser?
 
-Both run the same code. In Node, use `createDecider()` from `decidejs`; `decideMany()` is the fast path for batches. In
-a browser, use `createWorkerDecider()` from `decidejs/browser`, which runs the same decider in a Web Worker so the page
+Both run the same code. In Node, use `createDecider()` from `decidekit`; `decideMany()` is the fast path for batches. In
+a browser, use `createWorkerDecider()` from `decidekit/browser`, which runs the same decider in a Web Worker so the page
 doesn't freeze. A common split: train in Node or with the CLI, ship the head file, decide in the browser. You can also
 train in the browser when the examples come from the user.
 
 ## What licence do heads have?
 
-A head you train on your own data is yours. decidejs itself is MIT. The ready-made heads in
+A head you train on your own data is yours. decidekit itself is MIT. The ready-made heads in
 [heads/](../heads/README.md) are derived from public datasets and carry their licences: BANKING77 is CC BY 4.0
 (PolyAI) and CLINC150 is CC BY 3.0 (Clinc). Credit the dataset if you ship one of them.
 
@@ -141,9 +141,9 @@ No. A head knows only the labels it was trained on. To add, remove or rename a l
 
 ## npm warns that install scripts were blocked
 
-npm 11 skips install scripts for packages your project hasn't allowed and says so for three of decidejs's
-dependencies: onnxruntime-node, sharp and protobufjs. decidejs works anyway: onnxruntime-node ships its binaries in
-the package, and decidejs doesn't use sharp (transformers.js loads it for images). The packed-package test in CI
+npm 11 skips install scripts for packages your project hasn't allowed and says so for three of decidekit's
+dependencies: onnxruntime-node, sharp and protobufjs. decidekit works anyway: onnxruntime-node ships its binaries in
+the package, and decidekit doesn't use sharp (transformers.js loads it for images). The packed-package test in CI
 installs this way. You don't need to approve them.
 
 ## Why does `decide()` throw "this head was trained on ..."?

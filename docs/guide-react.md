@@ -1,12 +1,12 @@
 # React
 
-`decidejs/react` has two hooks over the worker decider. React is an optional peer dependency (18 or later): nothing
+`decidekit/react` has two hooks over the worker decider. React is an optional peer dependency (18 or later): nothing
 extra is installed for apps that don't use it. Tested with React 19 in Next.js 16 (`next dev` and `next build`) and Vite 7 (StrictMode).
 
 ```tsx
 "use client";
 import { useState } from "react";
-import { useDecider, useDecision } from "decidejs/react";
+import { useDecider, useDecision } from "decidekit/react";
 
 const LABELS = ["question", "bug_report", "praise"] as const;
 

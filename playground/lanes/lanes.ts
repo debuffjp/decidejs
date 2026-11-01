@@ -1,4 +1,4 @@
-// "Two lanes": decidejs answers what it's sure of in milliseconds, sends the rest to a slow LLM, and learns from
+// "Two lanes": decidekit answers what it's sure of in milliseconds, sends the rest to a slow LLM, and learns from
 // every answer it gets back. Drawn with spryte. Messages are BANKING77 test queries (CC BY 4.0, PolyAI): twelve card
 // intents close enough to each other that a gut feeling needs help at first. The LLM's answers to them were recorded
 // once (`llm` in messages.json), so the page never calls an LLM.
@@ -11,7 +11,7 @@ type Label = (typeof LABELS)[number];
 type Message = { text: string; label: Label | null; llm?: Label | null };
 const MESSAGES = messages as Message[];
 const NAMES = Object.fromEntries(LABELS.map((l) => [l, l.replace(/_/g, " ")])) as Record<Label, string>;
-// One sentence per label. Both sides read them: decidejs scores each label by the better of its name and this, and
+// One sentence per label. Both sides read them: decidekit scores each label by the better of its name and this, and
 // the LLM sees them in its prompt (they raised Llama 3.1 8B from 84% to 90% on these messages).
 const DESCRIPTIONS: Record<Label, string> = {
   card_arrival: "My card still hasn't arrived in the post.",
@@ -74,8 +74,8 @@ function at(p: Path) {
 const inFlight = new Map<string, Dot>();
 const topOf = (probabilities: Record<Label, number>) => (Object.entries(probabilities) as [Label, number][]).sort((a, b) => b[1] - a[1]);
 
-// Called by withFallback when decidejs isn't sure. The dot learns its answer as soon as it's known, but the promise
-// resolves only when the lesson chip reaches decidejs, so the retrain lands on screen when the lesson does.
+// Called by withFallback when decidekit isn't sure. The dot learns its answer as soon as it's known, but the promise
+// resolves only when the lesson chip reaches decidekit, so the retrain lands on screen when the lesson does.
 async function ask(text: string, _labels: readonly Label[], localDecision: { probabilities: Record<Label, number>; confidence: number }) {
   const dot = inFlight.get(text)!;
   dot.via = "llm";
@@ -294,9 +294,9 @@ function render() {
   draw.line(GUT.x + GUT.r + 18, GUT.y, BIN.x - 20, BIN.y + 180, 2, hex(C.gut, 0.16));
   draw.line(LLM.x + LLM.r + 4, LLM.y, BIN.x - 20, BIN.y + 220, 2, hex(C.llm, 0.14));
 
-  // decidejs, ringed by the lessons since its last retrain
+  // decidekit, ringed by the lessons since its last retrain
   const flash = Math.max(0, 1 - (clock - flashAt) / 1000);
-  node(GUT.x, GUT.y, GUT.r, C.gut, "decidejs", "~5 ms · free", flash);
+  node(GUT.x, GUT.y, GUT.r, C.gut, "decidekit", "~5 ms · free", flash);
   const pendingLessons = Math.max(0, Math.min(EVERY, lessons - retrains * EVERY));
   for (let i = 0; i < EVERY; i++) {
     const a = -Math.PI / 2 + (i / EVERY) * Math.PI * 2;
@@ -309,7 +309,7 @@ function render() {
   const thinking = dots.some((d) => d.phase === "thinking");
   node(LLM.x, LLM.y, LLM.r, C.llm, "LLM", "~1 s · paid", thinking ? (Math.sin(clock / 140) + 1) / 2 : 0);
   draw.text("unsure? ask", GUT.x + 8, (GUT.y + LLM.y) / 2, { font: F.s, color: hex(C.llm, 0.8), baseline: "middle" });
-  draw.text("answers teach decidejs", LLM.x - 22, (GUT.y + LLM.y) / 2 + 12, { font: F.s, color: hex(C.gut, 0.7), align: "right", baseline: "middle" });
+  draw.text("answers teach decidekit", LLM.x - 22, (GUT.y + LLM.y) / 2 + 12, { font: F.s, color: hex(C.gut, 0.7), align: "right", baseline: "middle" });
 
   // bins
   LABELS.forEach((l, i) => {
@@ -320,7 +320,7 @@ function render() {
     if (inBin.length) draw.text(String(inBin.length), W - 14, y + 2, { font: F.mono, color: C.faint, align: "right", baseline: "middle" });
   });
 
-  // lessons travelling back to decidejs
+  // lessons travelling back to decidekit
   for (const s of sparks) {
     const p = at(s.path), w = draw.measure(NAMES[s.label], F.s).w + 14, a = Math.min(1, (1 - p.t) * 6);
     roundRect(p.x - w / 2, p.y - 9, w, 18, 9, hex(C.gut, 0.92 * a));
@@ -342,7 +342,7 @@ function render() {
   // the gut's last call
   if (last) {
     const x = 16, y = 300, w = 236;
-    draw.text("How sure decidejs was", x, y, { font: F.s, color: C.muted, baseline: "middle" });
+    draw.text("How sure decidekit was", x, y, { font: F.s, color: C.muted, baseline: "middle" });
     wrap(`“${last.text}”`, F.m, w, 2).forEach((l, i) => draw.text(l, x, y + 18 + i * 16, { font: F.m, color: C.text, baseline: "middle" }));
     const sure = last.confidence >= THRESHOLD;
     last.top.forEach(([l, p], i) => {

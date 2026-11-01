@@ -1,4 +1,4 @@
-/* Shared look for the decidejs pages: shadcn-style zinc tokens, Geist, one lime accent. */
+/* Shared look for the decidekit pages: shadcn-style zinc tokens, Geist, one lime accent. */
 :root {
   --bg: #ffffff; --fg: #09090b; --card: #ffffff; --muted: #71717a; --line: #e4e4e7; --soft: #f4f4f5;
   --accent: #cffb2d; --accent-fg: #09090b; --pink: #e0457b; --ring: #a1a1aa; --radius: 10px;

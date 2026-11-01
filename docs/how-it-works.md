@@ -1,6 +1,6 @@
 # How it works
 
-decidejs has two parts: an encoder that turns text into a vector, and a head that turns the vector into a choice
+decidekit has two parts: an encoder that turns text into a vector, and a head that turns the vector into a choice
 between your labels. The encoder is a pretrained model you download once. The head is small and trained on your
 examples, in seconds to minutes, wherever your code runs.
 
@@ -8,7 +8,7 @@ examples, in seconds to minutes, wherever your code runs.
 
 The default is bge-small-en-v1.5, a sentence-embedding model, at 8-bit weights (34 MB), run through transformers.js.
 Pre-release builds used all-MiniLM-L6-v2 (23.7 MB), which also returns 384 numbers.
-It reads a text and returns 384 numbers. decidejs averages the model's output over the text's tokens (mean pooling)
+It reads a text and returns 384 numbers. decidekit averages the model's output over the text's tokens (mean pooling)
 and scales the result to length 1, so texts with similar meaning end up close together and the dot product of two
 vectors is their cosine similarity.
 
@@ -18,7 +18,7 @@ if you pair it with a different encoder.
 
 ## Zero-shot
 
-With a list of labels and no examples, decidejs encodes each label as text and compares it with the text you pass. Bare
+With a list of labels and no examples, decidekit encodes each label as text and compares it with the text you pass. Bare
 labels are turned into words first (`card_arrival` becomes "card arrival"), which scored 2.6 points higher on CLINC150's
 dev split than the raw label. With a record of descriptions, both the readable name and the description are encoded,
 and each label scores by the better of the two. Before this release, the description replaced the name.
@@ -50,7 +50,7 @@ An LLM can write them once at setup from your label names; check a few by hand. 
 LLM you pass it:
 
 ```ts
-import { describeLabels } from "decidejs";
+import { describeLabels } from "decidekit";
 
 const described = await describeLabels(["card_arrival", "refund", "lost_card"], (prompt) => myLlm(prompt), {
   context: "message to a bank's support chat",
@@ -124,7 +124,7 @@ It does not make the main thread safe for the encoder: one encoder call is one l
 That is why the browser entry runs everything in a worker. On the main thread, training BANKING77 froze the page for
 171 s; in the worker, the page's longest stall was 18 ms.
 
-## What decidejs does not do
+## What decidekit does not do
 
 - It does not fine-tune the encoder. Only the head is trained. Fine-tuning is the likely route past about 91% on
   BANKING77, and it is not built.

@@ -1,6 +1,6 @@
 # Bundlers
 
-`decidejs/browser` starts its worker with `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`,
+`decidekit/browser` starts its worker with `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`,
 the pattern Vite, webpack 5 and esbuild-based tools recognise.
 
 ## Vite
@@ -11,9 +11,9 @@ Tested with Vite 7.1: built, served cross-origin isolated, run in headless Chrom
 // vite.config.js
 export default {
   worker: { format: "es" },
-  optimizeDeps: { exclude: ["decidejs"] },
+  optimizeDeps: { exclude: ["decidekit"] },
   resolve: {
-    // Halves the wasm download (23.6 MB to 12.9 MB; 5.8 MB to 3.3 MB gzipped). decidejs runs on wasm by default,
+    // Halves the wasm download (23.6 MB to 12.9 MB; 5.8 MB to 3.3 MB gzipped). decidekit runs on wasm by default,
     // so it doesn't need the WebGPU build. Leave this out if you pass device: "webgpu".
     alias: { "onnxruntime-web/webgpu": "onnxruntime-web/wasm" },
   },
@@ -43,7 +43,7 @@ export default {
 ## Next.js
 
 Tested with Next.js 16.4 (Turbopack, App Router), `next build` then `next start`, in headless Chrome. Import
-`decidejs/browser` inside a client component, and only in the browser: a dynamic `import()` inside `useEffect`
+`decidekit/browser` inside a client component, and only in the browser: a dynamic `import()` inside `useEffect`
 keeps it out of server rendering.
 
 ```js
@@ -62,7 +62,7 @@ export default {
 ```js
 "use client";
 useEffect(() => {
-  import("decidejs/browser").then(async ({ createWorkerDecider }) => {
+  import("decidekit/browser").then(async ({ createWorkerDecider }) => {
     const d = await createWorkerDecider();
     // ...
   });

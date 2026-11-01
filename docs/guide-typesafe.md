@@ -1,10 +1,10 @@
 # Coming from Jev
 
-[Jev](https://typesafe.ai/) is TypeSafe's hosted [System One model](https://docs.typesafe.ai/concepts/system-one). `decidejs/typesafe` gives a decider the same call shape as [their JavaScript SDK](https://docs.typesafe.ai/sdk/javascript), so Choice questions move between the two with a changed import and client:
+[Jev](https://typesafe.ai/) is TypeSafe's hosted [System One model](https://docs.typesafe.ai/concepts/system-one). `decidekit/typesafe` gives a decider the same call shape as [their JavaScript SDK](https://docs.typesafe.ai/sdk/javascript), so Choice questions move between the two with a changed import and client:
 
 ```ts
-import { createDecider } from "decidejs";
-import { choice, typesafeClient } from "decidejs/typesafe";
+import { createDecider } from "decidekit";
+import { choice, typesafeClient } from "decidekit/typesafe";
 
 const client = typesafeClient(await createDecider());
 const { answers } = await client.systemOne({
@@ -24,7 +24,7 @@ answers.department.choice; // "returns" | "shipping" | "billing"
 
 ## What differs
 
-| | Jev | `decidejs/typesafe` |
+| | Jev | `decidekit/typesafe` |
 |---|---|---|
 | Choice | yes | yes |
 | Noul, Score | yes | throw an error |
@@ -51,14 +51,14 @@ answers.department.choice; // "returns" | "shipping" | "billing"
 
 The calibration measured in the [confidence guide](guide-confidence.md) is for the top probability: read it with `Math.max(...Object.values(answer.probabilities))`. We keep the top probability as the default because it can be read directly: an answer at 0.9 is right about 90% of the time, at any number of labels. TypeSafe's measure has a fair zero, an even split, which top probability lacks: 0.5 is weak with two labels and strong with fifty.
 
-A threshold tuned on Jev won't carry over to decidejs, or the other way: pick it again on your own data.
+A threshold tuned on Jev won't carry over to decidekit, or the other way: pick it again on your own data.
 
 ## Jev as the fallback
 
 Jev can be the slower model behind `withFallback()`. This uses TypeSafe's own SDK and your API key. We haven't run this example against the live API:
 
 ```ts
-import { withFallback, createDecider } from "decidejs";
+import { withFallback, createDecider } from "decidekit";
 import { choice, TypeSafeClient } from "@typesafe-ai/sdk";
 
 const jev = new TypeSafeClient();

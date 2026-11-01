@@ -1,10 +1,10 @@
 # API reference
 
-decidejs 0.1. Two entry points and a CLI:
+decidekit 0.1. Two entry points and a CLI:
 
-- `decidejs`: `createDecider`, `saveHead`, `loadHead` and the types. Runs in Node and the browser.
-- `decidejs/browser`: `createWorkerDecider`, `saveHead`, `loadHead` and the same types. Browser only (it starts a Web Worker).
-- `npx decidejs`: `train` and `decide` from the command line (Node 22.18 or later).
+- `decidekit`: `createDecider`, `saveHead`, `loadHead` and the types. Runs in Node and the browser.
+- `decidekit/browser`: `createWorkerDecider`, `saveHead`, `loadHead` and the same types. Browser only (it starts a Web Worker).
+- `npx decidekit`: `train` and `decide` from the command line (Node 22.18 or later).
 
 ## createDecider(options?)
 
@@ -25,7 +25,7 @@ The encoder runs on the thread that calls it. In a browser, use [`createWorkerDe
 instead, or the page freezes while it works.
 
 ```ts
-import { createDecider } from "decidejs";
+import { createDecider } from "decidekit";
 
 const d = await createDecider();
 const r = await d.decide("my card never arrived", ["card_arrival", "refund", "other"]);
@@ -80,8 +80,8 @@ again with the same options only encodes the new text.
 
 Throws:
 
-- `decidejs: decide() needs at least 2 options, got N` when an array or record has fewer than 2 entries.
-- `decidejs: this head was trained on <head model>, but the decider uses <model>. Pass { model: "<head model>" } to createDecider.`
+- `decidekit: decide() needs at least 2 options, got N` when an array or record has fewer than 2 entries.
+- `decidekit: this head was trained on <head model>, but the decider uses <model>. Pass { model: "<head model>" } to createDecider.`
   when a head's `model` does not match the decider's.
 
 ### decideMany(texts, using, options?)
@@ -136,8 +136,8 @@ const head = await d.train([
 
 Throws:
 
-- `decidejs: example N needs a string text and a non-empty string label, got {...}` for the first bad example.
-- `decidejs: train() needs at least 2 labels, got N`.
+- `decidekit: example N needs a string text and a non-empty string label, got {...}` for the first bad example.
+- `decidekit: train() needs at least 2 labels, got N`.
 
 Training yields to the event loop between batches of 64, so a page stays responsive, but the encoding step before it
 does not. In a browser, train in a worker.
@@ -159,7 +159,7 @@ const similarity = a.reduce((s, x, i) => s + x * b[i], 0); // cosine, since both
 ## createWorkerDecider(options?, worker?)
 
 ```ts
-import { createWorkerDecider } from "decidejs/browser";
+import { createWorkerDecider } from "decidekit/browser";
 
 function createWorkerDecider(options?: DeciderOptions, worker?: Worker): Promise<{
   decide: ...;      // same overloads as createDecider's
@@ -176,7 +176,7 @@ worker has loaded the model.
 Differences from `createDecider()`:
 
 - No `embed` and no `model` on the result.
-- `terminate()` stops the worker and rejects any calls still pending ("decidejs: the worker was terminated").
+- `terminate()` stops the worker and rejects any calls still pending ("decidekit: the worker was terminated").
 - Errors thrown in the worker come back as `Error`s with the original message.
 - Each call costs about 1 ms of message passing.
 
@@ -221,10 +221,10 @@ function loadHead<L extends string = string>(json: string): Head<L>;
 ```
 
 Parses a string written by `saveHead()`. The labels are typed `string` unless you pass the label type, for example
-the one `decidejs train --types` writes:
+the one `decidekit train --types` writes:
 
 ```ts
-import { loadHead } from "decidejs/browser";
+import { loadHead } from "decidekit/browser";
 import type { Label } from "./intent.head.labels.ts";
 
 const head = loadHead<Label>(await (await fetch("/intent.head.json")).text());
@@ -234,8 +234,8 @@ const head = loadHead<Label>(await (await fetch("/intent.head.json")).text());
 Pass heads through `loadHead()`, not plain `JSON.parse()`: a parsed object without `Float32Array` weights is not
 recognised as a head.
 
-Both `saveHead` and `loadHead` are exported from `decidejs` and from `decidejs/browser`. Import them from
-`decidejs/browser` in a page: that entry does not pull the encoder into your bundle (3.6 KB against 482 KB).
+Both `saveHead` and `loadHead` are exported from `decidekit` and from `decidekit/browser`. Import them from
+`decidekit/browser` in a page: that entry does not pull the encoder into your bundle (3.6 KB against 482 KB).
 
 ## Types
 
@@ -298,9 +298,9 @@ See the tables under [train()](#trainoptions) and [createDecider()](#decideropti
 ## CLI
 
 ```sh
-npx decidejs train <examples.csv|.jsonl> [-o head.json] [--model <hf-id>] [--no-label-names] [--types]
-npx decidejs decide <head.json> "<text>" [--min-confidence <0-1>]
-npx decidejs --help
+npx decidekit train <examples.csv|.jsonl> [-o head.json] [--model <hf-id>] [--no-label-names] [--types]
+npx decidekit decide <head.json> "<text>" [--min-confidence <0-1>]
+npx decidekit --help
 ```
 
 ### train
@@ -316,7 +316,7 @@ Reads examples, trains a head and writes it with `saveHead()`.
 - `--types`: also write `<out without .json>.labels.ts`:
 
   ```ts
-  // Written by decidejs train --types. Labels of the head next to this file.
+  // Written by decidekit train --types. Labels of the head next to this file.
   export const labels = ["card_arrival","refund"] as const;
   export type Label = (typeof labels)[number];
   ```
@@ -325,7 +325,7 @@ It prints the example count, label count and fewest examples per label to stderr
 and ends with the file size, training time and fitted temperature. Other `TrainOptions` keep their defaults.
 
 ```sh
-npx decidejs train tickets.csv -o support.head.json --types
+npx decidekit train tickets.csv -o support.head.json --types
 ```
 
 ### decide
@@ -333,7 +333,7 @@ npx decidejs train tickets.csv -o support.head.json --types
 Loads a head, creates a decider with the head's model and prints one line of JSON to stdout:
 
 ```sh
-npx decidejs decide support.head.json "my card never arrived" --min-confidence 0.9
+npx decidekit decide support.head.json "my card never arrived" --min-confidence 0.9
 ```
 
 The output has the shape `{"choice":"card_arrival","confidence":<number>}`.
@@ -342,19 +342,19 @@ The output has the shape `{"choice":"card_arrival","confidence":<number>}`.
 
 Exit codes: 0 on success, 1 on an error (the message goes to stderr), 2 on a usage error.
 
-## withFallback() and decidejs/react
+## withFallback() and decidekit/react
 
-`withFallback(decider, head, options)` and its `NONE` label (from `decidejs` and `decidejs/browser`) are documented in
-[guide-fallback.md](guide-fallback.md). `useDecider()` and `useDecision()` (from `decidejs/react`) are documented in
+`withFallback(decider, head, options)` and its `NONE` label (from `decidekit` and `decidekit/browser`) are documented in
+[guide-fallback.md](guide-fallback.md). `useDecider()` and `useDecision()` (from `decidekit/react`) are documented in
 [guide-react.md](guide-react.md).
 
-## decidejs/switch
+## decidekit/switch
 
 ### switchDecider(decider, options?)
 
 Wraps a decider from `createDecider()` as a [switch](https://github.com/osolmaz/switch) `Decider`. Answers `choice`, `bool` and `score` questions locally; images are ignored.
 
-- `text(state, question, id)`: what decidejs reads for a question. Default: `textOf(question.instructions, state)`.
+- `text(state, question, id)`: what decidekit reads for a question. Default: `textOf(question.instructions, state)`.
 - `heads`: trained heads by question id.
 - `teacher`: a switch decider to ask when a choice is below `minConfidence` (default 0.9); its answers train a head per repeating question every 8 answers.
 

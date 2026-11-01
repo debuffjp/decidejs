@@ -41,7 +41,7 @@ export type Choices<L extends string> = readonly L[] | Readonly<Record<L, string
 
 function isHead<L extends string>(c: Choices<L>): c is Head<L> {
   if (Array.isArray(c) || !("weights" in c)) return false;
-  if (!((c as Head<L>).weights instanceof Float32Array)) throw new Error("decidejs: this head's weights aren't a Float32Array. Read head files with loadHead(), not JSON.parse.");
+  if (!((c as Head<L>).weights instanceof Float32Array)) throw new Error("decidekit: this head's weights aren't a Float32Array. Read head files with loadHead(), not JSON.parse.");
   return true;
 }
 
@@ -135,7 +135,7 @@ function toDecision<L extends string>(labels: readonly L[], p: number[]): Decisi
 
 /**
  * Loads the encoder (downloaded once, then cached by the browser or transformers.js) and returns `decide()` and
- * `train()`. In a browser, prefer `createWorkerDecider()` from `decidejs/browser`: the encoder blocks the thread
+ * `train()`. In a browser, prefer `createWorkerDecider()` from `decidekit/browser`: the encoder blocks the thread
  * it runs on.
  */
 export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device, dtype = "q8", temperature, onProgress }: DeciderOptions = {}) {
@@ -159,11 +159,11 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
   async function score<L extends string>(q: number[], using: Choices<L>, minConfidence?: number): Promise<Decision<L, L | null>> {
     let d: Decision<L>;
     if (isHead(using)) {
-      if (using.model !== model) throw new Error(`decidejs: this head was trained on ${using.model}, but the decider uses ${model}. Pass { model: "${using.model}" } to createDecider.`);
+      if (using.model !== model) throw new Error(`decidekit: this head was trained on ${using.model}, but the decider uses ${model}. Pass { model: "${using.model}" } to createDecider.`);
       d = toDecision(using.labels, softmax(logits(using, q), using.temperature));
     } else {
       const labels = (Array.isArray(using) ? using : Object.keys(using)) as L[];
-      if (labels.length < 2) throw new Error(`decidejs: decide() needs at least 2 options, got ${labels.length}`);
+      if (labels.length < 2) throw new Error(`decidekit: decide() needs at least 2 options, got ${labels.length}`);
       // Bare labels are compared as readable text ("card_arrival" as "card arrival"): 2.6 points better on CLINC150's
       // dev split. A described label scores by the better of its name and its description: on the dev splits that
       // beat the description alone by 0.5 (BANKING77) and 3.1 points (CLINC150), and names alone by 7 and 10.
@@ -206,13 +206,13 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
    */
   async function train<const L extends string>(examples: readonly Example<L>[], opts: TrainOptions<L> = {}): Promise<Head<L>> {
     const bad = examples.findIndex((e) => typeof e?.text !== "string" || typeof e?.label !== "string" || !e.label);
-    if (bad >= 0) throw new Error(`decidejs: example ${bad} needs a string text and a non-empty string label, got ${JSON.stringify(examples[bad])}`);
-    if (!examples.length) throw new Error("decidejs: train() needs at least 1 example");
+    if (bad >= 0) throw new Error(`decidekit: example ${bad} needs a string text and a non-empty string label, got ${JSON.stringify(examples[bad])}`);
+    if (!examples.length) throw new Error("decidekit: train() needs at least 1 example");
     const labels = [...new Set([...(opts.labels ?? []), ...examples.map((e) => e.label)])].sort() as L[];
     if (opts.labels && opts.labelNames === false && labels.some((l) => !examples.some((e) => e.label === l))) {
-      throw new Error("decidejs: labels without examples need labelNames, which is what they start from");
+      throw new Error("decidekit: labels without examples need labelNames, which is what they start from");
     }
-    if (labels.length < 2) throw new Error(`decidejs: train() needs at least 2 labels, got ${labels.length}`);
+    if (labels.length < 2) throw new Error(`decidekit: train() needs at least 2 labels, got ${labels.length}`);
     const y = examples.map((e) => labels.indexOf(e.label));
     const texts = [...new Set(examples.map((e) => e.text))];
     const fresh = texts.filter((t) => !trainCache.has(t));
@@ -228,7 +228,7 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
     const priors = opts.labelNames === false ? undefined : await vectors(labels.map(readable));
     const cal = opts.calibrateOn;
     const unknown = cal?.find((e) => !labels.includes(e.label));
-    if (unknown) throw new Error(`decidejs: calibrateOn has label ${JSON.stringify(unknown.label)}, which isn't one of the head's labels`);
+    if (unknown) throw new Error(`decidekit: calibrateOn has label ${JSON.stringify(unknown.label)}, which isn't one of the head's labels`);
     const calibration = cal?.length ? { X: await vectors(cal.map((e) => e.text)), y: cal.map((e) => labels.indexOf(e.label)) } : undefined;
     return { model, ...(await fitHead(X, y, labels, opts, priors, LABEL_NAME_WEIGHT, undefined, SMALL_HEAD_FLOOR[model] ?? 1, calibration)) };
   }

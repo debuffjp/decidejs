@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// decidejs train <examples.csv|.jsonl> [-o head.json] [--model id] [--no-label-names] [--types]
-// decidejs decide <head.json> "<text>" [--min-confidence 0.9]
+// decidekit train <examples.csv|.jsonl> [-o head.json] [--model id] [--no-label-names] [--types]
+// decidekit decide <head.json> "<text>" [--min-confidence 0.9]
 import { readFile, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { createDecider, loadHead, saveHead, type Example } from "./index.ts";
 
 const USAGE = `usage:
-  decidejs train <examples.csv|.jsonl> [-o head.json] [--model <hf-id>] [--no-label-names] [--types]
-  decidejs decide <head.json> "<text>" [--min-confidence <0-1>]
+  decidekit train <examples.csv|.jsonl> [-o head.json] [--model <hf-id>] [--no-label-names] [--types]
+  decidekit decide <head.json> "<text>" [--min-confidence <0-1>]
 
 --types also writes head.labels.ts with the labels as a const array and a union type.
 
@@ -40,7 +40,7 @@ export async function readExamples(file: string): Promise<Example<string>[]> {
 
 /** A module with the head's labels, so code that loads the head file can type it: `loadHead<Label>(json)`. */
 export function labelsModule(labels: readonly string[]): string {
-  return `// Written by decidejs train --types. Labels of the head next to this file.
+  return `// Written by decidekit train --types. Labels of the head next to this file.
 export const labels = ${JSON.stringify(labels)} as const;
 export type Label = (typeof labels)[number];
 `;

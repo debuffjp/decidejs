@@ -1,4 +1,4 @@
-// decidejs on the same 211 lanes messages as eval/teacher-compare.ts: zero-shot with names, with descriptions, and a
+// decidekit on the same 211 lanes messages as eval/teacher-compare.ts: zero-shot with names, with descriptions, and a
 // 5-shot head (BANKING77 train, 3 seeds).
 import { readFile } from "node:fs/promises";
 import { createDecider } from "../src/index.ts";

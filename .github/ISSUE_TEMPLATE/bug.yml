@@ -10,6 +10,6 @@ body:
   - type: input
     attributes:
       label: Environment
-      description: decidejs version, browser or Node version, OS, model and device (wasm, webgpu, cpu)
+      description: decidekit version, browser or Node version, OS, model and device (wasm, webgpu, cpu)
     validations:
       required: true

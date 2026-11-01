@@ -57,7 +57,7 @@ examples out of training, then count, at each threshold, how many answers are he
 right.
 
 ```ts
-import { createDecider, type Example } from "decidejs";
+import { createDecider, type Example } from "decidekit";
 
 const d = await createDecider();
 

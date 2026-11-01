@@ -9,18 +9,18 @@ import { join, resolve } from "node:path";
 
 const run = (cmd, cwd) => execSync(cmd, { cwd, stdio: "inherit", shell: true });
 const root = resolve(import.meta.dirname, "..");
-const dir = mkdtempSync(join(tmpdir(), "decidejs-smoke-"));
+const dir = mkdtempSync(join(tmpdir(), "decidekit-smoke-"));
 try {
   run(`npm pack --pack-destination "${dir}"`, root);
   const tgz = readdirSync(dir).find((f) => f.endsWith(".tgz"));
   writeFileSync(join(dir, "package.json"), JSON.stringify({ name: "smoke", private: true, type: "module" }));
   run(`npm i --no-audit --no-fund ./${tgz} typescript@5 @types/react@18`, dir);
   writeFileSync(join(dir, "use.mts"), `
-import { createDecider, saveHead, loadHead, NONE } from "decidejs";
-import type { createWorkerDecider } from "decidejs/browser";
-import type { useDecider } from "decidejs/react";
-import type * as sw from "decidejs/switch";
-import { choice as ask, typesafeClient } from "decidejs/typesafe";
+import { createDecider, saveHead, loadHead, NONE } from "decidekit";
+import type { createWorkerDecider } from "decidekit/browser";
+import type { useDecider } from "decidekit/react";
+import type * as sw from "decidekit/switch";
+import { choice as ask, typesafeClient } from "decidekit/typesafe";
 const d = await createDecider();
 const r = await d.decide("my card still hasn't arrived", ["card_arrival", "lost_card", "refund"] as const);
 const choice: "card_arrival" | "lost_card" | "refund" = r.choice;
@@ -37,8 +37,8 @@ console.log("smoke: library ok", NONE);
   run("npx tsc -p .", dir);
   run("node use.mts", dir);
   writeFileSync(join(dir, "ex.csv"), "text,label\nwhere is my card,arrival\nhas my card shipped,arrival\nI want my money back,refund\nrefund me please,refund\n");
-  run("npx decidejs train ex.csv -o head.json --types", dir);
-  run('npx decidejs decide head.json "give me a refund"', dir);
+  run("npx decidekit train ex.csv -o head.json --types", dir);
+  run('npx decidekit decide head.json "give me a refund"', dir);
   console.log("smoke: ok");
 } finally {
   rmSync(dir, { recursive: true, force: true });

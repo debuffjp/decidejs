@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Questions and show and tell
-    url: https://github.com/debuffjp/decidejs/discussions
+    url: https://github.com/debuffjp/decidekit/discussions
     about: Ask how to use it, or show what you built.
   - name: debuff Discord
     url: https://discord.gg/jshbDHSpCY

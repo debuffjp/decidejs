@@ -84,7 +84,7 @@ Labels are compared as words: `_` and `-` become spaces and camelCase is split. 
 ## Train
 
 ```ts
-import { createDecider, saveHead } from "decidejs";
+import { createDecider, saveHead } from "decidekit";
 import { writeFile } from "node:fs/promises";
 
 const d = await createDecider();
@@ -98,7 +98,7 @@ The head's labels are the distinct labels in `examples`, sorted. Training repeat
 `seed`. Other options are in the [API reference](api.md#trainoptions); the defaults are the ones the tables above were
 measured with.
 
-In a browser, train with `createWorkerDecider()` from `decidejs/browser`: the same `train()`, run in a worker. On the main
+In a browser, train with `createWorkerDecider()` from `decidekit/browser`: the same `train()`, run in a worker. On the main
 thread, training BANKING77 froze the page for 171 s; in a worker the longest stall was 18 ms. Training 10,003 examples
 in a tab took 147-217 s; 9 examples with 3 labels took 0.1 s.
 
@@ -124,7 +124,7 @@ unlabelled rows, review the lowest-confidence ones first, add them, retrain.
 it with `loadHead()`:
 
 ```ts
-import { createWorkerDecider, loadHead } from "decidejs/browser";
+import { createWorkerDecider, loadHead } from "decidekit/browser";
 
 const head = loadHead(await (await fetch("/support.head.json")).text());
 const d = await createWorkerDecider();
@@ -139,8 +139,8 @@ a different one. When you change model, retrain.
 Train from a CSV or JSONL file without writing code:
 
 ```sh
-npx decidejs train tickets.csv -o support.head.json --types
-npx decidejs decide support.head.json "my card never arrived" --min-confidence 0.9
+npx decidekit train tickets.csv -o support.head.json --types
+npx decidekit decide support.head.json "my card never arrived" --min-confidence 0.9
 ```
 
 The CSV needs a header with `text` and `label` columns; JSONL needs one `{"text", "label"}` object per line. Full flags
@@ -151,7 +151,7 @@ are in the [API reference](api.md#cli).
 `--types` writes `support.head.labels.ts` next to the head:
 
 ```ts
-// Written by decidejs train --types. Labels of the head next to this file.
+// Written by decidekit train --types. Labels of the head next to this file.
 export const labels = ["card_arrival","refund"] as const;
 export type Label = (typeof labels)[number];
 ```

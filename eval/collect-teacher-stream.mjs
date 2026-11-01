@@ -1,6 +1,6 @@
 // Records Llama 3.1 8B's answer for every message in the lanes demo's 12-label BANKING77 stream (training split), plus
 // 70 CLINC150 out-of-scope queries, with the demo's prompt (sorted labels, descriptions). One call each, so replays of
-// any withFallback setting run offline. Needs a local Worker with an AI binding on TEACHER_URL (the decidejs eval
+// any withFallback setting run offline. Needs a local Worker with an AI binding on TEACHER_URL (the decidekit eval
 // teacher). Writes eval/teacher-8b-stream.json; resumes where it stopped and stops at the daily-limit error.
 //   TEACHER_URL=http://127.0.0.1:8799 [LIMIT=n] node eval/collect-teacher-stream.mjs
 import { readFileSync, writeFileSync, existsSync } from "node:fs";

@@ -1,5 +1,5 @@
 // How good is the fallback teacher? Llama 3.1 8B and 3.3 70B on Workers AI, with bare label names and with label
-// descriptions, on the 211 lanes demo messages (BANKING77 test, 12 labels), against decidejs on the same messages.
+// descriptions, on the 211 lanes demo messages (BANKING77 test, 12 labels), against decidekit on the same messages.
 // Needs a Worker with the /ask prompt on TEACHER_URL (default http://localhost:8799; a throwaway one run with
 // `wrangler dev --remote`). Appends to eval/results-teacher.jsonl.
 //   node --experimental-strip-types eval/teacher-compare.ts

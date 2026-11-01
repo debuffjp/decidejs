@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>decidejs: two lanes</title>
+<title>decidekit: two lanes</title>
 <meta name="description" content="Watch a small on-device classifier answer what it's sure of and learn the rest from an LLM.">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&display=swap">
@@ -10,9 +10,9 @@
 <script>if (/[?&]embed\b/.test(location.search)) document.documentElement.classList.add("embed");</script>
 <body class="dark">
 <main class="wide">
-  <nav class="top"><a href="../">decidejs</a><span>/</span><b>Two lanes</b><a class="end" href="https://github.com/debuffjp/decidejs">GitHub</a></nav>
+  <nav class="top"><a href="../">decidekit</a><span>/</span><b>Two lanes</b><a class="end" href="https://github.com/debuffjp/decidekit">GitHub</a></nav>
   <h1>Sure? It answers. Unsure? It asks.</h1>
-  <p class="lead">decidejs answers what it's sure of in milliseconds, on your device. When it isn't sure, it asks a slow
+  <p class="lead">decidekit answers what it's sure of in milliseconds, on your device. When it isn't sure, it asks a slow
     LLM and learns from the answer: every eight answers it retrains. It starts out knowing only the names of twelve
     card-banking intents.</p>
   <div class="card flush"><canvas id="c"></canvas></div>
@@ -26,14 +26,14 @@
     <span><i style="background:#ff7ab6"></i>sent to the LLM</span>
   </div>
   <p class="fine">Messages: BANKING77 test set (PolyAI, CC BY 4.0). The LLM is Llama 3.1 8B on Cloudflare Workers AI, given
-    the same one-sentence label descriptions decidejs uses; its answers to these messages were recorded once, so the
+    the same one-sentence label descriptions decidekit uses; its answers to these messages were recorded once, so the
     replay is the same for everyone and costs nothing. It agrees with BANKING77's labels on about 89% of them, and
-    decidejs learns its mistakes too.
-    <a href="https://github.com/debuffjp/decidejs/blob/main/docs/guide-fallback.md">How to do this in your app</a></p>
+    decidekit learns its mistakes too.
+    <a href="https://github.com/debuffjp/decidekit/blob/main/docs/guide-fallback.md">How to do this in your app</a></p>
 </main>
 <script type="module" src="lanes.js"></script>
 <script>
-  // Embedded on the decidejs front page: tell the parent how tall to be.
+  // Embedded on the decidekit front page: tell the parent how tall to be.
   if (document.documentElement.classList.contains("embed")) new ResizeObserver(() => parent.postMessage({ lanesHeight: document.documentElement.scrollHeight }, location.origin)).observe(document.body);
 </script>
 </body>

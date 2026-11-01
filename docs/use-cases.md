@@ -1,6 +1,6 @@
 # Use cases
 
-decidejs answers one question about a piece of text: which of these labels fits? It runs where the text already
+decidekit answers one question about a piece of text: which of these labels fits? It runs where the text already
 is (the user's tab, your Node process), so each answer is free, private and a few milliseconds. Use it when a
 fixed set of labels covers the question and you can collect a few dozen to a few hundred examples per label.
 
@@ -36,7 +36,7 @@ rows first. Nothing uploads.
 **Let an LLM teach it.** Start from label names alone and wrap your LLM call in `withFallback`: unsure messages go to
 the LLM, its answers become training examples, and the share it sees keeps falling. On CLINC150 (150 intents) the LLM
 saw 67% of messages at first and 14.5% after ten retrains, with the local head at 93.3%. Watch it happen in the
-[two-lanes demo](https://debuff.jp/decidejs/lanes/); the [fallback guide](guide-fallback.md) has the code.
+[two-lanes demo](https://debuff.jp/decidekit/lanes/); the [fallback guide](guide-fallback.md) has the code.
 
 **Games.** Read typed player chat or commands ("attack the goblin", "open the door") with no server, offline, at a
 few milliseconds a message. Label names alone are enough to prototype a command set.
@@ -65,5 +65,5 @@ error?" Small decisions an app makes thousands of times.
 
 ## Share yours
 
-Built something with decidejs? Post it in [Show and tell](https://github.com/debuffjp/decidejs/discussions) or the
+Built something with decidekit? Post it in [Show and tell](https://github.com/debuffjp/decidekit/discussions) or the
 [debuff Discord](https://discord.gg/jshbDHSpCY). Heads trained on public data are welcome there too.

@@ -1,4 +1,4 @@
-# decidejs docs
+# decidekit docs
 
 Start with the [main README](../README.md) for a five-line example and the headline numbers.
 
@@ -12,12 +12,12 @@ Start with the [main README](../README.md) for a five-line example and the headl
 - [Other languages](faq.md#which-languages-does-it-support): `multilingual-e5-small`, measured on Japanese, Chinese, German and Spanish.
 - [Coming from Jev](guide-typesafe.md): TypeSafe's client shape on a local decider, what differs and using Jev as the fallback.
 - [Bundlers](bundlers.md): Vite, webpack and Next.js config.
-- [switch](guide-switch.md): decidejs as a decision model in the switch harness, with trained heads and a teacher, and WikiRace results.
+- [switch](guide-switch.md): decidekit as a decision model in the switch harness, with trained heads and a teacher, and WikiRace results.
 - [Use cases](use-cases.md): good fits, poor fits and example code.
 
 ## Reference
 
-- [API reference](api.md): every export of `decidejs` and `decidejs/browser`, and the CLI.
+- [API reference](api.md): every export of `decidekit` and `decidekit/browser`, and the CLI.
 - [How it works](how-it-works.md): the encoder, the head and each training step, with the numbers behind them.
 - [Moving parts](moving-parts.md): every piece on one page (encoder, scoring, heads, calibration, fallback, worker, isolation, bundlers, caching, head files), where it lives and the numbers behind it.
 - [FAQ](faq.md).
@@ -25,5 +25,5 @@ Start with the [main README](../README.md) for a five-line example and the headl
 
 ## Write-ups
 
-- [Introducing decidejs](https://debuff.jp/blog/introducing-decidejs): what it is and the headline numbers.
+- [Introducing decidekit](https://debuff.jp/blog/introducing-decidekit): what it is and the headline numbers.
 - [When the LLM is wrong](https://debuff.jp/research/learning-from-a-noisy-llm): how `withFallback` learns from an LLM that makes mistakes.

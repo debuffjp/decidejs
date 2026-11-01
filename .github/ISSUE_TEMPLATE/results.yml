@@ -1,5 +1,5 @@
 name: Results on my data
-description: Share how decidejs did on a real task, good or bad
+description: Share how decidekit did on a real task, good or bad
 labels: [results]
 body:
   - type: textarea

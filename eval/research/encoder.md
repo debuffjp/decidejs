@@ -18,7 +18,7 @@ Baseline: bge-small q8, mean pooling, cosine against the better of name and desc
 
 8. **Static-embedding fast tier (model2vec potion).** Under 10 MB, about 0.1 ms per text, roughly 90% of MiniLM's MTEB score (https://github.com/MinishLab/model2vec, https://huggingface.co/blog/static-embeddings). Use it as an instant first pass or a low-end-device fallback; it loses accuracy. Test: `latency.ts` and `suite.ts` with a potion tokenizer-lookup path.
 
-9. **Pooling.** bge was trained with CLS pooling (see the model card), but decidejs uses mean pooling. Try `pooling: "cls"`. Expected gain: 0 to 1.5 points. Cost: one line. This is the cheapest test on the list, so run it first.
+9. **Pooling.** bge was trained with CLS pooling (see the model card), but decidekit uses mean pooling. Try `pooling: "cls"`. Expected gain: 0 to 1.5 points. Cost: one line. This is the cheapest test on the list, so run it first.
 
 10. **dtype and device.** fp16 against q8: expect about 0.0 to 0.5 points from fp16, at twice the download. int4 (q4) weights halve the size, but small BERT models lose more under it, so measure the drop. WebGPU via transformers.js v3 (https://huggingface.co/blog/transformersjs-v3) helps batch encoding of labels and examples while training, and probably not single-text latency at about 8 ms. Test: `latency.ts` per dtype/device, with accuracy from `suite.ts`.
 

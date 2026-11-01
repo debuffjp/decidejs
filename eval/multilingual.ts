@@ -1,4 +1,4 @@
-// Does decidejs work outside English? MASSIVE (60 intents, the same utterances translated per language), English label
+// Does decidekit work outside English? MASSIVE (60 intents, the same utterances translated per language), English label
 // names, for bge-small-en (the default) and multilingual-e5-small (needs "query: " before every text). Per language:
 // zero-shot accuracy, a head trained on 10 examples per label from that language, one trained on all of that
 // language's training rows, and one trained on English rows only (train once, use in every language). Test: 2,000

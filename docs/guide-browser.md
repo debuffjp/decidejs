@@ -6,7 +6,7 @@ The encoder runs wasm that never gives the thread a turn. On the main thread, tr
 171 s. In a worker, the page's longest stall while training was 18 ms. So in a browser, use `createWorkerDecider()`:
 
 ```ts
-import { createWorkerDecider, loadHead } from "decidejs/browser";
+import { createWorkerDecider, loadHead } from "decidekit/browser";
 
 const d = await createWorkerDecider();
 const r = await d.decide(input.value, ["question", "bug_report", "praise"]);
@@ -65,7 +65,7 @@ and the page never stalled for more than 18 ms.
 
 `credentialless` lets the page keep loading cross-origin images and scripts without credentials and without each
 server opting in. Check that third-party embeds you rely on (sign-in pop-ups, payment frames) still work with
-`same-origin` before turning it on. Without the headers, decidejs still works, single-threaded.
+`same-origin` before turning it on. Without the headers, decidekit still works, single-threaded.
 
 Header config for Vite, webpack and Next.js is in [bundlers.md](bundlers.md).
 
@@ -83,7 +83,7 @@ Header config for Vite, webpack and Next.js is in [bundlers.md](bundlers.md).
 With the alias, the first visit downloads the 34 MB model plus 12.9 MB of wasm (3.3 MB gzipped). Everything is cached
 after that. With all-MiniLM-L6-v2 the first visit was about 36 MB.
 
-The alias swaps onnxruntime's WebGPU build for its plain wasm build, which decidejs uses by default:
+The alias swaps onnxruntime's WebGPU build for its plain wasm build, which decidekit uses by default:
 
 ```js
 // vite.config.js
@@ -102,30 +102,30 @@ would any other asset.
 
 ## Bundlers
 
-decidejs starts its worker with `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`, the pattern
+decidekit starts its worker with `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`, the pattern
 Vite, webpack 5 and esbuild-based tools recognise. Tested from the packed package in Vite 7.1, webpack 5.112 and
 Next.js 16.4 (Turbopack). Config for each: [bundlers.md](bundlers.md).
 
-If your setup needs a different worker URL, create the `Worker` yourself, pointing at decidejs' `dist/worker.js`
+If your setup needs a different worker URL, create the `Worker` yourself, pointing at decidekit' `dist/worker.js`
 however your bundler serves it, and pass it as the second argument: `createWorkerDecider(options, worker)`.
 
 ## Keep the encoder out of the page bundle
 
-Import from `decidejs/browser`, not `decidejs`, in page code. `decidejs` pulls in transformers.js and the encoder; the
+Import from `decidekit/browser`, not `decidekit`, in page code. `decidekit` pulls in transformers.js and the encoder; the
 browser entry only holds the worker client and the head functions. A page that only loads a head came to 3.6 KB from
-`decidejs/browser` against 482 KB from `decidejs`.
+`decidekit/browser` against 482 KB from `decidekit`.
 
 ```ts
 // good: the encoder stays in the worker's chunk
-import { createWorkerDecider, loadHead } from "decidejs/browser";
+import { createWorkerDecider, loadHead } from "decidekit/browser";
 
 // pulls the encoder into the page bundle
-import { loadHead } from "decidejs";
+import { loadHead } from "decidekit";
 ```
 
 Types work the same from either entry.
 
 ## Server rendering
 
-`decidejs/browser` starts a Web Worker, so import it only in the browser. In Next.js, use a dynamic `import()` inside
+`decidekit/browser` starts a Web Worker, so import it only in the browser. In Next.js, use a dynamic `import()` inside
 `useEffect` in a client component; [bundlers.md](bundlers.md#nextjs) has the code.
