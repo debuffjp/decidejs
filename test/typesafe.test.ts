@@ -7,8 +7,8 @@ const decider = {
   async decide(text: string, using: any) {
     seen.push({ text, using });
     const labels: string[] = Array.isArray(using) ? using : Object.keys(using);
-    const probs = Object.fromEntries(labels.map((l, i) => [l, i === 0 ? 0.61 : (1 - 0.61) / (labels.length - 1)]));
-    return { choice: labels[0], confidence: 0.61, probs } as any;
+    const probabilities = Object.fromEntries(labels.map((l, i) => [l, i === 0 ? 0.61 : (1 - 0.61) / (labels.length - 1)]));
+    return { choice: labels[0], confidence: 0.61, probabilities } as any;
   },
 };
 

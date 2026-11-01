@@ -20,7 +20,7 @@ for (const [name, using] of [["zero-shot", labels], ["5-shot head", head]] as co
     if (m.llm === m.label) continue;
     wrong++;
     if (!labels.includes(m.llm!)) { offList++; continue; }
-    const ranked = Object.entries(r.probs as Record<string, number>).sort((a, b) => b[1] - a[1]).map(([l]) => l).filter((l) => l !== m.label);
+    const ranked = Object.entries(r.probabilities as Record<string, number>).sort((a, b) => b[1] - a[1]).map(([l]) => l).filter((l) => l !== m.label);
     if (ranked[0] === m.llm) top1++;
     if (ranked.slice(0, 3).includes(m.llm!)) top3++;
   }

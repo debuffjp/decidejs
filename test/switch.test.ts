@@ -13,8 +13,8 @@ function fake() {
       const entries = (Array.isArray(using) ? using.map((l) => [l, l]) : "weights" in using ? (using as Head<L>).labels.map((l) => [l, l]) : Object.entries(using)) as [L, string][];
       const confidence = Number(text.split(" ")[0]) || 0.99;
       const hit = entries.find(([, t]) => text.includes(t)) ?? entries[0];
-      const probs = Object.fromEntries(entries.map(([l]) => [l, l === hit[0] ? confidence : (1 - confidence) / (entries.length - 1)])) as Record<L, number>;
-      return { choice: hit[0], confidence, probs };
+      const probabilities = Object.fromEntries(entries.map(([l]) => [l, l === hit[0] ? confidence : (1 - confidence) / (entries.length - 1)])) as Record<L, number>;
+      return { choice: hit[0], confidence, probabilities };
     },
     async train<L extends string>(examples: readonly Example<L>[]) {
       trained.push([...examples]);

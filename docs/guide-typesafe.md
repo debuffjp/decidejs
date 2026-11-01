@@ -42,14 +42,16 @@ answers.department.choice; // "returns" | "shipping" | "billing"
 
 ## `confidence`
 
-The field means something different from `decide()`, and this layer follows TypeSafe. [Their `confidence`](https://docs.typesafe.ai/confidence) measures how concentrated the probabilities are, from 1 with everything on one option to 0 when evenly spread: `(n * top - 1) / (n - 1)` for `n` options. `decide()` returns the top probability itself.
+`decide()` and Jev use the same field names (`choice`, `probabilities`, `confidence`), but `confidence` means something different, and this layer follows TypeSafe. [Their `confidence`](https://docs.typesafe.ai/confidence) measures how concentrated the probabilities are, from 1 with everything on one option to 0 when evenly spread: `(n * top - 1) / (n - 1)` for `n` options. `decide()` returns the top probability itself.
 
 | Top probability, 3 options | `decide()` `confidence` | `systemOne()` `confidence` |
 |---|---|---|
 | 0.61 | 0.61 | 0.415 |
 | 0.90 | 0.90 | 0.85 |
 
-The calibration measured in the [confidence guide](guide-confidence.md) is for the top probability: read it with `Math.max(...Object.values(answer.probabilities))`. A threshold tuned on Jev won't carry over to decidejs, or the other way: pick it again on your own data.
+The calibration measured in the [confidence guide](guide-confidence.md) is for the top probability: read it with `Math.max(...Object.values(answer.probabilities))`. We keep the top probability as the default because it can be read directly: an answer at 0.9 is right about 90% of the time, at any number of labels. TypeSafe's measure has a fair zero, an even split, which top probability lacks: 0.5 is weak with two labels and strong with fifty.
+
+A threshold tuned on Jev won't carry over to decidejs, or the other way: pick it again on your own data.
 
 ## Jev as the fallback
 

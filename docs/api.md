@@ -65,7 +65,7 @@ Picks one option for `text`. `using` is one of:
 `"card_arrival" | "refund" | "other"`, not `string`.
 
 With `options.minConfidence` set, `choice` is `null` when `confidence` is below it, and the return type includes
-`null`. `confidence` and `probs` are filled in either way.
+`null`. `confidence` and `probabilities` are filled in either way.
 
 ```ts
 const r = await d.decide(text, { refund: "wants their money back", bug: "something is broken" });
@@ -245,7 +245,7 @@ Both `saveHead` and `loadHead` are exported from `decidejs` and from `decidejs/b
 interface Decision<L extends string, C extends L | null = L> {
   choice: C;                 // the most likely option; null when below minConfidence
   confidence: number;        // probability of the top option, 0 to 1
-  probs: Record<L, number>;  // probability of every option, sums to 1
+  probabilities: Record<L, number>;  // probability of every option, sums to 1
   similarity?: number;       // zero-shot only: best cosine similarity to any option's name or description
 }
 ```

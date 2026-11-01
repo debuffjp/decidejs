@@ -19,7 +19,7 @@ for (const k of [8, 32]) for (const seed of [7, 8, 9]) {
   for (const shifted of [false, true]) {
     const head = await d.train(kShot(train, k, seed));
     const s = (await d.decideMany(test.map((r) => r.text), head)).map((p, i) => {
-      const w = labels.map((l) => (p.probs as Record<string, number>)[l] * (shifted ? share[l] : 1));
+      const w = labels.map((l) => (p.probabilities as Record<string, number>)[l] * (shifted ? share[l] : 1));
       const sum = w.reduce((a, b) => a + b, 0), best = w.indexOf(Math.max(...w));
       return { right: labels[best] === test[i].label, confidence: w[best] / sum };
     });

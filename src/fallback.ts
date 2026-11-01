@@ -51,7 +51,7 @@ export interface FallbackOptions<L extends string> {
   restore?: { learned?: readonly Example<L>[]; confident?: readonly Example<L>[] };
 }
 
-/** A decision plus where it came from. `confidence` and `probs` are always the local decision's. */
+/** A decision plus where it came from. `confidence` and `probabilities` are always the local decision's. */
 export interface RoutedDecision<L extends string> extends Decision<L, L | null> {
   source: "local" | "fallback";
 }

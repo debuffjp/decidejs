@@ -1,12 +1,12 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-11-02)
 
 The first release. Numbers are on public test splits unless noted; the scripts that produced them are in `eval/`.
 
 ### Deciding
 
-- `createDecider()` picks one of your labels for a text, in Node or the browser, with `confidence` and `probs`. Labels
+- `createDecider()` picks one of your labels for a text, in Node or the browser, with `confidence` and `probabilities`. Labels
   are the type: `choice` has the literal type of the labels you pass.
 - Zero-shot from label names, or from described labels (`{ card_arrival: "My card hasn't arrived." }`), which score by
   the better of name and description. Zero-shot decisions report `similarity`, the best cosine similarity to any

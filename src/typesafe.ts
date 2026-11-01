@@ -62,9 +62,9 @@ export function typesafeClient(decider: Decides) {
     async systemOne<const Q extends Record<string, ChoiceQuestion<string>>>({ state, questions }: { state: string | Readonly<Record<string, unknown>>; questions: Q }) {
       const text = stateText(state), answers: Record<string, ChoiceAnswer<string>> = {};
       for (const [id, q] of Object.entries(questions)) {
-        const { choice, confidence, probs } = await decider.decide(text, options(q.criteria));
-        const n = Object.keys(probs).length;
-        answers[id] = { type: "choice", choice, confidence: Math.max(0, (n * confidence - 1) / (n - 1)), probabilities: probs };
+        const { choice, confidence, probabilities } = await decider.decide(text, options(q.criteria));
+        const n = Object.keys(probabilities).length;
+        answers[id] = { type: "choice", choice, confidence: Math.max(0, (n * confidence - 1) / (n - 1)), probabilities };
       }
       return { model: "decidejs", answers: answers as { [K in keyof Q]: Q[K] extends ChoiceQuestion<infer L> ? ChoiceAnswer<L> : never } };
     },

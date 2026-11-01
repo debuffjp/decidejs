@@ -11,10 +11,10 @@ function fake() {
       const confidence = Number(text.split(" ")[0]);
       const labels = (Array.isArray(using) ? using : "weights" in using ? (using as Head<L>).labels : Object.keys(using)) as L[];
       const head = { labels };
-      const probs = Object.fromEntries(head.labels.map((l, i) => [l, i === 0 ? confidence : (1 - confidence) / (head.labels.length - 1)])) as Record<L, number>;
+      const probabilities = Object.fromEntries(head.labels.map((l, i) => [l, i === 0 ? confidence : (1 - confidence) / (head.labels.length - 1)])) as Record<L, number>;
       const named = text.split(" ")[1] as L;
       const similarity = Number(text.match(/sim=([\d.]+)/)?.[1] ?? 0);
-      return { choice: labels.includes(named) ? named : head.labels[0], confidence, probs, similarity };
+      return { choice: labels.includes(named) ? named : head.labels[0], confidence, probabilities, similarity };
     },
     async train<L extends string>(examples: readonly Example<L>[], options?: TrainOptions<L>) {
       trained.push([...examples]);

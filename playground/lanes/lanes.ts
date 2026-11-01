@@ -72,14 +72,14 @@ function at(p: Path) {
 
 // --- decisions -------------------------------------------------------------------------------------------------
 const inFlight = new Map<string, Dot>();
-const topOf = (probs: Record<Label, number>) => (Object.entries(probs) as [Label, number][]).sort((a, b) => b[1] - a[1]);
+const topOf = (probabilities: Record<Label, number>) => (Object.entries(probabilities) as [Label, number][]).sort((a, b) => b[1] - a[1]);
 
 // Called by withFallback when decidejs isn't sure. The dot learns its answer as soon as it's known, but the promise
 // resolves only when the lesson chip reaches decidejs, so the retrain lands on screen when the lesson does.
-async function ask(text: string, _labels: readonly Label[], localDecision: { probs: Record<Label, number>; confidence: number }) {
+async function ask(text: string, _labels: readonly Label[], localDecision: { probabilities: Record<Label, number>; confidence: number }) {
   const dot = inFlight.get(text)!;
   dot.via = "llm";
-  last = { text, top: topOf(localDecision.probs).slice(0, 3), confidence: localDecision.confidence };
+  last = { text, top: topOf(localDecision.probabilities).slice(0, 3), confidence: localDecision.confidence };
   const lands = wait(3000);
   dot.choice = dot.m.llm ?? null;
   await lands;
@@ -104,8 +104,8 @@ function depart(dot: Dot) {
   void route!(dot.m.text).then((r) => {
     if (r.source !== "local") return;
     dot.via = "local";
-    dot.choice = r.choice ?? topOf(r.probs)[0][0];
-    last = { text: dot.m.text, top: topOf(r.probs).slice(0, 3), confidence: r.confidence };
+    dot.choice = r.choice ?? topOf(r.probabilities)[0][0];
+    last = { text: dot.m.text, top: topOf(r.probabilities).slice(0, 3), confidence: r.confidence };
   });
 }
 

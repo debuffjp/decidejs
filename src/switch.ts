@@ -109,12 +109,12 @@ export function switchDecider(local: Local, options: SwitchOptions = {}): Switch
       if (keys.length === 1) return { type: "choice", choice: keys[0], probabilities: { [keys[0]]: 1 }, confidence: 1 };
       if (teacher) states.set(text, state);
       const d = teacher ? await routerFor(id, q)(text).finally(() => states.delete(text)) : await local.decide(text, heads[id] ?? (q.criteria as Record<string, string>));
-      const choice = d.choice ?? (Object.entries(d.probs) as [string, number][]).sort((a, b) => b[1] - a[1])[0][0];
-      return { type: "choice", choice, probabilities: d.probs, confidence: d.confidence };
+      const choice = d.choice ?? (Object.entries(d.probabilities) as [string, number][]).sort((a, b) => b[1] - a[1])[0][0];
+      return { type: "choice", choice, probabilities: d.probabilities, confidence: d.confidence };
     }
     if (q.type === "bool") {
       const d = await local.decide(text, heads[id] ?? { true: q.criteria.true, false: q.criteria.false });
-      return { type: "bool", probability: (d.probs as Record<string, number>).true };
+      return { type: "bool", probability: (d.probabilities as Record<string, number>).true };
     }
     const levels = Object.fromEntries(q.criteria.map((c, i) => [String(i), c]));
     const d = await local.decide(text, heads[id] ?? levels);

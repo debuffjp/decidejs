@@ -15,7 +15,7 @@ export interface Decision<L extends string, C extends L | null = L> {
    */
   confidence: number;
   /** Probability of every option; sums to 1. */
-  probs: Record<L, number>;
+  probabilities: Record<L, number>;
   /**
    * Zero-shot only: the best cosine similarity between the text and any option's name or description. Low means the
    * text is about none of them (with bge-small, off-topic text was mostly under 0.5 and in-scope text over 0.7).
@@ -129,8 +129,8 @@ const PREFIX: Record<string, string> = { "Xenova/multilingual-e5-small": "query:
 function toDecision<L extends string>(labels: readonly L[], p: number[]): Decision<L> {
   let best = 0;
   for (let i = 1; i < p.length; i++) if (p[i] > p[best]) best = i;
-  const probs = Object.fromEntries(labels.map((l, i) => [l, p[i]])) as Record<L, number>;
-  return { choice: labels[best], confidence: p[best], probs };
+  const probabilities = Object.fromEntries(labels.map((l, i) => [l, p[i]])) as Record<L, number>;
+  return { choice: labels[best], confidence: p[best], probabilities };
 }
 
 /**

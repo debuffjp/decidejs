@@ -126,7 +126,7 @@ async function decide() {
     if (ticket !== latest) return; // a newer keystroke already asked
     status(`${(performance.now() - t0).toFixed(0)} ms · ${crossOriginIsolated ? "multi-threaded" : "single-threaded"}`);
     result.textContent = "";
-    const top = Object.entries(r.probs as Record<string, number>).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const top = Object.entries(r.probabilities as Record<string, number>).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const choice = result.appendChild(document.createElement("div"));
     choice.className = r.choice === null ? "choice none" : "choice";
     choice.innerHTML = "<b></b><span class=pct></span>";

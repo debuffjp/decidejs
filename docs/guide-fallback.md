@@ -167,7 +167,7 @@ off-topic queries):
 The calibration fix alone made off-topic text worse; with `NONE` learned it is the best of both.
 
 Before this default, `null` answers were dropped. `route.head.labels` and `route.learned` now include `NONE` once
-`ask` has returned `null`; `probs` has a `none_of_these` entry. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
+`ask` has returned `null`; `probabilities` has a `none_of_these` entry. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
 
 On CLINC150's 150 labels (eval/none-label.ts, one seed, a stand-in LLM that says `null` only for off-topic text),
