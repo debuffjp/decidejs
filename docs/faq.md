@@ -82,6 +82,24 @@ head reached 82.3-89.6% with 5 examples per label and 90.7-94.4% with all the tr
 labels reached 93.4% with one example per label. Hold back some labelled examples and measure: the recipe is in
 [guide-confidence.md](guide-confidence.md#pick-a-threshold-on-your-own-data).
 
+## What kinds of decisions is it good at?
+
+Deciding what a text is about: intents, topics, routing, categories. It is weak at deciding how a text feels. Measured
+with bge-small (2,000 test rows each, [eval/mteb.ts](../eval/mteb.ts), [eval/hwu64.ts](../eval/hwu64.ts)):
+
+| Task | Labels | Zero-shot | Trained | Confident answers right |
+|---|---|---|---|---|
+| HWU64 intents (never used for tuning) | 64 | 59.8% | 85.8% (10 per label), 90.2% (all) | 98% |
+| AG News topic | 4 | 67.5% | 84.4% (32 per label) | 95% |
+| Tweet sentiment | 3 | 53.3% | 61.3% (32 per label) | 89% |
+| Emotion | 6 | 50.6% | 49.4% (32 per label) | 66% |
+| Toxicity (7.6% toxic) | 2 | 65.7% | 66.6% (32 per label) | 56% |
+
+Sentiment, emotion and toxicity are limits of the encoder, which was trained on meaning, not tone: more examples
+barely help. Toxicity is the worst case, because rare labels make it worse: always answering "not toxic" would be
+right 92% of the time. Telling the head how rare toxic text is ([eval/prior-shift.ts](../eval/prior-shift.ts)) only
+made it answer "not toxic" to nearly everything. Use an LLM or a dedicated classifier for these for now.
+
 ## Why not fine-tune the encoder?
 
 Training only the head keeps training cheap enough for a browser tab (147-217 s for 10,003 examples, 0.1 s for 9) and

@@ -26,7 +26,7 @@ const labels = [...new Set(banking.train.map((r) => r.label))].sort();
 const descriptions: Record<string, string> = JSON.parse(await readFile(`eval/descriptions-${which}.json`, "utf8"));
 const d = await createDecider();
 const cache: Record<string, number[]> = JSON.parse(await readFile(`data/emb-${d.model.replace(/\W/g, "_")}.json`, "utf8"));
-const missing = [...banking.train, ...banking.test].map((r) => r.text).filter((t) => !cache[t]);
+const missing = [...banking.train, ...banking.test, ...loaded.clinc.oosTest].map((r) => r.text).filter((t) => !cache[t]);
 (await d.embed(missing)).forEach((v, i) => (cache[missing[i]] = v));
 const names = await d.embed(labels.map((l) => l.replace(/_/g, " ")));
 const descs = await d.embed(labels.map((l) => descriptions[l]));
@@ -72,6 +72,8 @@ for (let r = 0; r * ROUND < stream.length; r++) {
   head = await fitHead(learned.map((l) => l.x), learned.map((l) => l.y), labels, { seed: 7 }, names, 1, undefined, 0.5, calibration);
 }
 const test = (h: Head | null) => +(banking.test.filter((q) => top(predict(h, cache[q.text])) === labels.indexOf(q.label)).length / banking.test.length).toFixed(3);
-const line = { date: "2026-11-01", dataset: which, noise, hard, cal, self, final: true, headOnTest: test(head), zeroShotOnTest: test(null) };
+// CLINC150's 1,000 out-of-scope test queries: the share each answers locally (confidence 0.9 or more) instead of sending.
+const oos = (h: Head | null) => which === "clinc150" ? +(loaded.clinc.oosTest.filter((q) => Math.max(...predict(h, cache[q.text])) >= 0.9).length / loaded.clinc.oosTest.length).toFixed(3) : undefined;
+const line = { date: "2026-11-01", dataset: which, noise, hard, cal, self, final: true, headOnTest: test(head), zeroShotOnTest: test(null), oosAnsweredLocally: oos(head), zeroShotOosAnsweredLocally: oos(null) };
 console.log(JSON.stringify(line));
 await appendFile("eval/results-long-stream.jsonl", JSON.stringify(line) + "\n");
