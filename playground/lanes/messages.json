@@ -52,7 +52,7 @@
  {
   "text": "I payed with a card and was charged an extra fee",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "My latest payment was declined, I was told everything was back to working order. What happened?",
@@ -67,7 +67,7 @@
  {
   "text": "Is there a reason I was charged a fee for using my card as payment? I've never had an extra fee before.",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "I made a card payment and a fee is showing up?",
@@ -122,7 +122,7 @@
  {
   "text": "Why doesn't the card payment work",
   "label": "declined_card_payment",
-  "llm": "card_not_working"
+  "llm": "declined_card_payment"
  },
  {
   "text": "Help me.  My card doesn't work.",
@@ -142,7 +142,7 @@
  {
   "text": "How long will it take for the card to arrive?",
   "label": "card_delivery_estimate",
-  "llm": "card_arrival"
+  "llm": "card_delivery_estimate"
  },
  {
   "text": "I got a fee for an ATM withdrawal.",
@@ -172,7 +172,7 @@
  {
   "text": "My funding to my card didn't go through.",
   "label": "top_up_failed",
-  "llm": "declined_card_payment"
+  "llm": null
  },
  {
   "text": "My credit card was declined.",
@@ -267,7 +267,7 @@
  {
   "text": "I used my card for a purchase and was charged a fee",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "What is the fee charged with this card payment?",
@@ -297,7 +297,7 @@
  {
   "text": "im not sure what this charge is for",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": null
  },
  {
   "text": "I have a top up that didn't go through.  Why?",
@@ -312,7 +312,7 @@
  {
   "text": "There is an unauthorized fee.",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "Heyy I tried to top up with my card today but it failed! I just got the couple days before but it has worked last time. What's going on, can you double check please?",
@@ -322,7 +322,7 @@
  {
   "text": "I would appreciate that someone let me know when there is an extra charge for payments. I was checking the app earlier and saying a charge on one of my payments that was additional that no one made me aware of before.",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "still waiting on that card",
@@ -357,7 +357,7 @@
  {
   "text": "How do I track my card?",
   "label": "card_arrival",
-  "llm": "card_arrival"
+  "llm": "activate_my_card"
  },
  {
   "text": "So, I tried topping up my card for the today. Unfortunately, it failed. A couple of days back I used it and it works fine. Can you double check and tell me what's going on?",
@@ -382,7 +382,7 @@
  {
   "text": "How long does it take to get my card? Can I choose when to receive it?",
   "label": "card_delivery_estimate",
-  "llm": "card_arrival"
+  "llm": "card_delivery_estimate"
  },
  {
   "text": "I'm just wondering when my card will get here.",
@@ -397,7 +397,7 @@
  {
   "text": "Why hasn't my card been delivered?",
   "label": "card_arrival",
-  "llm": "card_delivery_estimate"
+  "llm": "card_arrival"
  },
  {
   "text": "Why was my top-up unsuccessful?",
@@ -427,7 +427,7 @@
  {
   "text": "I have been waiting longer than expected for my bank card, could you provide information on when it will arrive?",
   "label": "card_arrival",
-  "llm": "card_arrival"
+  "llm": "card_delivery_estimate"
  },
  {
   "text": "My card was declined today when eating and I need to know what's wrong.",
@@ -462,7 +462,7 @@
  {
   "text": "Is it a good time to exchange?",
   "label": "exchange_rate",
-  "llm": "exchange_rate"
+  "llm": null
  },
  {
   "text": "Would like to use my card and need to activate it first.  Can you help me do this?",
@@ -577,7 +577,7 @@
  {
   "text": "Why did I have to pay extra because I paid with card?",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "A fee was charged for my recent withdrawal.",
@@ -602,7 +602,7 @@
  {
   "text": "How can I get my physical card to work?",
   "label": "card_not_working",
-  "llm": "card_arrival"
+  "llm": "card_not_working"
  },
  {
   "text": "Please, activate my card",
@@ -617,12 +617,12 @@
  {
   "text": "Why did I have to pay more when I do it with my card?",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "I show another charge on my card from when I used it, why?",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "My new card keeps getting declined. I was very excited to use it for the first time today. Why is this doing this?",
@@ -642,7 +642,7 @@
  {
   "text": "Why was I charged for card payment?",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "When will I get my card?",
@@ -652,7 +652,7 @@
  {
   "text": "Why would I be charged a fee for card payment?",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "I want to choose a different PIN.",
@@ -667,7 +667,7 @@
  {
   "text": "I was charged a fee after using my card and I shouldn't have been.",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "I lost my card",
@@ -677,7 +677,7 @@
  {
   "text": "How long will it take to arrive?",
   "label": "card_delivery_estimate",
-  "llm": "card_arrival"
+  "llm": "card_delivery_estimate"
  },
  {
   "text": "I cant find my card, it's gone.",
@@ -717,7 +717,7 @@
  {
   "text": "I have been charged a fee for paying with card",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "how to activate card?",
@@ -762,7 +762,7 @@
  {
   "text": "When should I expect my card?",
   "label": "card_delivery_estimate",
-  "llm": "card_arrival"
+  "llm": "card_delivery_estimate"
  },
  {
   "text": "My card won't work.",
@@ -832,7 +832,7 @@
  {
   "text": "How long will it take to deliver something to US?",
   "label": "card_delivery_estimate",
-  "llm": null
+  "llm": "card_delivery_estimate"
  },
  {
   "text": "I received my new card, how is it activated?",
@@ -867,7 +867,7 @@
  {
   "text": "Do you know why my card payment did not work?",
   "label": "declined_card_payment",
-  "llm": "card_not_working"
+  "llm": "declined_card_payment"
  },
  {
   "text": "How often do your exchange rates change",
@@ -912,7 +912,7 @@
  {
   "text": "Why are there fees for card usage?",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": null
  },
  {
   "text": "I got my new card where do I go to activate it?",
@@ -937,7 +937,7 @@
  {
   "text": "Is it normal to have to wait over a week for my new card?",
   "label": "card_arrival",
-  "llm": "card_arrival"
+  "llm": "card_delivery_estimate"
  },
  {
   "text": "Did you start charging for cash withdrawals? I thought it was free so far but noticed suddendly there is a fee. How much do I need to pay?",
@@ -957,7 +957,7 @@
  {
   "text": "Why was I charged an extra fee when paying with my card?",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": "card_payment_fee_charged"
  },
  {
   "text": "My card was declined in a shop",
@@ -987,7 +987,7 @@
  {
   "text": "Why do I get charged additional fees on some payments, but not others?",
   "label": "card_payment_fee_charged",
-  "llm": "declined_card_payment"
+  "llm": null
  },
  {
   "text": "If I am overseas, how do I change my pin?",
@@ -1052,7 +1052,7 @@
  {
   "text": "WHAT CAN I DO AFTER THE CARD MISSING",
   "label": "activate_my_card",
-  "llm": "lost_or_stolen_card"
+  "llm": "card_arrival"
  },
  {
   "text": "Is there a fee for withdrawing cash?",
@@ -1076,102 +1076,127 @@
  },
  {
   "text": "I've notice I was charged for withdrawing cash, can you explain why?",
-  "label": "cash_withdrawal_charge"
+  "label": "cash_withdrawal_charge",
+  "llm": "cash_withdrawal_charge"
  },
  {
   "text": "My top up didn't work.",
-  "label": "top_up_failed"
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
  },
  {
   "text": "I desperately need to change my PIN, but I'm overseas on vacation right now. How can I do this?",
-  "label": "change_pin"
+  "label": "change_pin",
+  "llm": "change_pin"
  },
  {
   "text": "What is the exchange rate like on this app?",
-  "label": "exchange_rate"
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
  },
  {
   "text": "I tried activating my bill of fare and it didn't workplace",
-  "label": "activate_my_card"
+  "label": "activate_my_card",
+  "llm": null
  },
  {
   "text": "I have a pending transfer",
-  "label": "pending_transfer"
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
  },
  {
   "text": "I am waiting for a pending money transfer to process.",
-  "label": "pending_transfer"
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
  },
  {
   "text": "How can I check to see if my top-up worked?",
-  "label": "top_up_failed"
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
  },
  {
   "text": "How can I change my Tholepin ?",
-  "label": "change_pin"
+  "label": "change_pin",
+  "llm": "change_pin"
  },
  {
   "text": "How do I set a new pin?",
-  "label": "change_pin"
+  "label": "change_pin",
+  "llm": "change_pin"
  },
  {
   "text": "I'd like to make a new PIN selection.",
-  "label": "change_pin"
+  "label": "change_pin",
+  "llm": "change_pin"
  },
  {
   "text": "Why didn`t my topup go through?",
-  "label": "top_up_failed"
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
  },
  {
   "text": "Can you tell me where you get your exchange rates?",
-  "label": "exchange_rate"
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
  },
  {
   "text": "In what ATM can I change my pin?",
-  "label": "change_pin"
+  "label": "change_pin",
+  "llm": "change_pin"
  },
  {
   "text": "How long will it take to activate my new card?",
-  "label": "activate_my_card"
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
  },
  {
   "text": "I would like to change my PIN but I am not currently in the country.",
-  "label": "change_pin"
+  "label": "change_pin",
+  "llm": "change_pin"
  },
  {
   "text": "Is there a way my new card can be renewed?",
-  "label": "activate_my_card"
+  "label": "activate_my_card",
+  "llm": null
  },
  {
   "text": "please tell me why my top-up failed.",
-  "label": "top_up_failed"
+  "label": "top_up_failed",
+  "llm": "top_up_failed"
  },
  {
   "text": "Why is my transfer not done yet?",
-  "label": "pending_transfer"
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
  },
  {
   "text": "I had made a transfer but its still pending.",
-  "label": "pending_transfer"
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
  },
  {
   "text": "Can i change my PIN at the ATM?",
-  "label": "change_pin"
+  "label": "change_pin",
+  "llm": "change_pin"
  },
  {
   "text": "What exchange rates do you offer?",
-  "label": "exchange_rate"
+  "label": "exchange_rate",
+  "llm": "exchange_rate"
  },
  {
   "text": "I did transfer, why is it pending",
-  "label": "pending_transfer"
+  "label": "pending_transfer",
+  "llm": "pending_transfer"
  },
  {
   "text": "How do I activate a card I received?",
-  "label": "activate_my_card"
+  "label": "activate_my_card",
+  "llm": "activate_my_card"
  },
  {
   "text": "My entire gym bag, including my wallet, was stolen out of my locker today. Everything in my wallet is gone - how do I block the card to make it can't be used?",
-  "label": "lost_or_stolen_card"
+  "label": "lost_or_stolen_card",
+  "llm": "lost_or_stolen_card"
  }
 ]
