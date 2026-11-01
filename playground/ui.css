@@ -71,3 +71,9 @@ input[type=range] { accent-color: var(--fg); width: 120px; }
 
 main.wide { max-width: 1040px; }
 canvas { display: block; width: 100%; }
+
+/* lanes/?embed: just the demo, for the front page */
+.embed nav.top, .embed h1, .embed .lead, .embed .fine { display: none; }
+.embed main { padding: 0; max-width: none; }
+html.embed { overflow: hidden; }
+.embed body { background: transparent; }

@@ -1,4 +1,4 @@
-import { createWorkerDecider, loadHead, type Choices, type Head } from "../src/browser.ts";
+import { createWorkerDecider, loadHead, type Choices, type Head } from "../../src/browser.ts";
 
 type Mode = "zero" | "banking77" | "clinc150" | "train";
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -24,7 +24,7 @@ const d = await createWorkerDecider({
     for (const [x, y] of files.values()) { a += x; b += y; }
     status(`Downloading the model, first visit only: ${(a / 1e6).toFixed(1)} of ${(b / 1e6).toFixed(1)} MB`);
   },
-});
+}, new Worker(new URL("../worker.js", import.meta.url), { type: "module" }));
 ready = true;
 status(crossOriginIsolated ? "Ready · multi-threaded" : "Ready · single-threaded");
 
@@ -41,7 +41,7 @@ function labelsFromBox(): Choices<string> {
 async function choices(): Promise<Choices<string> | undefined> {
   if (mode === "zero") return labelsFromBox();
   if (mode === "train") return trained;
-  heads[mode] ??= loadHead(await (await fetch(`heads/${mode}.head.json`)).text());
+  heads[mode] ??= loadHead(await (await fetch(`../heads/${mode}.head.json`)).text());
   return heads[mode];
 }
 

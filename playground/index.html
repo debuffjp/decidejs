@@ -2,98 +2,125 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>decidejs playground</title>
-<meta name="description" content="Sort text into your own labels with a small model that runs in your browser tab.">
+<title>decidejs: fast, typed decisions from text</title>
+<meta name="description" content="decidejs picks one of your labels for a piece of text in milliseconds, on the user's device, and learns from an LLM when it isn't sure. Open source.">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&display=swap">
 <link rel="stylesheet" href="ui.css">
 <style>
-  .result { margin-top: 18px; min-height: 196px; }
-  .choice { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
-  .choice b { font-size: 1.35rem; font-weight: 600; letter-spacing: -.01em; overflow-wrap: anywhere; }
-  .choice .pct { font-family: "Geist Mono", monospace; color: var(--muted); }
-  .choice.none b { color: var(--muted); }
-  .p { display: grid; grid-template-columns: minmax(0, 13em) 1fr 3.6em; gap: 10px; align-items: center; font-size: 13px; margin: 6px 0; }
-  .p span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
-  .p.top span:first-child { color: var(--fg); }
-  .track { height: 6px; background: var(--soft); border-radius: 999px; overflow: hidden; }
-  .fill { height: 100%; background: var(--ring); border-radius: 999px; transition: width .25s ease; }
-  .p.top .fill { background: var(--fg); }
-  .p span:last-child { text-align: right; font-family: "Geist Mono", monospace; font-size: 12px; color: var(--muted); }
-  .foot { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
-  .foot .end { margin-left: auto; }
-  .promo { display: flex; gap: 16px; align-items: center; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; }
-  .promo p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .hero { padding: 36px 0 8px; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.1rem); letter-spacing: -.035em; margin: 10px 0 12px; max-width: 18ch; }
+  .hero .lead { font-size: 17px; max-width: 60ch; }
+  .eyebrow { display: inline-flex; gap: 8px; align-items: center; font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
+  .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .cta { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0 28px; }
+  .cta a { text-decoration: none; }
+  pre { margin: 0; overflow-x: auto; font: 13px/1.65 "Geist Mono", monospace; }
+  .code { background: var(--soft); }
+  .k { color: var(--muted); } .s { color: #65a30d; } body.dark .s, :root:not(.light) .s { color: var(--accent); }
+  section { margin: 44px 0; }
+  section > h2 { font-size: 1.35rem; letter-spacing: -.02em; margin-bottom: 6px; }
+  section > .lead { margin-bottom: 18px; }
+  .frame { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #0b0b0d; }
+  .frame iframe { display: block; width: 100%; border: 0; height: 640px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .stat b { display: block; font-size: 1.9rem; letter-spacing: -.03em; font-weight: 600; }
+  .stat span { color: var(--muted); font-size: 13px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .cards .card h3 { margin: 0 0 4px; font-size: 14px; font-weight: 600; }
+  .cards .card p { margin: 0; color: var(--muted); font-size: 13px; }
+  .cards a.card { text-decoration: none; transition: border-color .15s; } .cards a.card:hover { border-color: var(--ring); }
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: center; }
+  @media (max-width: 820px) { .two { grid-template-columns: minmax(0, 1fr); } .frame iframe { height: 900px; } }
+  footer { border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); font-size: 13px; display: flex; gap: 16px; flex-wrap: wrap; }
 </style>
 <body>
 <main>
-  <nav class="top"><b>decidejs</b><span>/</span><span>Playground</span>
-    <a class="end" href="lanes/">Two lanes demo</a><a class="end" href="https://github.com/debuffjp/decidejs">GitHub</a></nav>
-  <h1>Sort text into your labels, right in this tab</h1>
-  <p class="lead">A 23 MB sentence model runs in your browser and picks the label that fits, with a confidence you can
-    trust. Nothing you type leaves your device.</p>
+  <nav class="top"><b>decidejs</b>
+    <a class="end" href="playground/">Playground</a><a class="end" href="lanes/">Two lanes</a>
+    <a class="end" href="https://github.com/debuffjp/decidejs/tree/main/docs">Docs</a><a class="end" href="https://github.com/debuffjp/decidejs">GitHub</a></nav>
 
-  <div class="grid">
-    <section class="card">
-      <h2>Labels</h2>
-      <p class="desc">What should it choose between?</p>
-      <div class="tabs" role="tablist" id="tabs">
-        <button role="tab" data-mode="zero" aria-selected="true">Your labels</button>
-        <button role="tab" data-mode="banking77" aria-selected="false">Banking</button>
-        <button role="tab" data-mode="clinc150" aria-selected="false">Assistant</button>
-        <button role="tab" data-mode="train" aria-selected="false">Train your own</button>
-      </div>
+  <div class="hero">
+    <span class="eyebrow">Open source · runs in the browser and Node</span>
+    <h1>A gut feeling for your app</h1>
+    <p class="lead">decidejs picks one of your labels for a piece of text in milliseconds, on the user's device, with a
+      confidence you can trust. When it isn't sure, it can ask an LLM and learn from the answer, so it asks less every
+      day.</p>
+    <div class="cta">
+      <a href="playground/"><button class="primary">Try it in your browser</button></a>
+      <a href="https://github.com/debuffjp/decidejs"><button>GitHub</button></a>
+      <a href="https://github.com/debuffjp/decidejs/tree/main/docs"><button>Docs</button></a>
+    </div>
+    <div class="two">
+      <div class="card code"><pre><span class="k">import</span> { createDecider } <span class="k">from</span> <span class="s">"decidejs"</span>;
 
-      <div id="zero-box">
-        <label class="field" for="labels">Labels, one per line</label>
-        <textarea id="labels" rows="6">question
-bug_report
-praise: says something nice about the product
-feature_request: asks for something new</textarea>
-        <div class="hint">Add <code>: description</code> to say what a label means. No training needed: it compares your text with the label names.</div>
+<span class="k">const</span> d = <span class="k">await</span> createDecider();
+<span class="k">const</span> { choice, confidence } = <span class="k">await</span> d.decide(
+  <span class="s">"my card still hasn't arrived"</span>,
+  [<span class="s">"card_arrival"</span>, <span class="s">"lost_card"</span>, <span class="s">"refund"</span>],
+);
+<span class="k">// choice: "card_arrival", typed as your labels</span></pre></div>
+      <div>
+        <h2>A System One model, in plain words</h2>
+        <p class="lead" style="font-size:14.5px;margin:6px 0 0">Kahneman called fast, intuitive thinking System 1. A
+          System One model works the same way: it doesn't write anything, it reads the text once and picks one of the
+          options you give it. That makes it fast, cheap and safe to wire into code, because the answer is always one of
+          your labels. decidejs is a small one: a 23 MB sentence model that runs where your text already is.</p>
       </div>
-
-      <div id="head-box" hidden>
-        <p class="hint" id="head-about"></p>
-      </div>
-
-      <div id="train-box" hidden>
-        <label class="field" for="examples">Examples, one per line as <code>label, text</code></label>
-        <textarea id="examples" rows="9">refund, I want my money back
-refund, please refund my order
-refund, can I get a refund for this
-shipping, where is my package
-shipping, my order hasn't arrived
-shipping, when will it be delivered
-account, I can't log in
-account, how do I reset my password
-account, change my email address</textarea>
-        <div class="row"><button id="train" class="primary">Train</button><span id="train-status" class="hint" style="margin:0"></span></div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Try it</h2>
-      <p class="desc">Type anything. It decides as you type.</p>
-      <input id="text" value="the app crashes when I open settings" autocomplete="off" aria-label="Text to decide">
-      <div class="chips" id="chips"></div>
-      <div class="result" id="result" aria-live="polite"></div>
-      <div class="foot">
-        <label class="switch"><input id="min" type="checkbox"> “None of these” below</label>
-        <input id="min-value" type="range" min="0.3" max="0.99" step="0.01" value="0.9" aria-label="Threshold">
-        <span class="mono" id="min-label">0.90</span>
-        <span class="end" id="status">Loading the model...</span>
-      </div>
-    </section>
+    </div>
   </div>
 
-  <div class="card promo">
-    <div><h2>Watch it learn from an LLM</h2><p>Unsure answers go to an LLM, and its replies become training data. The share it asks keeps falling.</p></div>
-    <a href="lanes/"><button class="primary">Open the two lanes demo</button></a>
-  </div>
-  <p class="fine">decidejs is open source (MIT). Docs and benchmarks on <a href="https://github.com/debuffjp/decidejs">GitHub</a>.
-    Made by the <a href="https://debuff.jp">debuff</a> team.</p>
+  <section>
+    <h2>Watch it learn from an LLM</h2>
+    <p class="lead">It starts out knowing only twelve label names. What it's sure of, it answers itself. What it isn't, it
+      asks an LLM about, and every eight answers it retrains. Type your own message to try it.</p>
+    <div class="frame"><iframe id="lanes" src="lanes/?embed" title="decidejs two lanes demo" loading="lazy"></iframe></div>
+  </section>
+
+  <section>
+    <h2>Numbers</h2>
+    <p class="lead">Measured on public intent datasets. Method and every run are in the repo.</p>
+    <div class="stats">
+      <div class="card stat"><b>90.6%</b><span>on 77 banking intents (BANKING77) with a trained head of 156 KB</span></div>
+      <div class="card stat"><b>67% → 14.5%</b><span>share of messages sent to the LLM, from label names alone to ten retrains (CLINC150)</span></div>
+      <div class="card stat"><b>0.9 = 90%</b><span>calibrated confidence: an answer at 0.9 is right about 90% of the time</span></div>
+      <div class="card stat"><b>3.6 KB</b><span>added to your page bundle; the model loads in a worker and is cached</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What people use it for</h2>
+    <div class="cards">
+      <div class="card"><h3>Cut the LLM bill</h3><p>Answer the easy majority on device and send only unsure messages to an LLM, which teaches it as it goes.</p></div>
+      <div class="card"><h3>Route support messages</h3><p>Billing, bug, account: route a message before it's sent, and show the right help while the user types.</p></div>
+      <div class="card"><h3>Command palettes</h3><p>"Make it darker" to <code>theme.dark</code>, in milliseconds, offline.</p></div>
+      <div class="card"><h3>Games</h3><p>Read typed player chat and commands with no server.</p></div>
+      <div class="card"><h3>Sensitive text</h3><p>Health, finance and internal tools: training and deciding both stay on the device.</p></div>
+      <div class="card"><h3>Agent harnesses</h3><p>A free decision model for <a href="https://github.com/osolmaz/switch">switch</a>, with an LLM as its teacher.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Go further</h2>
+    <div class="cards">
+      <a class="card" href="playground/"><h3>Playground</h3><p>Your own labels, ready-made banking and assistant heads, and a head you train in the page.</p></a>
+      <a class="card" href="lanes/"><h3>Two lanes</h3><p>The learning demo, full screen.</p></a>
+      <a class="card" href="https://github.com/debuffjp/decidejs/blob/main/docs/guide-fallback.md"><h3>Learn from an LLM</h3><p>The <code>withFallback</code> guide.</p></a>
+      <a class="card" href="https://github.com/debuffjp/decidejs/blob/main/docs/guide-react.md"><h3>React</h3><p><code>useDecider</code> and <code>useDecision</code>.</p></a>
+    </div>
+  </section>
+
+  <footer>
+    <span>MIT licensed. Made by the <a href="https://debuff.jp">debuff</a> team.</span>
+    <a href="https://discord.gg/jshbDHSpCY">Discord</a>
+    <a href="https://github.com/debuffjp/decidejs/discussions">Discussions</a>
+  </footer>
 </main>
-<script type="module" src="app.js"></script>
+<script>
+  // The embedded demo reports its height, so the frame fits it without a scrollbar.
+  addEventListener("message", (e) => {
+    if (e.origin === location.origin && e.data?.lanesHeight) document.getElementById("lanes").style.height = `${e.data.lanesHeight}px`;
+  });
+</script>
 </body>
 </html>

@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&display=swap">
 <link rel="stylesheet" href="../ui.css">
+<script>if (/[?&]embed\b/.test(location.search)) document.documentElement.classList.add("embed");</script>
 <body class="dark">
 <main class="wide">
   <nav class="top"><a href="../">decidejs</a><span>/</span><b>Two lanes</b><a class="end" href="https://github.com/debuffjp/decidejs">GitHub</a></nav>
@@ -32,5 +33,9 @@
     <a href="https://github.com/debuffjp/decidejs/blob/main/docs/guide-fallback.md">How to do this in your app</a></p>
 </main>
 <script type="module" src="lanes.js"></script>
+<script>
+  // Embedded on the decidejs front page: tell the parent how tall to be.
+  if (document.documentElement.classList.contains("embed")) new ResizeObserver(() => parent.postMessage({ lanesHeight: document.documentElement.scrollHeight }, location.origin)).observe(document.body);
+</script>
 </body>
 </html>
