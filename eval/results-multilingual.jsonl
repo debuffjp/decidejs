@@ -1,1 +1,10 @@
 {"date":"2026-11-01","model":"Xenova/bge-small-en-v1.5","lang":"en","test":2000,"zeroShot":0.619,"tenPerLabel":0.761,"full":0.856,"englishHead":0.856,"fullEce":0.018}
+{"date":"2026-11-01","model":"Xenova/bge-small-en-v1.5","lang":"ja","test":2000,"zeroShot":0.064,"tenPerLabel":0.308,"full":0.55,"englishHead":0.09,"fullEce":0.021}
+{"date":"2026-11-01","model":"Xenova/bge-small-en-v1.5","lang":"de","test":2000,"zeroShot":0.185,"tenPerLabel":0.464,"full":0.674,"englishHead":0.152,"fullEce":0.028}
+{"date":"2026-11-01","model":"Xenova/bge-small-en-v1.5","lang":"es","test":2000,"zeroShot":0.204,"tenPerLabel":0.487,"full":0.662,"englishHead":0.192,"fullEce":0.028}
+{"date":"2026-11-01","model":"Xenova/bge-small-en-v1.5","lang":"zh-CN","test":2000,"zeroShot":0.1,"tenPerLabel":0.251,"full":0.396,"englishHead":0.163,"fullEce":0.03}
+{"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"en","test":2000,"zeroShot":0.514,"tenPerLabel":0.702,"full":0.786,"englishHead":0.786,"fullEce":0.211}
+{"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"ja","test":2000,"zeroShot":0.435,"tenPerLabel":0.684,"full":0.765,"englishHead":0.701,"fullEce":0.257}
+{"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"de","test":2000,"zeroShot":0.4,"tenPerLabel":0.604,"full":0.716,"englishHead":0.608,"fullEce":0.268}
+{"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"es","test":2000,"zeroShot":0.418,"tenPerLabel":0.656,"full":0.752,"englishHead":0.664,"fullEce":0.29}
+{"date":"2026-11-01","model":"Xenova/multilingual-e5-small","prefix":"query: ","lang":"zh-CN","test":2000,"zeroShot":0.385,"tenPerLabel":0.695,"full":0.765,"englishHead":0.653,"fullEce":0.327}

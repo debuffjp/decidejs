@@ -7,6 +7,7 @@ Issues, results and pull requests are all welcome. Chat happens in the [debuff D
 ```sh
 npm ci
 npm run typecheck
+npm run smoke  # packs the package, installs it in an empty project and uses it
 npm run build
 ```
 

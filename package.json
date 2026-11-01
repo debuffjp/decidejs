@@ -51,7 +51,8 @@
     "eval:suite": "node --experimental-strip-types eval/suite.ts",
     "eval:hill": "node --experimental-strip-types eval/hill.ts",
     "test": "node --test --experimental-strip-types \"test/*.test.ts\"",
-    "lint:prose": "node scripts/lint-prose.mjs"
+    "lint:prose": "node scripts/lint-prose.mjs",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "4.2.0"
