@@ -20,7 +20,7 @@ The first release. Numbers are on public test splits unless noted; the scripts t
 
 ### Training
 
-- `train()` fits one softmax layer on frozen embeddings: 90.6% on BANKING77 and 95.0% on CLINC150 with all examples,
+- `train()` fits one softmax layer on frozen embeddings: 90.7% on BANKING77 and 94.4% on CLINC150 with all examples,
   82.3% and 89.6% with 5 per label. HWU64, never used for tuning: 90.2%.
 - Calibrated: the temperature is fitted on held-out examples (5 folds for small sets), with a per-model floor for
   small heads. Calibration error 0.01 to 0.03 for heads with 10 or more examples per label.

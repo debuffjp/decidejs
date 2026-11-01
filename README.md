@@ -1,5 +1,9 @@
 # decidejs
 
+[![npm](https://img.shields.io/npm/v/decidejs?color=cffb2d&labelColor=11140d)](https://www.npmjs.com/package/decidejs) [![ci](https://github.com/debuffjp/decidejs/actions/workflows/ci.yml/badge.svg)](https://github.com/debuffjp/decidejs/actions/workflows/ci.yml) [![MIT](https://img.shields.io/badge/licence-MIT-cffb2d?labelColor=11140d)](LICENSE) [![Discord](https://img.shields.io/badge/discord-debuff-a78bfa?labelColor=11140d)](https://discord.gg/jshbDHSpCY)
+
+**[Try it in your browser](https://debuff.jp/decidejs/playground/)** · [Watch it learn from an LLM](https://debuff.jp/decidejs/lanes/) · [Launch post](https://debuff.jp/blog/introducing-decidejs) · [Research: when the LLM is wrong](https://debuff.jp/research/learning-from-a-noisy-llm)
+
 A decision model for the browser and Node: it picks one of your labels for a piece of text, with confidence you can trust, and learns from an LLM when it isn't sure. Your labels are the type. No server, no API key.
 
 A System One model in the browser: like TypeSafe's Jev, but on the user's device, so each decision is free, private and a few milliseconds. Jev leaves unsure cases to your code; decidejs can ask an LLM about them and learn from the answers.
@@ -195,6 +199,7 @@ and offline apps, and text that can't leave the device. Details, code and poor f
 |---|---|---|---|---|
 | decidejs | yes (worker) | yes | yes | trained heads |
 | [jimothy](https://www.npmjs.com/package/jimothy) | inference (worker) | no, Node | yes | yes |
+| [Jev](https://typesafe.ai/) (TypeSafe) | no, API | no | yes | yes |
 | transformers.js zero-shot pipeline | yes | no | no | no |
 | MediaPipe text classifier | yes | no, offline | no | no |
 | LLM structured output (AI SDK `Output.choice`) | no, API | n/a | yes | no |
