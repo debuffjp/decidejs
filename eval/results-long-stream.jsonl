@@ -227,3 +227,4 @@
 {"date":"2026-11-01","dataset":"clinc150","noise":0.1,"hard":true,"cal":2,"self":0,"selfSet":0,"selfWrong":0,"round":7,"learned":2305,"learnedWrong":0.174,"sent":0.198,"right":0.957,"zeroShotSent":0.437,"zeroShotRight":0.882}
 {"date":"2026-11-01","dataset":"clinc150","noise":0.1,"hard":true,"cal":2,"self":0,"selfSet":0,"selfWrong":0,"round":8,"learned":2504,"learnedWrong":0.177,"sent":0.199,"right":0.953,"zeroShotSent":0.451,"zeroShotRight":0.89}
 {"date":"2026-11-01","dataset":"clinc150","noise":0.1,"hard":true,"cal":2,"self":0,"selfSet":0,"selfWrong":0,"round":9,"learned":2714,"learnedWrong":0.179,"sent":0.21,"right":0.951,"zeroShotSent":0.448,"zeroShotRight":0.901}
+{"date":"2026-11-01","dataset":"clinc150","noise":0.1,"hard":true,"cal":2,"self":0,"selfSet":0,"selfWrong":0,"round":10,"learned":2937,"learnedWrong":0.18,"sent":0.223,"right":0.948,"zeroShotSent":0.451,"zeroShotRight":0.891}

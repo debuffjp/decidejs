@@ -22,7 +22,10 @@ reviews or survey answers in Node in a few seconds, with no API bill.
 `billing.invoices`. Zero-shot works for a first try; a head trained on real queries is much better.
 
 **Moderation hints before posting.** Flag "this reads as a personal attack" while someone types. The text never
-leaves their device. Use it as a nudge, not as the only moderation.
+leaves their device. Use it as a nudge, not as the only moderation. Measured on a public toxicity set with the default
+encoder, a head on 32 examples per label was right 66.6% of the time and caught 68 to 86% of toxic comments while
+flagging about a third of clean ones (see the [FAQ](faq.md#what-kinds-of-decisions-is-it-good-at)): fine for a gentle
+"are you sure?", not for blocking.
 
 **Label a dataset in the browser.** Load a CSV in a tab, label 20 rows per class, train, review the low-confidence
 rows first. Nothing uploads.
@@ -55,6 +58,8 @@ error?" Small decisions an app makes thousands of times.
   can't read alongside the text.
 - **Languages other than English** with the default model. A multilingual encoder can be passed as `model`, but we
   haven't measured one yet.
+- **Tone: sentiment, emotion, toxicity.** The default encoder reads what a text is about better than how it feels:
+  61% on tweet sentiment, 49% on emotion with 32 examples per label ([FAQ](faq.md#what-kinds-of-decisions-is-it-good-at)).
 - **Labels you can't give examples for**, when accuracy matters. Zero-shot got 61-70% on our intent benchmarks against
   90-94% for a trained head.
 
