@@ -36,9 +36,11 @@ on the part that carries the meaning (a subject line, a title, the first paragra
 
 ## Does my users' text leave the device?
 
-No. In the browser, the model and the head run in the user's tab and training runs there too. decidekit makes no network
-requests of its own beyond downloading the model files, from Hugging Face or your own `modelHost` (and whatever head file
-you fetch yourself).
+No. In the browser, the model and the head run in the user's tab and training runs there too. The only network requests
+are downloads: the model files from Hugging Face or your own `modelHost`, onnxruntime's wasm from jsDelivr or your own
+`wasmHost`, and whatever head file you fetch yourself. Those hosts see the user's IP address and your page's origin, not
+the text. Earlier versions of this answer left out the jsDelivr download. With both hosts set to your own, nothing goes
+to a third party.
 
 ## Does it work offline?
 

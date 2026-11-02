@@ -41,3 +41,12 @@ test("train() with labels that have no examples yet can still choose them", asyn
 test("train() rejects calibrateOn labels the head doesn't have", async () => {
   await assert.rejects(d.train([{ text: "a", label: "x" }, { text: "b", label: "y" }], { calibrateOn: [{ text: "c", label: "z" as "x" }] }), /calibrateOn has label "z"/);
 });
+
+test("wasmHost points onnxruntime at your host", async () => {
+  const { env } = await import("@huggingface/transformers");
+  await createDecider({ wasmHost: "https://cdn.example.com/ort" });
+  assert.deepEqual(env.backends.onnx.wasm!.wasmPaths, {
+    wasm: "https://cdn.example.com/ort/ort-wasm-simd-threaded.wasm",
+    mjs: "https://cdn.example.com/ort/ort-wasm-simd-threaded.mjs",
+  });
+});

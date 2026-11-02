@@ -42,6 +42,7 @@ const r = await d.decide("my card never arrived", ["card_arrival", "refund", "ot
 | `device` | `"wasm" \| "webgpu" \| "cpu"` | transformers.js' choice (wasm in browsers, cpu in Node) | Where the encoder runs. |
 | `dtype` | `"q8" \| "fp16" \| "fp32"` | `"q8"` | Weight precision of the encoder. |
 | `modelHost` | `string` | none (Hugging Face) | New in 0.1.1. Serves model files from `<modelHost>/<model>/`. It applies to the whole page or process. See [self-hosting](guide-browser.md#host-the-model-files-yourself). |
+| `wasmHost` | `string` | none (jsDelivr) | New in 0.2.2. Serves onnxruntime's wasm from your own host. It applies to the whole page or process. See [self-hosting](guide-browser.md#host-the-wasm-yourself). |
 | `onProgress` | `(p: { file: string; loaded: number; total: number }) => void` | none | Called as model files download. Only fires on a download, so not on cached loads. |
 | `temperature` | `number` | `0.03` for bge-small (`0.025` for described labels), `0.05` for other models (`0.05` for all models before 0.1.0) | Softmax temperature for zero-shot similarities. Setting it uses the same value for named and described labels. Has no effect on trained heads, which carry their own. |
 

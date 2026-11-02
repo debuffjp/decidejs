@@ -110,6 +110,12 @@ export interface DeciderOptions {
    * `https://cdn.example.com/models/debuffjp/decide-small/onnx/model_quantized.onnx`. Applies to the whole page or process.
    */
   modelHost?: string;
+  /**
+   * Serve onnxruntime's wasm from your own host instead of jsDelivr, as `<wasmHost>/ort-wasm-simd-threaded.wasm` and
+   * `.mjs` (`ort-wasm-simd-threaded.asyncify.*` with `device: "webgpu"`). Copy them from `onnxruntime-web/dist`.
+   * Applies to the whole page or process.
+   */
+  wasmHost?: string;
   /** Weight precision. Default `q8`. */
   dtype?: "q8" | "fp16" | "fp32";
   /** Called as model files download (first load only; later loads come from cache). */
@@ -150,10 +156,18 @@ function toDecision<L extends string>(labels: readonly L[], p: number[]): Decisi
   return { choice: labels[best], confidence: p[best], probabilities };
 }
 
-function usePlainWasm() {
+function chooseWasm(webgpu: boolean, wasmHost?: string) {
+  const wasm = env.backends.onnx.wasm;
+  if (!wasm) return;
+  if (wasmHost) {
+    const file = (wasmHost.endsWith("/") ? wasmHost : wasmHost + "/") + (webgpu ? "ort-wasm-simd-threaded.asyncify" : "ort-wasm-simd-threaded");
+    wasm.wasmPaths = { wasm: file + ".wasm", mjs: file + ".mjs" };
+    return;
+  }
+  if (webgpu) return;
   // transformers.js points browsers other than Safari at the 23.6 MB WebGPU-capable build whatever JS is bundled.
   // Leaves paths the app set itself alone.
-  const paths = env.backends.onnx.wasm?.wasmPaths as { mjs?: string; wasm?: string } | string | undefined;
+  const paths = wasm.wasmPaths as { mjs?: string; wasm?: string } | string | undefined;
   if (!paths || typeof paths === "string" || !paths.wasm?.startsWith("https://cdn.jsdelivr.net/npm/onnxruntime-web@")) return;
   paths.wasm = paths.wasm.replace(".asyncify.", ".");
   paths.mjs = paths.mjs?.replace(".asyncify.", ".");
@@ -164,13 +178,13 @@ function usePlainWasm() {
  * `train()`. In a browser, prefer `createWorkerDecider()` from `decidekit/browser`: the encoder blocks the thread
  * it runs on.
  */
-export async function createDecider({ model: requested = SMALL, device, dtype = "q8", temperature, onProgress, modelHost }: DeciderOptions = {}) {
+export async function createDecider({ model: requested = SMALL, device, dtype = "q8", temperature, onProgress, modelHost, wasmHost }: DeciderOptions = {}) {
   const model = canonical(requested);
   if (modelHost) {
     env.remoteHost = modelHost.endsWith("/") ? modelHost : modelHost + "/";
     env.remotePathTemplate = "{model}/";
   }
-  if (device !== "webgpu") usePlainWasm();
+  chooseWasm(device === "webgpu", wasmHost);
   const embed: FeatureExtractionPipeline = await (pipeline as any)("feature-extraction", model, {
     device, dtype, revision: REVISIONS[model],
     progress_callback: onProgress && ((p: any) => p.status === "progress" && onProgress({ file: p.file, loaded: p.loaded, total: p.total })),

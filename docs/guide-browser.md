@@ -128,6 +128,30 @@ your host serves whichever files you copied.
 use it too, even without passing it. A worker decider sets it inside its worker. If the host is on another origin, it
 needs to allow CORS requests from your page.
 
+## Host the wasm yourself
+
+By default onnxruntime's wasm comes from jsDelivr on first use, even when you set `modelHost`. A strict
+Content-Security-Policy, a blocked CDN or an offline network makes loading fail with `no available backend found`. Before
+0.2.2 a worker decider had no way to change this. To serve the files yourself, set `wasmHost`:
+
+```ts
+const d = await createWorkerDecider({
+  modelHost: "https://cdn.example.com/models",
+  wasmHost: "https://cdn.example.com/ort", // or a same-origin path such as "/ort/"
+});
+```
+
+Copy these two files from `node_modules/onnxruntime-web/dist/` each time you update decidekit, because the JS and wasm
+have to come from the same onnxruntime version:
+
+```
+ort-wasm-simd-threaded.wasm
+ort-wasm-simd-threaded.mjs
+```
+
+With `device: "webgpu"` copy `ort-wasm-simd-threaded.asyncify.wasm` and `.mjs` instead. `wasmHost` applies to the whole
+page or process, and another origin has to allow CORS requests from your page.
+
 ## Bundlers
 
 decidekit starts its worker with `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`, the pattern

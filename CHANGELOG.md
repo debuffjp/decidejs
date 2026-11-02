@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Browser
+
+- New option `wasmHost` serves onnxruntime's wasm from your own host instead of jsDelivr. It applies to the whole page or process.
+- The docs now say the wasm comes from jsDelivr. The FAQ on network requests left that out before.
+
 ## 0.2.1 (2026-11-02)
 
 ### Browser

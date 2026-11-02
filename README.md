@@ -155,7 +155,7 @@ decidekit runs the Decide models, each a sentence encoder plus a calibrated head
 | Decide Multilingual | [`debuffjp/decide-multilingual`](https://huggingface.co/debuffjp/decide-multilingual) | about 118 MB | 76% on Japanese and Chinese intents | intfloat's [multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small), identical to `Xenova/multilingual-e5-small` |
 
 Pass the id as `model` to `createDecider()`. The files download from Hugging Face on first use, pinned to a revision, and
-are then cached. To serve them yourself, pass `modelHost`: see [self-hosting](docs/guide-browser.md#host-the-model-files-yourself).
+are then cached. To serve them yourself, pass `modelHost`: see [self-hosting](docs/guide-browser.md#host-the-model-files-yourself). onnxruntime's wasm comes from jsDelivr unless you pass [`wasmHost`](docs/guide-browser.md#host-the-wasm-yourself).
 
 Before 0.1.1 the default id was `Xenova/bge-small-en-v1.5`. The old ids and heads recording them keep working: they
 resolve to the new ids, so `d.model` returns the new id.
