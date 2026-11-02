@@ -18,7 +18,7 @@ const d = await createDecider();
 const r = await d.decide("my card hasn't arrived yet", head, { minConfidence: 0.9 });
 ```
 
-The CLINC150 head has no out-of-scope label. Use `minConfidence` for that: at 0.93, it returned `null` for 91.1% of
+The CLINC150 head has no out-of-scope label. Use `minConfidence` for that: at 0.93, it returned `null` for 89.9% of
 CLINC150's out-of-scope test queries. That threshold was picked on the validation split, which this head also
 trained on, so expect a little less on your own text.
 

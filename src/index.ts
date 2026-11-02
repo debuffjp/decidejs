@@ -94,7 +94,7 @@ export interface DeciderOptions {
   /**
    * A Hugging Face sentence-embedding model with ONNX weights. Default `debuffjp/decide-small` (Decide Small, 34 MB at q8).
    * Before 0.1.1 the default id was `Xenova/bge-small-en-v1.5`, the same weights; that id and heads recording it still work.
-   * Pre-release builds defaulted to `Xenova/all-MiniLM-L6-v2` (23 MB): smaller and 1.6x faster, 3 to 5 points less
+   * Pre-release builds defaulted to `Xenova/all-MiniLM-L6-v2` (23.7 MB): smaller and about 1.8x faster in Chrome, 3 to 5 points less
    * accurate. Pass it to keep using heads trained on it.
    */
   model?: string;
@@ -218,8 +218,8 @@ export async function createDecider({ model: requested = SMALL, device, dtype = 
   /**
    * Trains a head on labelled examples: mini-batch gradient descent on the embeddings, keeping the best holdout
    * epoch, then a temperature fitted on the holdout so `confidence` is calibrated. Every label needs at least a few
-   * examples. Each label starts at the mean of its examples and its name, so 5 per label already gave 79% on BANKING77 and
-   * 87% on CLINC150 (see the README).
+   * examples. Each label starts at the mean of its examples and its name, so 5 per label already gave 82.3% on BANKING77 and
+   * 89.6% on CLINC150 (see the README).
    */
   async function train<const L extends string>(examples: readonly Example<L>[], opts: TrainOptions<L> = {}): Promise<Head<L>> {
     const bad = examples.findIndex((e) => typeof e?.text !== "string" || typeof e?.label !== "string" || !e.label);

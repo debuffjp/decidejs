@@ -158,3 +158,7 @@ A head only works with the encoder it was trained on. Create the decider with th
 Roughly. The fixed temperature came out close to calibrated on two intent datasets, but that may not hold for your
 labels. Check it on labelled text of your own before thresholding, or train a head, which fits its own temperature. See
 [guide-confidence.md](guide-confidence.md#zero-shot-confidence).
+
+## Why does it say "File doesn't exist" when it loads the model?
+
+In Node on Windows, transformers.js caches the model inside `node_modules`. In a deeply nested project the path can pass the Windows limit of 260 characters, and loading fails with "Load model ... failed. File doesn't exist". Move the project to a shorter path or enable long paths in Windows.

@@ -19,7 +19,7 @@ normalised.
 **Where:** `createDecider()` in `src/index.ts`.
 
 **Numbers:** 3.2 ms per text in Node, 1.1 ms batched; 7.7 ms median and 13.8 ms p95 per decision in Chrome with
-threads. Chosen over all-MiniLM-L6-v2 (23.7 MB, 1.6x faster) for 3 to 5 points of accuracy; gte-small was rejected
+threads. Chosen over all-MiniLM-L6-v2 (23.7 MB, about 1.8x faster in Chrome) for 3 to 5 points of accuracy; gte-small was rejected
 because its zero-shot confidence couldn't be calibrated.
 
 **Read more:** [guide-training.md](guide-training.md) (model comparison), [how-it-works.md](how-it-works.md).

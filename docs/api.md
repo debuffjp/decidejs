@@ -201,7 +201,7 @@ const r = await d.decide(input.value, ["question", "bug_report", "praise"]);
 Asks an LLM once for a one-sentence description of each label, written as a typical message under it, and returns a
 `Record<L, string>` to pass to `decide()`. `complete(prompt)` is your LLM call; it should return the reply text.
 Labels the reply misses get their readable name. `options.context` says what the texts are ("message to a bank's
-support chat"). On the dev splits, descriptions raised zero-shot accuracy by 6 to 10 points.
+support chat"). On the dev splits, descriptions raised zero-shot accuracy by 7 to 10 points.
 
 `describePrompt(labels, options?)` returns the prompt and `parseDescriptions(labels, reply)` reads a reply, for when
 you'd rather run the LLM call yourself (a batch job, a different process).
