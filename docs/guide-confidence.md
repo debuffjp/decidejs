@@ -14,6 +14,13 @@ confidence with its accuracy, and average the gaps weighted by group size. 0 is 
 
 | Examples per label | 5 | 10 | 25 | all |
 |---|---|---|---|---|
+| ECE, BANKING77 | 0.050 | 0.015 | 0.013 | 0.013 |
+| ECE, CLINC150 | 0.020 | 0.015 | 0.016 | 0.008 |
+
+Those are 0.2, with label names (`eval/results-h14.json`). Before 0.2 (SGD at every size, no label names, `eval/results-bge-small.json`):
+
+| Examples per label | 5 | 10 | 25 | all |
+|---|---|---|---|---|
 | ECE, BANKING77 | 0.071 | 0.029 | 0.011 | 0.017 |
 | ECE, CLINC150 | 0.028 | 0.010 | 0.015 | 0.008 |
 
@@ -104,7 +111,7 @@ Two ways to handle text that fits none of your labels.
 label, so it comes back `null`. On CLINC150, trained on in-scope examples only, a threshold of 0.9 picked on the
 validation split returned `null` for 87.0% of the 1,000 out-of-scope test queries with bge-small (`eval/results-bge-small.json`).
 The cost: 84.7% of in-scope queries were answered and right, against 94.4% right with no threshold, because some correct
-answers also fall below 0.9. With all-MiniLM-L6-v2, at 0.93 (`eval/results.json`): 86.3%, 82.9% and 94.0%.
+answers also fall below 0.9. With all-MiniLM-L6-v2, at 0.93 (`eval/results.json`): 86.3%, 82.9% and 94.0%. Those are before 0.2. In 0.2 the threshold picked the same way is 0.98, with 92.8%, 82.0% and 96.3% (`eval/results-h14.json`). A threshold chosen on an older head won't carry over, so pick it again.
 
 This needs enough examples per label to mean something. With 3 examples per label, a head gave "hello" a confidence of
 0.89. CLINC150 has 100 examples per label.

@@ -4,6 +4,11 @@ import type { Head, TrainOptions } from "./index.ts";
 
 const BATCH = 64;
 const CENTROID_SCALE = 20;
+// At 5 per label Adam lost 0.29 points on CLINC150, at 10 it gained on BANKING77 and CLINC150 (eval/spike). The cutoff
+// between them wasn't measured on its own.
+const ADAM_FROM = 8;
+// Without a better holdout loss for this many epochs, stop the probe run.
+const ADAM_PATIENCE = 30;
 
 // Lets a tab paint and handle input between training batches. A message-channel task, unlike setTimeout, isn't
 // throttled to once a second (or minute) when the tab is in the background.
@@ -59,11 +64,24 @@ function batchGradient(ids: number[], X: Float64Array, y: number[], W: Float32Ar
   }
 }
 
+// One Adam step from the summed gradient. Adam's settings follow jimothy's src/linear.ts (MIT, Andrew Prifer).
+function adamStep(p: Float32Array, g: Float64Array, m: Float64Array, v: Float64Array, rows: number, l2: number, lr: number, epoch: number) {
+  const c1 = 1 - 0.9 ** epoch, c2 = 1 - 0.999 ** epoch;
+  for (let k = 0; k < p.length; k++) {
+    const d = g[k] / rows + l2 * p[k];
+    m[k] = 0.9 * m[k] + 0.1 * d;
+    v[k] = 0.999 * v[k] + 0.001 * d * d;
+    p[k] -= (lr * m[k]) / c1 / (Math.sqrt(v[k] / c2) + 1e-8);
+  }
+}
+
 /** Fits weights, biases and temperature to embeddings `X` with label indices `y`. */
 export async function fitHead<L extends string>(X: ArrayLike<number>[], y: number[], labels: L[], opts: TrainOptions = {}, priors?: ArrayLike<number>[], priorWeight = 1, centroidScale = CENTROID_SCALE, smallFloor = 1, calibration?: { X: ArrayLike<number>[]; y: number[] }) {
   // smallFloor: the lowest temperature a head with under 50 held-out answers may get; createDecider picks it per model.
   // calibration: labelled examples known to be right to fit the temperature on instead of the training examples.
-  const { epochs = 60, learningRate = 2, l2 = 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
+  // A set learningRate or l2 was tuned for SGD, so it keeps SGD unless the solver is named.
+  const adam = opts.solver ? opts.solver === "adam" : opts.learningRate === undefined && opts.l2 === undefined && X.length / labels.length >= ADAM_FROM;
+  const { epochs = adam ? 100 : 60, learningRate = adam ? 0.05 : 2, l2 = adam ? 0 : 1e-4, holdout = 0.1, seed = 7, onEpoch } = opts;
   const dim = X[0].length, C = labels.length;
   // One flat buffer, so the inner loops read typed memory instead of an array of arrays.
   const Xf = new Float64Array(X.length * dim);
@@ -90,6 +108,26 @@ export async function fitHead<L extends string>(X: ArrayLike<number>[], y: numbe
     let best = { acc: check ? acc() : 0, weights: head.weights.slice(), bias: head.bias.slice(), epochs: 0 };
     const gW = new Float64Array(C * dim), gb = new Float64Array(C), z = new Float64Array(C);
     const W = head.weights, B = head.bias;
+    if (adam) {
+      const mW = new Float64Array(C * dim), vW = new Float64Array(C * dim), mB = new Float64Array(C), vB = new Float64Array(C);
+      let bestLoss = Infinity;
+      for (let ep = 0; ep < nEpochs; ep++) {
+        gW.fill(0); gb.fill(0);
+        for (let b = 0; b < rows.length; b += BATCH) {
+          batchGradient(rows.slice(b, b + BATCH), Xf, y, W, B, gW, gb, z, C, dim);
+          await yieldToPage();
+        }
+        adamStep(W, gW, mW, vW, rows.length, l2, learningRate, ep + 1);
+        adamStep(B, gb, mB, vB, rows.length, 0, learningRate, ep + 1);
+        if (!check) continue;
+        const loss = check.reduce((sum, i) => sum - Math.log(softmax(logits(head, X[i]), 1)[y[i]] + 1e-300), 0);
+        if (onEpoch) onEpoch(ep, acc());
+        if (loss < bestLoss * (1 - 1e-7)) { bestLoss = loss; best = { acc: 0, weights: W.slice(), bias: B.slice(), epochs: ep + 1 }; }
+        if (ep + 1 - best.epochs >= ADAM_PATIENCE) break;
+        await yieldToPage();
+      }
+      return check ? { ...head, weights: best.weights, bias: best.bias, epochs: best.epochs } : { ...head, epochs: nEpochs };
+    }
     const order = [...rows];
     for (let ep = 0; ep < nEpochs; ep++) {
       order.sort(() => rand() - 0.5);

@@ -73,3 +73,39 @@ test("fitHead fits the temperature on calibration examples when given, so noisy 
   const calibrated = await fitHead(X, noisy, ["a", "b", "c"], { epochs: 20 }, undefined, 1, undefined, 1, clean);
   assert.ok(calibrated.temperature < plain.temperature, `${calibrated.temperature} < ${plain.temperature}`);
 });
+
+test("adam from 8 examples per label, sgd below", async () => {
+  const many = { ...clusters(8), labels: ["a", "b", "c"] }, few = { ...clusters(7), labels: ["a", "b", "c"] };
+  const same = (a: { weights: Float32Array }, b: { weights: Float32Array }) => assert.deepEqual([...a.weights], [...b.weights]);
+  same(await fitHead(many.X, many.y, many.labels, { epochs: 5 }), await fitHead(many.X, many.y, many.labels, { epochs: 5, solver: "adam" }));
+  same(await fitHead(few.X, few.y, few.labels, { epochs: 5 }), await fitHead(few.X, few.y, few.labels, { epochs: 5, solver: "sgd" }));
+  assert.notDeepEqual(
+    [...(await fitHead(many.X, many.y, many.labels, { epochs: 5, solver: "adam" })).weights],
+    [...(await fitHead(many.X, many.y, many.labels, { epochs: 5, solver: "sgd" })).weights],
+  );
+});
+
+test("a set learningRate or l2 keeps sgd", async () => {
+  const { X, y } = clusters(8), labels = ["a", "b", "c"];
+  const sgd = await fitHead(X, y, labels, { epochs: 5, solver: "sgd", learningRate: 1 });
+  assert.deepEqual([...(await fitHead(X, y, labels, { epochs: 5, learningRate: 1 })).weights], [...sgd.weights]);
+});
+
+test("adam separates clusters and reports epochs", async () => {
+  const { X, y } = clusters(20), labels = ["a", "b", "c"];
+  const seen: number[] = [];
+  const head = await fitHead(X, y, labels, { onEpoch: (e) => seen.push(e) });
+  assert.ok(seen.length > 0);
+  const right = X.filter((x, i) => { const z = logits({ labels, dim: 8, weights: head.weights, bias: head.bias }, x); return z.indexOf(Math.max(...z)) === y[i]; });
+  assert.equal(right.length, X.length);
+});
+
+test("adam yields inside an epoch", async () => {
+  const { X, y } = clusters(100), labels = ["a", "b", "c"];
+  let ticks = 0, on = true;
+  const tick = () => { ticks++; if (on) setImmediate(tick); };
+  tick();
+  await fitHead(X, y, labels, { epochs: 1, solver: "adam", holdout: 0.5 });
+  on = false;
+  assert.ok(ticks >= 6, String(ticks));
+});

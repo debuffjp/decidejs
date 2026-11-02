@@ -98,6 +98,8 @@ Before 0.1.0 the name counted as 3 examples: with all-MiniLM-L6-v2 at 5 per labe
 
 ### 4. Gradient descent
 
+From 8 examples per label (mean across labels), 0.2 uses full-batch Adam: learning rate 0.05, no weight decay, up to 100 epochs, keeping the epoch with the lowest loss on the held-out examples and stopping after 30 epochs without a better one. Below 8, and in every version before 0.2, it uses the method below.
+
 Mini-batch gradient descent on softmax cross-entropy: batches of 64, learning rate 2, weight decay 1e-4, up to 60
 epochs. After each epoch, accuracy on the held-out examples is checked, and the best epoch is kept. Its count is
 recorded, and the best epoch can be 0: if the centroid start is never beaten on held-out examples, gradient descent is

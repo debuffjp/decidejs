@@ -70,11 +70,16 @@ export interface TrainOptions<L extends string = string> {
    * can still be chosen. Needs `labelNames`.
    */
   labels?: readonly L[];
-  /** Passes over the examples. Default 60; the best holdout epoch is kept. */
+  /**
+   * How to fit the head. By default `adam` from 8 examples per label (mean across labels), `sgd` below that. Setting
+   * `learningRate` or `l2` without this also picks `sgd`.
+   */
+  solver?: "adam" | "sgd";
+  /** Most passes over the examples. Default 100 with `adam`, 60 with `sgd`; the best holdout epoch is kept. */
   epochs?: number;
-  /** Default 2. */
+  /** Default 0.05 with `adam`, 2 with `sgd`. */
   learningRate?: number;
-  /** Weight decay. Default 1e-4. */
+  /** Weight decay. Default 0 with `adam`, 1e-4 with `sgd`. */
   l2?: number;
   /** Share of examples held out for early stopping and temperature fitting. Default 0.1. */
   holdout?: number;

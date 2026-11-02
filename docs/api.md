@@ -132,9 +132,10 @@ const head = await d.train([
 | Option | Type | Default | What it does |
 |---|---|---|---|
 | `labelNames` | `boolean` | `true` | Use each label's readable name as a hint at the starting point (it counts as 1 extra example; 3 before 0.1.0). Turn off for opaque ids like `c17`. |
-| `epochs` | `number` | `60` | Most passes over the examples. The best epoch on held-out examples is kept. |
-| `learningRate` | `number` | `2` | Gradient descent step size. |
-| `l2` | `number` | `1e-4` | Weight decay. |
+| `solver` | `"adam" \| "sgd"` | `adam` from 8 examples per label, else `sgd` | How the head is fitted. New in 0.2: before that, always `sgd`. Setting `learningRate` or `l2` without `solver` picks `sgd`. |
+| `epochs` | `number` | `100` with `adam`, `60` with `sgd` | Most passes over the examples. The best epoch on held-out examples is kept. Before 0.2 the default was `60`. |
+| `learningRate` | `number` | `0.05` with `adam`, `2` with `sgd` | Step size. |
+| `l2` | `number` | `0` with `adam`, `1e-4` with `sgd` | Weight decay. |
 | `holdout` | `number` | `0.1` | Share of examples held out to pick the epoch count and fit the temperature. When that share is under 200 examples, 5 folds are used instead (every example is held out once). |
 | `seed` | `number` | `7` | Seed for the split and the shuffling, so a run repeats exactly. |
 | `calibrateOn` | `Example<L>[]` | none | Examples known to be right, used only to fit the temperature. Pass about 2 per label when the training examples come from a source that is sometimes wrong, such as an LLM through `withFallback()`. Labels must be among the head's. |

@@ -31,6 +31,15 @@ Accuracy on each dataset's test split, mean of 3 seeds, default model (bge-small
 
 | Examples per label | 5 | 10 | 25 | all |
 |---|---|---|---|---|
+| BANKING77 (77 labels) | 83.7% | 87.5% | 90.2% | 93.1% |
+| CLINC150 (150 labels) | 90.2% | 92.8% | 94.3% | 96.3% |
+| Calibration error (ECE), BANKING77 | 0.050 | 0.015 | 0.013 | 0.013 |
+| Calibration error (ECE), CLINC150 | 0.020 | 0.015 | 0.016 | 0.008 |
+
+Source: `eval/results-h14.json`, version 0.2, with label names. Before 0.2 (SGD at every size, no label names, `eval/results-bge-small.json`):
+
+| Examples per label | 5 | 10 | 25 | all |
+|---|---|---|---|---|
 | BANKING77 (77 labels) | 82.3% | 83.8% | 88.7% | 90.7% |
 | CLINC150 (150 labels) | 89.6% | 92.0% | 93.4% | 94.4% |
 | Calibration error (ECE), BANKING77 | 0.071 | 0.029 | 0.011 | 0.017 |

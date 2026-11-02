@@ -16,8 +16,8 @@ const r = await d.decide("my card never arrived", ["card_arrival", "refund", "ot
 r.choice; // "card_arrival" | "refund" | "other"
 ```
 
-Give it 5 examples per label and it reaches 82% on BANKING77 (77 intents); give it the full training set and it
-reaches 90.7%, with each answer taking about 8 ms (median) in Chrome. Training runs in the user's tab, so their data never
+Give it 5 examples per label and it reaches 84% on BANKING77 (77 intents); give it the full training set and it
+reaches 93.1%, with each answer taking about 8 ms (median) in Chrome. Training runs in the user's tab, so their data never
 leaves the device.
 
 ## Zero-shot
@@ -169,6 +169,15 @@ and calibration error (ECE, lower is better) on each dataset's test split, mean 
 
 | Examples per label | 5 | 10 | 25 | all |
 |---|---|---|---|---|
+| BANKING77 (77 labels) | 83.7% | 87.5% | 90.2% | 93.1% |
+| CLINC150 (150 labels) | 90.2% | 92.8% | 94.3% | 96.3% |
+| ECE, BANKING77 | 0.050 | 0.015 | 0.013 | 0.013 |
+| ECE, CLINC150 | 0.020 | 0.015 | 0.016 | 0.008 |
+
+Those are 0.2, with label names, from [eval/results-h14.json](eval/results-h14.json). HWU64 with all data goes from 90.15% to 91.17%. Before 0.2 (SGD at every size, no label names, `eval/results-bge-small.json`):
+
+| Examples per label | 5 | 10 | 25 | all |
+|---|---|---|---|---|
 | BANKING77 (77 labels) | 82.3% | 83.8% | 88.7% | 90.7% |
 | CLINC150 (150 labels) | 89.6% | 92.0% | 93.4% | 94.4% |
 | ECE, BANKING77 | 0.071 | 0.029 | 0.011 | 0.017 |
@@ -189,7 +198,7 @@ queries, [eval/tiny.ts](eval/tiny.ts), measured with all-MiniLM-L6-v2), 1 exampl
 a threshold there.
 
 **In Chrome** (BANKING77, full training set, worker, cross-origin isolated, 16 threads): 7.7 ms median and 13.8 ms
-p95 per decision, 228 s to train on 10,003 examples with no page stall longer than 18 ms. all-MiniLM-L6-v2 in the
+p95 per decision before 0.2, 228 s to train on 10,003 examples with no page stall longer than 18 ms. A 0.2 run on the same machine took 208 s, with a longest stall of 19 ms and 93.05% test accuracy (runs on this laptop vary: another 0.1 run took 147 s). all-MiniLM-L6-v2 in the
 same run: 4.2 ms median, 7.7 ms p95. In Node: 3.2 ms median for a single text, 1.1 ms per text batched (MiniLM 2.0
 and 0.7). Earlier MiniLM run: [bench/results.json](bench/results.json).
 

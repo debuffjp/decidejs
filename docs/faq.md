@@ -64,8 +64,7 @@ They combine: decide locally, and send only answers below `minConfidence` (where
 ## How does it compare with jimothy?
 
 [jimothy](https://www.npmjs.com/package/jimothy) (MIT) also builds typed local classifiers with calibrated confidence. It
-reports 92.4% on BANKING77, above decidekit's 90.7%. It trains in Node and runs inference in a worker. Pick jimothy if you
-train ahead of time in Node and want the higher number. Pick decidekit if training has to happen in the page, from the
+reports 92.4% on BANKING77 on its own split, with all-MiniLM-L6-v2. decidekit 0.2 reaches 93.1% on the dataset's test split with Decide Small (90.7% before 0.2). The splits and encoders differ, so that isn't a direct comparison. decidekit 0.2's Adam settings come from jimothy's source. jimothy trains in Node and runs inference in a worker. Pick it if you train ahead of time in Node. Pick decidekit if training has to happen in the page, from the
 user's own data.
 
 ## And the transformers.js zero-shot pipeline?
@@ -100,7 +99,7 @@ A head you train on your own data is yours. decidekit itself is MIT. The ready-m
 ## How accurate will it be on my data?
 
 It depends on how distinct your labels are and how many examples you have. On two public intent benchmarks, a trained
-head reached 82.3-89.6% with 5 examples per label and 90.7-94.4% with all the training data (78.7-87.3% and
+head reached 83.7-90.2% with 5 examples per label and 93.1-96.3% with all the training data in 0.2 (82.3-89.6% and 90.7-94.4% before 0.2; 78.7-87.3% and
 90.6-94.0% with the pre-release default, all-MiniLM-L6-v2). Small tasks with 2 to 10
 labels reached 93.4% with one example per label. Hold back some labelled examples and measure: the recipe is in
 [guide-confidence.md](guide-confidence.md#pick-a-threshold-on-your-own-data).
@@ -128,8 +127,7 @@ Use an LLM or a dedicated classifier for these for now.
 ## Why not fine-tune the encoder?
 
 Training only the head keeps training cheap enough for a browser tab (147-217 s for 10,003 examples, 0.1 s for 9) and
-lets one cached encoder serve every head. Fine-tuning the encoder is the likely route past about 91% on BANKING77, but
-it is not built.
+lets one cached encoder serve every head. We tried fine-tuning on SNIPS and PAWS on 2026-11-02: it lost 2.5 points on BANKING77 and 1.2 on CLINC150 on the dev splits. That rules out this data mix only. Before 0.2 this answer called fine-tuning the likely route past about 91% on BANKING77; better head training reached 93.1% instead.
 
 ## How big is a head?
 

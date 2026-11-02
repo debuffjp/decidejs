@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 (unreleased)
+
+### Training
+
+- From 8 examples per label (mean across labels), `train()` fits the head with full-batch Adam, starting from the same centroid and label-name point. Test accuracy with all data: BANKING77 90.6% to 93.1%, CLINC150 94.6% to 96.1%, HWU64 90.15% to 91.17% (one seed, on cached embeddings; through train() in eval/results-h14.json, BANKING77 93.1% and CLINC150 96.3%). At 5 per label nothing changes. At 10 per label: BANKING77 84.4% to 87.5%, CLINC150 92.2% to 92.5%, HWU64 85.50% to 85.38%. Adam's settings come from jimothy's `src/linear.ts` (MIT, Andrew Prifer).
+- New option `solver`. Setting `learningRate` or `l2` without it keeps SGD, so tuned calls behave as before. The default `epochs` is 100 with Adam.
+- Saved heads keep working unchanged. Retrained heads can score differently, so pick `minConfidence` thresholds again: the CLINC150 out-of-scope threshold moved from 0.9 to 0.98.
+- Training takes longer: in Node, BANKING77 went from 84 s to 123 s on cached embeddings. In Chrome, BANKING77 took 208 s with a longest page stall of 19 ms.
+
 ## 0.1.1 (2026-11-02)
 
 ### Models
