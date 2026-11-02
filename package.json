@@ -1,6 +1,6 @@
 {
   "name": "decidekit",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A System One model in the browser: typed, calibrated text decisions on the user's device. Learns from an LLM when it isn't sure.",
   "license": "MIT",
   "repository": "github:debuffjp/decidekit",
