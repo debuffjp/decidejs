@@ -46,7 +46,7 @@ held-out examples and retrains on everything.
 
 **Where:** `train()` in `src/index.ts`, `fitHead()` in `src/head.ts`.
 
-**Numbers:** BANKING77 82.3% with 5 examples per label, 90.7% with all 10,003; CLINC150 89.6% and 94.4%
+**Numbers:** in 0.2, BANKING77 83.7% with 5 examples per label, 93.1% with all 10,003; CLINC150 90.2% and 96.3% (`eval/results-h14.json`). Before 0.2: 82.3%, 90.7%, 89.6% and 94.4%
 (`eval/results-bge-small.json`). The shipped heads reach 90.6% and 95.0%; the CLINC150 one also trains on the validation
 split (`heads/README.md`). A head is 156 KB for 77 labels. Training all of BANKING77 takes 228 s in a browser worker.
 

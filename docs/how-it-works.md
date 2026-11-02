@@ -131,7 +131,6 @@ That is why the browser entry runs everything in a worker. On the main thread, t
 
 ## What decidekit does not do
 
-- It does not fine-tune the encoder. Only the head is trained. Fine-tuning is the likely route past about 91% on
-  BANKING77, and it is not built.
+- It does not fine-tune the encoder. Only the head is trained. A fine-tune on SNIPS and PAWS lost to the plain encoder on the dev splits (2026-11-02). Before 0.2 this page called fine-tuning the likely route past about 91% on BANKING77.
 - It does not run the encoder on WebGPU in the worker yet.
 - It does not fall back to a larger hosted model below the threshold. You can build that on `choice === null`.
