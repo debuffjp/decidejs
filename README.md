@@ -29,8 +29,8 @@ await d.decide(text, ["question", "bug_report", "praise"]);
 await d.decide(text, { refund: "wants their money back", bug: "something is broken" });
 ```
 
-Zero-shot is for trying things out: 61% on BANKING77 and 70% on CLINC150 (dev splits), against 90-94% trained.
-Its confidence came out close to calibrated on those datasets (error 0.005-0.045 with 2 to 150 options), but check
+Zero-shot is for trying things out: 66% on BANKING77 and 73% on CLINC150 (dev splits), against 90-94% trained.
+Its confidence came out close to calibrated on those datasets (error 0.03-0.04), but check
 it on your own labels before relying on a threshold.
 
 ## Train a head
@@ -150,16 +150,20 @@ Download on first visit: the model (34 MB) and onnxruntime's wasm (23.6 MB, 5.8 
 
 decidekit runs the Decide models, each a sentence encoder plus a calibrated head:
 
-| Model | Encoder | Download | Reads |
-|---|---|---|---|
-| Decide Small (default) | `Xenova/bge-small-en-v1.5` | 34 MB | English |
-| Decide Multilingual | `Xenova/multilingual-e5-small` | 118 MB | 76% on Japanese and Chinese intents |
+| Model | Id | Download | Reads | Upstream |
+|---|---|---|---|---|
+| Decide Small (default) | [`debuffjp/decide-small`](https://huggingface.co/debuffjp/decide-small) | 34 MB | English | BAAI's [bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5), identical to `Xenova/bge-small-en-v1.5` |
+| Decide Multilingual | [`debuffjp/decide-multilingual`](https://huggingface.co/debuffjp/decide-multilingual) | about 118 MB | 76% on Japanese and Chinese intents | intfloat's [multilingual-e5-small](https://huggingface.co/intfloat/multilingual-e5-small), identical to `Xenova/multilingual-e5-small` |
 
-Pass the encoder id as `model` to `createDecider()`.
+Pass the id as `model` to `createDecider()`. The files download from Hugging Face on first use, pinned to a revision, and
+are then cached. To serve them yourself, pass `modelHost`: see [self-hosting](docs/guide-browser.md#host-the-model-files-yourself).
+
+Before 0.1.1 the default id was `Xenova/bge-small-en-v1.5`. The old ids and heads recording them keep working: they
+resolve to the new ids, so `d.model` returns the new id.
 
 ## Numbers
 
-bge-small-en-v1.5 (the default) at q8, Ryzen 7 260 laptop, Node 24 and headless Chrome 156, 2026-11-01. Accuracy
+Decide Small (bge-small-en-v1.5, the default) at q8, without label names, Ryzen 7 260 laptop, Node 24 and headless Chrome 156, 2026-11-01. Accuracy
 and calibration error (ECE, lower is better) on each dataset's test split, mean of 3 seeds (one run for "all"):
 [eval/results-bge-small.json](eval/results-bge-small.json).
 
@@ -196,8 +200,8 @@ in-scope examples only, with `minConfidence` 0.93 picked on the validation split
 
 **The smaller model.** `createDecider({ model: "Xenova/all-MiniLM-L6-v2" })` (23.7 MB, the pre-release default) is
 about 1.8x faster per decision in Chrome and 3 to 5 points less accurate with few examples, about the same with all
-the data. Pass it to keep using heads trained on it. Before this default changed, the README suggested
-`{ labelNames: false }` with bge-small: label names slightly hurt it on the dev splits.
+the data. Pass it to keep using heads trained on it. Before 0.1.0 a label name counted as 3 examples and the README
+suggested `{ labelNames: false }` with bge-small. It now counts as 1, which helps.
 
 Reproduce: `npm run eval:suite` (Node), `npm run bench` then `npm run bench:run` (Chrome).
 
@@ -244,6 +248,6 @@ issue template for them. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Status
 
-0.1. English with the default model, other languages with `multilingual-e5-small` ([FAQ](docs/faq.md#which-languages-does-it-support)); short texts (about a paragraph). Not done yet: WebGPU in the worker and fine-tuning the encoder (the likely route past about 91%).
+0.1. English with the default model, other languages with Decide Multilingual ([FAQ](docs/faq.md#which-languages-does-it-support)); short texts (about a paragraph). Not done yet: WebGPU in the worker and fine-tuning the encoder (the likely route past about 91%).
 
 Made by the [debuff](https://debuff.jp) team. MIT.

@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.1.1 (2026-11-02)
+
+### Models
+
+- The default model id is `debuffjp/decide-small` (Decide Small). Before 0.1.1 it was `Xenova/bge-small-en-v1.5`. The
+  weights are identical, so decisions don't change. For other languages the id is `debuffjp/decide-multilingual`
+  (Decide Multilingual), identical to `Xenova/multilingual-e5-small`.
+- The old ids and heads recording them keep working. They resolve to the new ids, so `d.model` returns the new id. A
+  head trained on 0.1.1 records the new id, so a 0.1.0 decider needs that id passed as `model` to use it.
+- Downloads of both models are pinned to a revision.
+- New option `modelHost` serves model files from `<modelHost>/<model>/` instead of Hugging Face. It applies to the
+  whole page or process.
+
+### Docs
+
+- Label names count as 1 example in every doc, and the advice to turn them off with bge-small is gone: it applied to the
+  old weight of 3.
+- Calibration, out-of-scope and zero-shot numbers are now bge-small's or labelled with the model they were measured on.
+- `decide()` documents that a described label scores by the better of its name and description.
+- The API reference covers `decidekit/typesafe`.
+
 ## 0.1.0 (2026-11-02)
 
 The first release. Numbers are on public test splits unless noted; the scripts that produced them are in `eval/`.

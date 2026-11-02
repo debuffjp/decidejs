@@ -60,8 +60,8 @@ const route = withFallback(d, ["refund", "bug_report", "question"], { ask, retra
 route.head; // null until the first retrain
 ```
 
-The same simulation with no examples at all ([eval/results-fallback-cold-0.9.jsonl](../eval/results-fallback-cold-0.9.jsonl),
-`COLD=1`):
+The same simulation with no examples at all, with all-MiniLM-L6-v2 ([eval/results-fallback-cold-0.9.jsonl](../eval/results-fallback-cold-0.9.jsonl),
+`COLD=1`; with bge-small, [the same run](https://github.com/debuffjp/decidekit/blob/main/eval/results-fallback-cold-0.9-bge.jsonl) went from 67.9% to 15.7% sent, with the head at 95.3%):
 
 | Round | Examples | Sent to the fallback | Local answers right | Head accuracy |
 |---|---|---|---|---|
@@ -166,7 +166,7 @@ off-topic queries):
 
 The calibration fix alone made off-topic text worse; with `NONE` learned it is the best of both.
 
-Before this default, `null` answers were dropped. `route.head.labels` and `route.learned` now include `NONE` once
+Before 0.1.0, `null` answers were dropped. `route.head.labels` and `route.learned` now include `NONE` once
 `ask` has returned `null`; `probabilities` has a `none_of_these` entry. Give the LLM the same label descriptions too: they took Llama 3.1 8B from 84% to 90%
 on the lanes demo's messages.
 
@@ -207,7 +207,7 @@ The returned function also has:
   localStorage.decideState = JSON.stringify(route.saved());
   ```
 
-  Before this, only `route.learned` could be saved, so a reload lost the calibration set and the next head fitted its
+  Before 0.1.0, only `route.learned` could be saved, so a reload lost the calibration set and the next head fitted its
   confidence on the LLM's answers.
 
 A background retrain that fails keeps the current head; call `retrain()` yourself to see the error.

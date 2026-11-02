@@ -6,7 +6,9 @@ examples, in seconds to minutes, wherever your code runs.
 
 ## The encoder
 
-The default is bge-small-en-v1.5, a sentence-embedding model, at 8-bit weights (34 MB), run through transformers.js.
+The default is Decide Small (`debuffjp/decide-small`), an unmodified copy of the sentence-embedding model
+bge-small-en-v1.5, at 8-bit weights (34 MB), run through transformers.js. The files download from Hugging Face on first
+use and are then cached.
 Pre-release builds used all-MiniLM-L6-v2 (23.7 MB), which also returns 384 numbers.
 It reads a text and returns 384 numbers. decidekit averages the model's output over the text's tokens (mean pooling)
 and scales the result to length 1, so texts with similar meaning end up close together and the dot product of two
@@ -21,7 +23,7 @@ if you pair it with a different encoder.
 With a list of labels and no examples, decidekit encodes each label as text and compares it with the text you pass. Bare
 labels are turned into words first (`card_arrival` becomes "card arrival"), which scored 2.6 points higher on CLINC150's
 dev split than the raw label. With a record of descriptions, both the readable name and the description are encoded,
-and each label scores by the better of the two. Before this release, the description replaced the name.
+and each label scores by the better of the two. Before 0.1.0, the description replaced the name.
 
 The cosine similarities go through a softmax at a fixed temperature per model: 0.03 for bge-small (0.025 when the
 labels are described, since descriptions score higher), 0.05 for
@@ -88,10 +90,11 @@ With a handful of examples per label, this starting point is most of the accurac
 
 ### 3. Add the label names
 
-Unless `labelNames` is `false`, each label's readable name is encoded and added to its mean as if it were 3 more
-examples. A label with 5 examples starts at a point between its examples and its name. At 5 examples per label it took
-test accuracy from 77.4% to 78.7% on BANKING77 and from 86.0% to 87.3% on CLINC150. With bge-small it slightly hurt on
-the dev splits, so turn it off there.
+Unless `labelNames` is `false`, each label's readable name is encoded and added to its mean as if it were 1 more
+example. A label with 5 examples starts at a point between its examples and its name. With bge-small at 5 examples per
+label it took dev accuracy from 80.8% to 81.8% on BANKING77 and from 90.4% to 91.4% on CLINC150 (`eval/results-priors.jsonl`).
+Before 0.1.0 the name counted as 3 examples: with all-MiniLM-L6-v2 at 5 per label that took test accuracy from 77.4% to
+78.7% on BANKING77 and from 86.0% to 87.3% on CLINC150.
 
 ### 4. Gradient descent
 
@@ -106,7 +109,7 @@ The held-out examples' scores are used to fit the temperature, as described in
 [guide-confidence.md](guide-confidence.md#how-the-temperature-is-fitted). In short: a grid search from 0.2 to 5 for the
 lowest negative log-likelihood, with 5 folds when the holdout is under 200 examples, held-out examples skipped when
 their label has nothing left to train on, and a floor under 50 held-out answers (0.5 for bge-small, 1 for other models; 1 for all in pre-release builds). The fold change took ECE at 1
-example per label from 0.459 to 0.020.
+example per label, with all-MiniLM-L6-v2, from 0.459 to 0.020.
 
 ### 6. Retrain on all of it
 

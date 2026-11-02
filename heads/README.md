@@ -1,7 +1,8 @@
 # Ready-made heads
 
 Heads trained on public datasets, so you can see decidekit work before collecting your own examples. Both use the
-default model (`Xenova/bge-small-en-v1.5`, q8) and load with `loadHead()`. Heads shipped before this release were
+default model (Decide Small, q8) and load with `loadHead()`. They record its old id, `Xenova/bge-small-en-v1.5`, which still
+works. Heads shipped before 0.1.0 were
 trained on `Xenova/all-MiniLM-L6-v2` (BANKING77 90.6%, CLINC150 94.2%).
 
 | Head | Labels | Trained on | Test accuracy | Size |

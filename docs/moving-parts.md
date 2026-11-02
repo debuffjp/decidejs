@@ -13,13 +13,13 @@ text ──► encoder (bge-small, 384 numbers) ──┬──► zero-shot: co
 ## 1. The encoder
 
 **What:** turns a text into 384 numbers so that texts with similar meaning land close together. The default is
-`Xenova/bge-small-en-v1.5` at 8-bit weights (34 MB), run by transformers.js on onnxruntime's wasm build. Mean pooling,
+Decide Small (`debuffjp/decide-small`) at 8-bit weights (34 MB), run by transformers.js on onnxruntime's wasm build. Mean pooling,
 normalised.
 
 **Where:** `createDecider()` in `src/index.ts`.
 
 **Numbers:** 3.2 ms per text in Node, 1.1 ms batched; 7.7 ms median and 13.8 ms p95 per decision in Chrome with
-threads. Chosen over all-MiniLM-L6-v2 (23 MB, 1.6x faster) for 3 to 5 points of accuracy; gte-small was rejected
+threads. Chosen over all-MiniLM-L6-v2 (23.7 MB, 1.6x faster) for 3 to 5 points of accuracy; gte-small was rejected
 because its zero-shot confidence couldn't be calibrated.
 
 **Read more:** [guide-training.md](guide-training.md) (model comparison), [how-it-works.md](how-it-works.md).
@@ -46,8 +46,9 @@ held-out examples and retrains on everything.
 
 **Where:** `train()` in `src/index.ts`, `fitHead()` in `src/head.ts`.
 
-**Numbers:** BANKING77 82.3% with 5 examples per label, 90.6% with all 10,003 (the shipped head); CLINC150 89.6% and
-95.0%. A head is 156 KB for 77 labels. Training all of BANKING77 takes 228 s in a browser worker.
+**Numbers:** BANKING77 82.3% with 5 examples per label, 90.7% with all 10,003; CLINC150 89.6% and 94.4%
+(`eval/results-bge-small.json`). The shipped heads reach 90.6% and 95.0%; the CLINC150 one also trains on the validation
+split (`heads/README.md`). A head is 156 KB for 77 labels. Training all of BANKING77 takes 228 s in a browser worker.
 
 **Read more:** [guide-training.md](guide-training.md).
 
@@ -72,7 +73,7 @@ answer becomes a training example; with `retrainEvery` it retrains on its own.
 
 **Numbers:** with real Llama 3.1 8B answers on 12 described BANKING77 labels, the share sent fell from 30%
 (zero-shot) to 19%. On CLINC150 from label names alone, the share sent to the LLM fell from 68% to 16% over ten retrains
-with a perfect teacher. A real teacher matters: a teacher wrong 20% of the time left it at 52%. On all 77 BANKING77 labels, a teacher
+with a perfect teacher (bge-small; all-MiniLM-L6-v2 went from 67% to 14.5%). A real teacher matters: a teacher wrong 20% of the time left it at 52%. On all 77 BANKING77 labels, a teacher
 wrong 15% of the time kept sends at 64% until `calibrateOn` (2 correct examples per label) brought them to 24%.
 Started from labels, it now calibrates on zero-shot's own confident answers by default (31%), and learns the
 LLM's `null` answers as `NONE` when the text is far from every label. Give the LLM the
@@ -97,7 +98,8 @@ Each call costs about 1 ms of message passing.
 **What:** with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: credentialless`, the page
 is cross-origin isolated and onnxruntime's wasm can use several threads.
 
-**Numbers:** with all-MiniLM-L6-v2, p95 decision time went from 14.3 ms to 7.8 ms.
+**Numbers:** with all-MiniLM-L6-v2, p95 decision time went from 14.3 ms to 7.8 ms in one run (2026-10-31). A later
+isolated run measured 7.7 ms.
 
 **Read more:** [guide-browser.md](guide-browser.md).
 

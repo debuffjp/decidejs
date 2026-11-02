@@ -9,15 +9,16 @@ Take all the answers a head gave with confidence around 0.9. If about 90% of the
 at 0.9. Calibrated everywhere means a confidence of `p` is right about `p` of the time, at every `p`.
 
 The error is measured as ECE (expected calibration error): group answers by confidence, compare each group's average
-confidence with its accuracy, and average the gaps weighted by group size. 0 is perfect. On the test splits:
+confidence with its accuracy, and average the gaps weighted by group size. 0 is perfect. On the test splits, with the default model and no label names
+(`eval/results-bge-small.json`):
 
 | Examples per label | 5 | 10 | 25 | all |
 |---|---|---|---|---|
-| ECE, BANKING77 | 0.065 | 0.048 | 0.025 | 0.019 |
-| ECE, CLINC150 | 0.029 | 0.013 | 0.012 | 0.012 |
+| ECE, BANKING77 | 0.071 | 0.029 | 0.011 | 0.017 |
+| ECE, CLINC150 | 0.028 | 0.010 | 0.015 | 0.008 |
 
 Calibration is loosest with few examples on labels that sit close together (BANKING77 at 5 per label). On small tasks
-of 2 to 10 labels, ECE was 0.020 at 1 example per label and 0.008 at 5.
+of 2 to 10 labels, measured with all-MiniLM-L6-v2 (`eval/tiny.ts`), ECE was 0.020 at 1 example per label and 0.008 at 5.
 
 Calibrated does not mean accurate. A head that is right 80% of the time and says 0.8 is calibrated; it is still wrong
 one time in five. What calibration buys is that the number tells you which answers to trust.
@@ -40,7 +41,7 @@ picks the temperature so the probabilities match how often the head is right on 
    1, which made them underconfident). Pre-release builds used 1 for every model.
 5. Retrain on every example and keep the temperature.
 
-The head stores it as `head.temperature`. The 5-fold step matters with little data: at 1 example per label it took ECE
+The head stores it as `head.temperature`. The 5-fold step matters with little data: at 1 example per label, with all-MiniLM-L6-v2, it took ECE
 from 0.459 to 0.020.
 
 ## Pick a threshold on your own data
@@ -89,7 +90,7 @@ head's labels, so it always counts as wrong when answered) and check how much of
 
 Zero-shot `decide()` (a label array or a record of descriptions) has no examples to fit a temperature on. It uses a
 fixed one per model (`createDecider({ temperature })`): 0.03 for the default bge-small (0.025 for described labels,
-which score higher: ECE 0.042 on BANKING77 and 0.020 on CLINC150), 0.05 for all-MiniLM-L6-v2 and other models. Before this release it was 0.05 for every model. On the BANKING77 and CLINC150 dev splits these came out
+which score higher: ECE 0.042 on BANKING77 and 0.020 on CLINC150), 0.05 for all-MiniLM-L6-v2 and other models. Before 0.1.0 it was 0.05 for every model. On the BANKING77 and CLINC150 dev splits these came out
 close to calibrated, ECE 0.03-0.04 for bge-small (MiniLM at 0.05: 0.005-0.045 with 2 to 150 options). Describing your
 labels also raises accuracy: see [how-it-works.md](how-it-works.md#describe-your-labels). That was measured on two intent datasets only. Your labels or
 descriptions may be scored sharper or flatter, so check zero-shot confidence on some labelled text of your own before
@@ -100,10 +101,10 @@ putting a threshold on it, or train a head.
 Two ways to handle text that fits none of your labels.
 
 **A threshold.** Train on your real labels only and set `minConfidence`. Off-topic text tends to score low on every
-label, so it comes back `null`. On CLINC150, trained on in-scope examples only, a threshold of 0.93 picked on the
-validation split returned `null` for 89.9% of the 1,000 out-of-scope test queries with the shipped bge-small head (86.3% with
-all-MiniLM-L6-v2). The cost: 82.9% of in-scope queries
-were answered and right, against 94.0% right with no threshold, because some correct answers also fall below 0.93.
+label, so it comes back `null`. On CLINC150, trained on in-scope examples only, a threshold of 0.9 picked on the
+validation split returned `null` for 87.0% of the 1,000 out-of-scope test queries with bge-small (`eval/results-bge-small.json`).
+The cost: 84.7% of in-scope queries were answered and right, against 94.4% right with no threshold, because some correct
+answers also fall below 0.9. With all-MiniLM-L6-v2, at 0.93 (`eval/results.json`): 86.3%, 82.9% and 94.0%.
 
 This needs enough examples per label to mean something. With 3 examples per label, a head gave "hello" a confidence of
 0.89. CLINC150 has 100 examples per label.

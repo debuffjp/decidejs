@@ -58,9 +58,9 @@ BANKING77 (16 threads, 2026-11-01):
 |---|---|---|
 | Cross-origin isolated, bge-small (default) | 7.7 ms | 13.8 ms |
 | Cross-origin isolated, all-MiniLM-L6-v2 | 4.2 ms | 7.7 ms |
-| Not isolated, all-MiniLM-L6-v2 (`bench/results.json`) | | 14.3 ms |
+| Not isolated, all-MiniLM-L6-v2 (2026-10-31 run) | | 14.3 ms |
 
-Not isolated has only been measured with all-MiniLM-L6-v2. Training BANKING77 in a worker took 228 s with bge-small,
+Not isolated has only been measured with all-MiniLM-L6-v2, in a run where isolation took p95 from 14.3 ms to 7.8 ms. Training BANKING77 in a worker took 228 s with bge-small,
 and the page never stalled for more than 18 ms.
 
 `credentialless` lets the page keep loading cross-origin images and scripts without credentials and without each
@@ -73,7 +73,7 @@ Header config for Vite, webpack and Next.js is in [bundlers.md](bundlers.md).
 
 | File | Size |
 |---|---|
-| Model, bge-small-en-v1.5 at q8 (default) | 34 MB |
+| Model, Decide Small at q8 (default) | 34 MB |
 | Model, all-MiniLM-L6-v2 at q8 (pre-release default) | 23.7 MB |
 | onnxruntime wasm | 23.6 MB (5.8 MB gzipped) |
 | onnxruntime wasm with the alias below | 12.9 MB (3.3 MB gzipped) |
@@ -100,13 +100,39 @@ The model files are cached by the browser after the first download, so later vis
 belongs to the page's origin and the browser may clear it, so be ready for a second download. Head files are ordinary static files: give them a content hash in the file name or a cache header as you
 would any other asset.
 
+## Host the model files yourself
+
+By default the files come from Hugging Face on first use and are then cached. To serve them from your own host, set
+`modelHost` (since 0.1.1):
+
+```ts
+const d = await createWorkerDecider({ modelHost: "https://cdn.example.com/models" });
+```
+
+Files are read from `<modelHost>/<model>/`, with the tokenizer and config files alongside the `onnx` folder:
+
+```
+https://cdn.example.com/models/debuffjp/decide-small/config.json
+https://cdn.example.com/models/debuffjp/decide-small/tokenizer.json
+https://cdn.example.com/models/debuffjp/decide-small/tokenizer_config.json
+https://cdn.example.com/models/debuffjp/decide-small/onnx/model_quantized.onnx
+```
+
+Copy them from [debuffjp/decide-small](https://huggingface.co/debuffjp/decide-small) or
+[debuffjp/decide-multilingual](https://huggingface.co/debuffjp/decide-multilingual). The revision pin doesn't apply here:
+your host serves whichever files you copied.
+
+`modelHost` applies to the whole page or process: it sets transformers.js' host, so later deciders in the same thread
+use it too, even without passing it. A worker decider sets it inside its worker. If the host is on another origin, it
+needs to allow CORS requests from your page.
+
 ## Bundlers
 
 decidekit starts its worker with `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`, the pattern
 Vite, webpack 5 and esbuild-based tools recognise. Tested from the packed package in Vite 7.1, webpack 5.112 and
 Next.js 16.4 (Turbopack). Config for each: [bundlers.md](bundlers.md).
 
-If your setup needs a different worker URL, create the `Worker` yourself, pointing at decidekit' `dist/worker.js`
+If your setup needs a different worker URL, create the `Worker` yourself, pointing at decidekit's `dist/worker.js`
 however your bundler serves it, and pass it as the second argument: `createWorkerDecider(options, worker)`.
 
 ## Keep the encoder out of the page bundle

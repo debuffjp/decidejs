@@ -2,13 +2,14 @@
 
 ## Which languages does it support?
 
-English with the default model. For other languages, use `multilingual-e5-small`:
+English with the default model. For other languages, use Decide Multilingual:
 
 ```ts
-const d = await createDecider({ model: "Xenova/multilingual-e5-small" });
+const d = await createDecider({ model: "debuffjp/decide-multilingual" });
 ```
 
-decidekit knows its settings (the "query: " prefix it expects, its temperatures), so confidence stays calibrated. It
+Decide Multilingual is an unmodified copy of `Xenova/multilingual-e5-small`, from intfloat's multilingual-e5-small, which
+is why the table below calls it e5. Before 0.1.1 this example used the Xenova id, which still works. decidekit knows its settings (the "query: " prefix it expects, its temperatures), so confidence stays calibrated. It
 downloads about 118 MB against 34 MB. On MASSIVE (60 intents, labels named in English, 2,000 test messages per
 language, eval/multilingual.ts):
 
@@ -36,7 +37,8 @@ on the part that carries the meaning (a subject line, a title, the first paragra
 ## Does my users' text leave the device?
 
 No. In the browser, the model and the head run in the user's tab and training runs there too. decidekit makes no network
-requests of its own beyond downloading the model files (and whatever head file you fetch yourself).
+requests of its own beyond downloading the model files, from Hugging Face or your own `modelHost` (and whatever head file
+you fetch yourself).
 
 ## Does it work offline?
 
@@ -62,13 +64,13 @@ They combine: decide locally, and send only answers below `minConfidence` (where
 ## How does it compare with jimothy?
 
 [jimothy](https://www.npmjs.com/package/jimothy) (MIT) also builds typed local classifiers with calibrated confidence. It
-reports 92.4% on BANKING77, above decidekit' 90.7%. It trains in Node and runs inference in a worker. Pick jimothy if you
+reports 92.4% on BANKING77, above decidekit's 90.7%. It trains in Node and runs inference in a worker. Pick jimothy if you
 train ahead of time in Node and want the higher number. Pick decidekit if training has to happen in the page, from the
 user's own data.
 
 ## And the transformers.js zero-shot pipeline?
 
-It is NLI-based, its result is untyped and its scores are not calibrated. decidekit' zero-shot compares embeddings, types
+It is NLI-based, its result is untyped and its scores are not calibrated. decidekit's zero-shot compares embeddings, types
 the choice as your labels and can move to a trained head with the same `decide()` call.
 
 ## Does it use WebGPU?

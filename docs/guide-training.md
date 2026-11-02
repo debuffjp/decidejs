@@ -1,7 +1,7 @@
 # Training a head
 
 A head is a small layer trained on your examples. It sits on top of the encoder and turns an embedding into a choice
-between your labels. Trained heads are far more accurate than zero-shot (90-94% against 61-70% on the two intent
+between your labels. Trained heads are far more accurate than zero-shot (90-94% against 66-73% on the two intent
 benchmarks below) and their confidence is calibrated.
 
 ## Collect examples
@@ -36,7 +36,7 @@ Accuracy on each dataset's test split, mean of 3 seeds, default model (bge-small
 | Calibration error (ECE), BANKING77 | 0.071 | 0.029 | 0.011 | 0.017 |
 | Calibration error (ECE), CLINC150 | 0.028 | 0.010 | 0.015 | 0.008 |
 
-Source: `eval/results-bge-small.json`. With all-MiniLM-L6-v2, the pre-release default (`eval/results.json`):
+Source: `eval/results-bge-small.json`, measured without label names. With all-MiniLM-L6-v2, the pre-release default (`eval/results.json`):
 
 | Examples per label | 5 | 10 | 25 | all |
 |---|---|---|---|---|
@@ -44,11 +44,12 @@ Source: `eval/results-bge-small.json`. With all-MiniLM-L6-v2, the pre-release de
 | CLINC150 (150 labels) | 87.3% | 89.8% | 92.8% | 94.0% |
 | Calibration error (ECE), BANKING77 | 0.065 | 0.048 | 0.025 | 0.019 |
 | Calibration error (ECE), CLINC150 | 0.029 | 0.013 | 0.012 | 0.012 |
- BANKING77's labels are close together (many card and transfer intents), so it needs more
+
+BANKING77's labels are close together (many card and transfer intents), so it needs more
 examples than CLINC150, whose 150 intents spread over 10 domains.
 
 Small tasks need fewer. On 60 tasks per size with 2 to 10 labels sampled from CLINC150, scored on its validation
-queries (`eval/tiny.ts`):
+queries, with all-MiniLM-L6-v2 (`eval/tiny.ts`):
 
 | Examples per label | 1 | 2 | 3 | 5 |
 |---|---|---|---|---|
@@ -71,12 +72,13 @@ example at the starting point of training. With bge-small at 5 examples per labe
 81.8% on BANKING77 and from 90.4% to 91.4% on CLINC150; with 1 example per label, from 58% to 73% and 69% to 84%.
 Pre-release builds (all-MiniLM-L6-v2) counted the name as 3 examples: there it raised test accuracy at 5 per label from
 77.4% to 78.7% on BANKING77 and from 86.0% to 87.3% on CLINC150.
+At that weight, bge-small got no better at 5 per label (BANKING77 79.3%, CLINC150 90.5% on the dev splits), so before 0.1.0
+these docs suggested `labelNames: false` with bge-small. At weight 1 you can leave it on (`eval/results-priors.jsonl`).
 
 Turn it off with `{ labelNames: false }` (CLI: `--no-label-names`) when:
 
 - labels are opaque ids (`c17`, `INTENT_042`) or codes whose words mean nothing;
-- a label's name says something different from what its examples mean (`other`, `misc`, an internal team name);
-- you use bge-small, where label names slightly hurt on the dev splits.
+- a label's name says something different from what its examples mean (`other`, `misc`, an internal team name).
 
 Labels are compared as words: `_` and `-` become spaces and camelCase is split. `cardArrival`, `card-arrival` and
 `card_arrival` all read as "card arrival".
@@ -96,7 +98,7 @@ await writeFile("support.head.json", saveHead(head));
 
 The head's labels are the distinct labels in `examples`, sorted. Training repeats exactly for the same examples and
 `seed`. Other options are in the [API reference](api.md#trainoptions); the defaults are the ones the tables above were
-measured with.
+measured with, apart from label names.
 
 In a browser, train with `createWorkerDecider()` from `decidekit/browser`: the same `train()`, run in a worker. On the main
 thread, training BANKING77 froze the page for 171 s; in a worker the longest stall was 18 ms. Training 10,003 examples
@@ -171,27 +173,28 @@ check it against the file.
 
 ## Choosing a model
 
-Two encoders have been measured. Both are English.
+Two English encoders have been measured here. For other languages, see the [FAQ](faq.md#which-languages-does-it-support).
 
-| | all-MiniLM-L6-v2 | bge-small-en-v1.5 (default) |
+| | all-MiniLM-L6-v2 | Decide Small, bge-small-en-v1.5 (default) |
 |---|---|---|
-| Model id | `Xenova/all-MiniLM-L6-v2` | `Xenova/bge-small-en-v1.5` |
+| Model id | `Xenova/all-MiniLM-L6-v2` | `debuffjp/decide-small` |
 | Download | 23.7 MB at q8 | 34 MB at q8 |
 | 5 per label, BANKING77 | 78.7% | 82.3% |
 | 5 per label, CLINC150 | 87.3% | 89.6% |
 | All data, BANKING77 | 90.6% | 90.7% |
 | All data, CLINC150 | 94.0% | 94.4% |
 | Time per decision, Chrome median | 4.2 ms | 7.7 ms |
-| Label names | help | slightly hurt; pass `labelNames: false` |
+| Label names | help | help at weight 1 |
 
-The bge-small numbers are without label names (`eval/results-bge-small.json`). With only a handful of examples per label,
+The bge-small numbers are without label names (`eval/results-bge-small.json`). Before 0.1.1 its id was
+`Xenova/bge-small-en-v1.5`, the same weights; that id and heads recording it still work. With only a handful of examples per label,
 bge-small is the better start, which is why it became the default. Pre-release builds defaulted to all-MiniLM-L6-v2.
 With plenty of data the two are close, and MiniLM is smaller and faster. Heads trained on MiniLM need
 `createDecider({ model: "Xenova/all-MiniLM-L6-v2" })`.
 
 ```ts
-const d = await createDecider({ model: "Xenova/bge-small-en-v1.5" });
-const head = await d.train(examples, { labelNames: false });
+const d = await createDecider({ model: "debuffjp/decide-small" });
+const head = await d.train(examples);
 ```
 
 Any Hugging Face sentence-embedding model with ONNX weights can be passed as `model`, but others have not been measured.

@@ -1,7 +1,7 @@
 // decide(text, options): typed, calibrated decisions on device. Zero-shot compares the text with each option's
 // embedding; a trained head (a softmax layer over the same embeddings, 156 KB for 77 labels) is far more
 // accurate. Both return the option literals as the choice type.
-import { pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
+import { env, pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
 import { fitHead, logits, softmax } from "./head.ts";
 
 /** The result of `decide()`. */
@@ -92,13 +92,19 @@ export interface TrainOptions<L extends string = string> {
 
 export interface DeciderOptions {
   /**
-   * A Hugging Face sentence-embedding model with ONNX weights. Default `Xenova/bge-small-en-v1.5` (34 MB at q8).
+   * A Hugging Face sentence-embedding model with ONNX weights. Default `debuffjp/decide-small` (Decide Small, 34 MB at q8).
+   * Before 0.1.1 the default id was `Xenova/bge-small-en-v1.5`, the same weights; that id and heads recording it still work.
    * Pre-release builds defaulted to `Xenova/all-MiniLM-L6-v2` (23 MB): smaller and 1.6x faster, 3 to 5 points less
    * accurate. Pass it to keep using heads trained on it.
    */
   model?: string;
   /** Defaults to transformers.js' choice: wasm in browsers, cpu in Node. */
   device?: "wasm" | "webgpu" | "cpu";
+  /**
+   * Serve model files from your own host instead of Hugging Face, as `<modelHost>/<model>/`, for example
+   * `https://cdn.example.com/models/debuffjp/decide-small/onnx/model_quantized.onnx`. Applies to the whole page or process.
+   */
+  modelHost?: string;
   /** Weight precision. Default `q8`. */
   dtype?: "q8" | "fp16" | "fp32";
   /** Called as model files download (first load only; later loads come from cache). */
@@ -122,9 +128,15 @@ const LABEL_NAME_WEIGHT = 1;
 // multilingual-e5-small's similarities sit close together, so it needs far lower temperatures: on MASSIVE in English
 // and Japanese, 0.0105 for label names (calibration error 0.03 to 0.04; descriptions not yet measured) and a floor of
 // 0.4 (eval/e5-settings.ts). It also expects "query: " before every text.
-const SMALL_HEAD_FLOOR: Record<string, number> = { "Xenova/bge-small-en-v1.5": 0.5, "Xenova/multilingual-e5-small": 0.4 };
-const TEMPERATURES: Record<string, [names: number, described: number]> = { "Xenova/bge-small-en-v1.5": [0.03, 0.025], "Xenova/all-MiniLM-L6-v2": [0.05, 0.05], "Xenova/multilingual-e5-small": [0.0105, 0.0105] };
-const PREFIX: Record<string, string> = { "Xenova/multilingual-e5-small": "query: " };
+// The Decide models are unmodified copies of these upstream ids, so the old ids and heads trained on them still work.
+const SMALL = "debuffjp/decide-small", MULTILINGUAL = "debuffjp/decide-multilingual";
+const SAME_MODEL: Record<string, string> = { "Xenova/bge-small-en-v1.5": SMALL, "Xenova/multilingual-e5-small": MULTILINGUAL };
+const canonical = (model: string) => SAME_MODEL[model] ?? model;
+// Pinned so a later change on Hugging Face can't change what an installed version decides.
+const REVISIONS: Record<string, string> = { [SMALL]: "188d690f86190863e3b4e44e29c88348b10230c4", [MULTILINGUAL]: "a3e353d26d846b2163db8acad65ef3d43893592e" };
+const SMALL_HEAD_FLOOR: Record<string, number> = { [SMALL]: 0.5, [MULTILINGUAL]: 0.4 };
+const TEMPERATURES: Record<string, [names: number, described: number]> = { [SMALL]: [0.03, 0.025], "Xenova/all-MiniLM-L6-v2": [0.05, 0.05], [MULTILINGUAL]: [0.0105, 0.0105] };
+const PREFIX: Record<string, string> = { [MULTILINGUAL]: "query: " };
 
 function toDecision<L extends string>(labels: readonly L[], p: number[]): Decision<L> {
   let best = 0;
@@ -138,9 +150,14 @@ function toDecision<L extends string>(labels: readonly L[], p: number[]): Decisi
  * `train()`. In a browser, prefer `createWorkerDecider()` from `decidekit/browser`: the encoder blocks the thread
  * it runs on.
  */
-export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device, dtype = "q8", temperature, onProgress }: DeciderOptions = {}) {
+export async function createDecider({ model: requested = SMALL, device, dtype = "q8", temperature, onProgress, modelHost }: DeciderOptions = {}) {
+  const model = canonical(requested);
+  if (modelHost) {
+    env.remoteHost = modelHost.endsWith("/") ? modelHost : modelHost + "/";
+    env.remotePathTemplate = "{model}/";
+  }
   const embed: FeatureExtractionPipeline = await (pipeline as any)("feature-extraction", model, {
-    device, dtype,
+    device, dtype, revision: REVISIONS[model],
     progress_callback: onProgress && ((p: any) => p.status === "progress" && onProgress({ file: p.file, loaded: p.loaded, total: p.total })),
   });
   const optionCache = new Map<string, number[][]>(), prefix = PREFIX[model] ?? "";
@@ -159,7 +176,7 @@ export async function createDecider({ model = "Xenova/bge-small-en-v1.5", device
   async function score<L extends string>(q: number[], using: Choices<L>, minConfidence?: number): Promise<Decision<L, L | null>> {
     let d: Decision<L>;
     if (isHead(using)) {
-      if (using.model !== model) throw new Error(`decidekit: this head was trained on ${using.model}, but the decider uses ${model}. Pass { model: "${using.model}" } to createDecider.`);
+      if (canonical(using.model) !== model) throw new Error(`decidekit: this head was trained on ${using.model}, but the decider uses ${model}. Pass { model: "${using.model}" } to createDecider.`);
       d = toDecision(using.labels, softmax(logits(using, q), using.temperature));
     } else {
       const labels = (Array.isArray(using) ? using : Object.keys(using)) as L[];

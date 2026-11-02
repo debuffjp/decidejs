@@ -1,9 +1,12 @@
 # API reference
 
-decidekit 0.1. Two entry points and a CLI:
+decidekit 0.1.1. These entry points and a CLI:
 
 - `decidekit`: `createDecider`, `saveHead`, `loadHead` and the types. Runs in Node and the browser.
 - `decidekit/browser`: `createWorkerDecider`, `saveHead`, `loadHead` and the same types. Browser only (it starts a Web Worker).
+- `decidekit/react`: `useDecider` and `useDecision`.
+- `decidekit/switch`: `switchDecider` and `textOf`.
+- `decidekit/typesafe`: `typesafeClient` and `choice`, the shape of TypeSafe's SDK.
 - `npx decidekit`: `train` and `decide` from the command line (Node 22.18 or later).
 
 ## createDecider(options?)
@@ -19,7 +22,7 @@ function createDecider(options?: DeciderOptions): Promise<{
 ```
 
 Loads the sentence encoder through transformers.js and resolves once it is ready. The first call downloads the model
-files; later loads come from the cache (the browser's cache, or transformers.js' cache directory in Node).
+files from Hugging Face (or your `modelHost`); later loads come from the cache (the browser's cache, or transformers.js' cache directory in Node).
 
 The encoder runs on the thread that calls it. In a browser, use [`createWorkerDecider()`](#createworkerdecideroptions-worker)
 instead, or the page freezes while it works.
@@ -35,14 +38,17 @@ const r = await d.decide("my card never arrived", ["card_arrival", "refund", "ot
 
 | Option | Type | Default | What it does |
 |---|---|---|---|
-| `model` | `string` | `"Xenova/bge-small-en-v1.5"` | Hugging Face id of a sentence-embedding model with ONNX weights. Before this release the default was `"Xenova/all-MiniLM-L6-v2"`: pass it to keep using heads trained on it. |
+| `model` | `string` | `"debuffjp/decide-small"` | Hugging Face id of a sentence-embedding model with ONNX weights. Before 0.1.1 the default id was `"Xenova/bge-small-en-v1.5"`, the same weights; that id and `"Xenova/multilingual-e5-small"` still work and resolve to `"debuffjp/decide-small"` and `"debuffjp/decide-multilingual"`. Before 0.1.0 the default was `"Xenova/all-MiniLM-L6-v2"`: pass it to keep using heads trained on it. |
 | `device` | `"wasm" \| "webgpu" \| "cpu"` | transformers.js' choice (wasm in browsers, cpu in Node) | Where the encoder runs. |
 | `dtype` | `"q8" \| "fp16" \| "fp32"` | `"q8"` | Weight precision of the encoder. |
+| `modelHost` | `string` | none (Hugging Face) | New in 0.1.1. Serves model files from `<modelHost>/<model>/`. It applies to the whole page or process. See [self-hosting](guide-browser.md#host-the-model-files-yourself). |
 | `onProgress` | `(p: { file: string; loaded: number; total: number }) => void` | none | Called as model files download. Only fires on a download, so not on cached loads. |
-| `temperature` | `number` | `0.03` for bge-small (`0.025` for described labels), `0.05` for other models (`0.05` for all models before this release) | Softmax temperature for zero-shot similarities. Setting it uses the same value for named and described labels. Has no effect on trained heads, which carry their own. |
+| `temperature` | `number` | `0.03` for bge-small (`0.025` for described labels), `0.05` for other models (`0.05` for all models before 0.1.0) | Softmax temperature for zero-shot similarities. Setting it uses the same value for named and described labels. Has no effect on trained heads, which carry their own. |
 
-The returned `model` is the model id in use. Trained heads record it, and `decide()` refuses a head trained on a
-different model.
+The returned `model` is the model id in use. An old id resolves to the new one, so `createDecider({ model: "Xenova/bge-small-en-v1.5" })`
+returns `model: "debuffjp/decide-small"`. Trained heads record the id, and `decide()` refuses a head trained on a
+different model. A head recording an old id counts as trained on the new id. Since 0.1.1, downloads of the two Decide
+models are pinned to a revision, so a later change on Hugging Face can't change what an installed version decides.
 
 ### decide(text, using, options?)
 
@@ -56,8 +62,8 @@ Picks one option for `text`. `using` is one of:
 - **An array of labels** (zero-shot). Each label is compared with the text as readable words: `_` and `-` become
   spaces, camelCase is split and the result is lowercased, so `card_arrival` and `cardArrival` are both read as
   "card arrival".
-- **A record of label to description** (zero-shot). The descriptions are compared with the text, as written; the
-  keys are what `choice` returns.
+- **A record of label to description** (zero-shot). The readable name and the description, as written, are both
+  compared with the text, and each label scores by the better of the two. The keys are what `choice` returns.
 - **A trained [`Head`](#head)**. The head's weights score the text and its fitted temperature turns the scores into
   probabilities.
 
@@ -125,7 +131,7 @@ const head = await d.train([
 
 | Option | Type | Default | What it does |
 |---|---|---|---|
-| `labelNames` | `boolean` | `true` | Use each label's readable name as a hint at the starting point (it counts as 1 extra example; 3 before the switch to bge-small). Turn off for opaque ids like `c17`. |
+| `labelNames` | `boolean` | `true` | Use each label's readable name as a hint at the starting point (it counts as 1 extra example; 3 before 0.1.0). Turn off for opaque ids like `c17`. |
 | `epochs` | `number` | `60` | Most passes over the examples. The best epoch on held-out examples is kept. |
 | `learningRate` | `number` | `2` | Gradient descent step size. |
 | `l2` | `number` | `1e-4` | Weight decay. |
@@ -311,7 +317,7 @@ Reads examples, trains a head and writes it with `saveHead()`.
   needs a header row with `text` and `label` columns (other columns are ignored); fields can be quoted with `"`, and
   `""` inside quotes is a literal quote.
 - `-o, --out <file>`: where to write the head. Default `head.json`.
-- `--model <id>`: encoder to train on. Default `Xenova/bge-small-en-v1.5` (`Xenova/all-MiniLM-L6-v2` before this release).
+- `--model <id>`: encoder to train on. Default `debuffjp/decide-small` (`Xenova/bge-small-en-v1.5` before 0.1.1, `Xenova/all-MiniLM-L6-v2` before 0.1.0).
 - `--no-label-names`: same as `labelNames: false`.
 - `--types`: also write `<out without .json>.labels.ts`:
 
@@ -347,6 +353,21 @@ Exit codes: 0 on success, 1 on an error (the message goes to stderr), 2 on a usa
 `withFallback(decider, head, options)` and its `NONE` label (from `decidekit` and `decidekit/browser`) are documented in
 [guide-fallback.md](guide-fallback.md). `useDecider()` and `useDecision()` (from `decidekit/react`) are documented in
 [guide-react.md](guide-react.md).
+
+## decidekit/typesafe
+
+The shape of TypeSafe's SDK on a local decider, for Choice questions. [The guide](guide-typesafe.md) covers what differs.
+
+### typesafeClient(decider)
+
+Wraps a decider from `createDecider()` or `createWorkerDecider()`. `client.systemOne({ state, questions })` resolves with `{ answers }`, one per question.
+Each answer has `choice`, `probabilities` and `confidence`. `confidence` follows TypeSafe's formula, `(n * top - 1) / (n - 1)`, so it reads lower than `decide()`'s.
+
+### choice(instructions, criteria)
+
+A Choice question. `criteria` maps option names to descriptions (`null` for none), or is a trained head. `instructions` is ignored: decidekit compares the state with the options.
+
+`noul` and `score` are exported too, and throw: they aren't supported locally.
 
 ## decidekit/switch
 

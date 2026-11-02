@@ -35,7 +35,7 @@ rows first. Nothing uploads.
 
 **Let an LLM teach it.** Start from label names alone and wrap your LLM call in `withFallback`: unsure messages go to
 the LLM, its answers become training examples, and the share it sees keeps falling. On CLINC150 (150 intents) the LLM
-saw 67% of messages at first and 14.5% after ten retrains, with the local head at 93.3%. Watch it happen in the
+saw 68% of messages at first and 16% after ten retrains, with the local head at 95.3% (default model). Watch it happen in the
 [two-lanes demo](https://debuff.jp/decide/lanes/); the [fallback guide](guide-fallback.md) has the code.
 
 **Games.** Read typed player chat or commands ("attack the goblin", "open the door") with no server, offline, at a
@@ -56,11 +56,11 @@ error?" Small decisions an app makes thousands of times.
 - **Long documents.** The encoder reads 128 to 256 tokens (about a paragraph) and ignores the rest.
 - **Reasoning over facts.** "Is this refund allowed under our policy?" needs the policy, which a sentence encoder
   can't read alongside the text.
-- **Languages other than English** with the default model. Pass `model: "Xenova/multilingual-e5-small"` instead:
+- **Languages other than English** with the default model. Pass `model: "debuffjp/decide-multilingual"` instead:
   76% on Japanese and Chinese intents against 55% and 40% ([FAQ](faq.md#which-languages-does-it-support)).
 - **Tone: sentiment, emotion, toxicity.** The default encoder reads what a text is about better than how it feels:
   61% on tweet sentiment, 49% on emotion with 32 examples per label ([FAQ](faq.md#what-kinds-of-decisions-is-it-good-at)).
-- **Labels you can't give examples for**, when accuracy matters. Zero-shot got 61-70% on our intent benchmarks against
+- **Labels you can't give examples for**, when accuracy matters. Zero-shot got 66-73% on our intent benchmarks against
   90-94% for a trained head.
 
 ## Share yours

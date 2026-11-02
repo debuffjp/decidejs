@@ -9,7 +9,7 @@ Start with the [main README](../README.md) for a five-line example and the headl
 - [In the browser](guide-browser.md): the worker, download progress, cross-origin isolation, first-load size and keeping the encoder out of the page bundle.
 - [Falling back to an LLM](guide-fallback.md): `withFallback()`, learning from the fallback, measured savings.
 - [React](guide-react.md): `useDecider()` and `useDecision()`.
-- [Other languages](faq.md#which-languages-does-it-support): `multilingual-e5-small`, measured on Japanese, Chinese, German and Spanish.
+- [Other languages](faq.md#which-languages-does-it-support): Decide Multilingual, measured on Japanese, Chinese, German and Spanish.
 - [Coming from Jev](guide-typesafe.md): TypeSafe's client shape on a local decider, what differs and using Jev as the fallback.
 - [Bundlers](bundlers.md): Vite, webpack and Next.js config.
 - [switch](guide-switch.md): decidekit as a decision model in the switch harness, with trained heads and a teacher, and WikiRace results.
