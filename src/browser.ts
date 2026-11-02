@@ -19,8 +19,19 @@ export async function createWorkerDecider({ onProgress, ...options }: DeciderOpt
     pending.delete(data.id);
     data.error ? p.reject(new Error(data.error)) : p.resolve(data.value);
   };
+  // After this the worker never answers, so every call, now or later, has to reject.
+  let dead: Error | undefined;
+  const fail = (message: string) => {
+    dead = new Error(message);
+    for (const p of pending.values()) p.reject(dead);
+    pending.clear();
+  };
+  // A failed load gives an empty message, and a wrong worker URL from the bundler is its usual cause.
+  worker.onerror = (e) => fail(`decidekit: the worker failed: ${e.message || "it did not load, check the worker URL your bundler produced"}`);
+  worker.onmessageerror = () => fail("decidekit: the worker failed: it sent a message the page can't read");
   const call = <T>(op: string, payload: object, progress?: (p: any) => void) =>
     new Promise<T>((resolve, reject) => {
+      if (dead) return reject(dead);
       const id = next++;
       pending.set(id, { resolve, reject, progress });
       worker.postMessage({ id, op, ...payload });
@@ -43,8 +54,7 @@ export async function createWorkerDecider({ onProgress, ...options }: DeciderOpt
       call<Head<L>>("train", { args: [examples, opts] }, (p) => onEpoch?.(p.epoch, p.accuracy)),
     terminate: () => {
       worker.terminate();
-      for (const p of pending.values()) p.reject(new Error("decidekit: the worker was terminated"));
-      pending.clear();
+      fail("decidekit: the worker was terminated");
     },
   };
 }

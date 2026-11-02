@@ -48,8 +48,8 @@ files in its cache directory after the first download.
 
 ## What does it cost to run?
 
-Nothing per call. The costs are the first download (34 MB of model plus 12.9 MB of wasm, 3.3 MB gzipped, with the
-wasm alias in [bundlers.md](bundlers.md)) and the user's CPU: about 8 ms median per decision in Chrome, 1.1 ms per text
+Nothing per call. The costs are the first download (34 MB of model plus 12.9 MB of wasm, 3.3 MB gzipped; 23.6 MB of
+wasm before 0.2.1) and the user's CPU: about 8 ms median per decision in Chrome, 1.1 ms per text
 in Node with `decideMany()`. The pre-release default, all-MiniLM-L6-v2, needed about 36 MB and 3-5 ms.
 
 ## Should I use this or an LLM?
@@ -76,7 +76,7 @@ the choice as your labels and can move to a trained head with the same `decide()
 
 Not by default. `createDecider({ device: "webgpu" })` passes the device through to transformers.js, but WebGPU in the
 worker is not done yet and has not been measured. The default is wasm in browsers and cpu in Node. If you do use WebGPU,
-leave out the wasm alias from [bundlers.md](bundlers.md).
+leave out the optional alias from [bundlers.md](bundlers.md); the wasm download is then 23.6 MB.
 
 ## Does it work on phones?
 

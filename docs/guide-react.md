@@ -55,5 +55,5 @@ again on every render.
 ## Next.js
 
 Use the hooks in a client component (`"use client"`). Next.js still renders client components on the server once; the
-hooks only start the worker in an effect, which never runs there. Add the cross-origin isolation headers and the wasm
+hooks only start the worker in an effect, which never runs there. Add the cross-origin isolation headers and, optionally, the
 alias from [bundlers.md](bundlers.md#nextjs).

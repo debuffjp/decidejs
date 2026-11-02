@@ -106,11 +106,11 @@ isolated run measured 7.7 ms.
 ## 8. Bundlers and download size
 
 **What:** the worker starts with `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`, which
-Vite, webpack 5 and esbuild-based tools understand. An alias from `onnxruntime-web/webgpu` to `onnxruntime-web/wasm`
-drops the WebGPU build decidekit doesn't use by default.
+Vite, webpack 5 and esbuild-based tools understand. From 0.2.1 decidekit fetches onnxruntime's plain wasm unless you
+pass `device: "webgpu"`. An optional alias from `onnxruntime-web/webgpu` to `onnxruntime-web/wasm` drops the WebGPU JS.
 
-**Numbers:** the alias halves the wasm (23.6 MB to 12.9 MB, 3.3 MB gzipped). First visit: the 34 MB model plus the
-wasm. decidekit adds 3.6 KB to the page bundle itself.
+**Numbers:** the plain wasm is 12.9 MB (3.3 MB gzipped), against 23.6 MB for the WebGPU-capable one that 0.2.0 fetched
+with or without the alias. First visit: the 34 MB model plus the wasm. decidekit adds 3.6 KB to the page bundle itself.
 
 **Read more:** [bundlers.md](bundlers.md).
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Browser
+
+- `createWorkerDecider()` rejects when the worker fails to load, crashes or sends an unreadable message. Before, the call never settled. Calls after a failure or after `terminate()` reject too.
+- The wasm download is 12.9 MB (3.3 MB gzipped) unless you pass `device: "webgpu"`. Earlier docs said an alias got this size, but in Chrome with an esbuild build, 0.2.0 fetched the 23.6 MB file with or without it. The alias is now optional and only trims about 14.5 KB gzipped of worker JS. Paths you set in `wasmPaths` are left alone.
+
 ## 0.2.0 (2026-11-02)
 
 ### Training

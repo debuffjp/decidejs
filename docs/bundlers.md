@@ -13,8 +13,8 @@ export default {
   worker: { format: "es" },
   optimizeDeps: { exclude: ["decidekit"] },
   resolve: {
-    // Halves the wasm download (23.6 MB to 12.9 MB; 5.8 MB to 3.3 MB gzipped). decidekit runs on wasm by default,
-    // so it doesn't need the WebGPU build. Leave this out if you pass device: "webgpu".
+    // Optional: drops onnxruntime's WebGPU JS, about 14.5 KB gzipped. Leave this out if you pass device: "webgpu".
+    // Before 0.2.1 this was documented as halving the wasm download; see guide-browser.md.
     alias: { "onnxruntime-web/webgpu": "onnxruntime-web/wasm" },
   },
 };
@@ -29,8 +29,8 @@ server: { headers: { "Cross-Origin-Opener-Policy": "same-origin", "Cross-Origin-
 ## webpack 5
 
 Tested with webpack 5.112 from the packed package, served cross-origin isolated, run in headless Chrome (zero-shot
-and training). It works with no config: webpack splits the worker into its own chunk. The alias brings the wasm
-from 22.5 MiB to 12.3 MiB:
+and training). It works with no config: webpack splits the worker into its own chunk. The optional alias drops
+onnxruntime's WebGPU JS. Before 0.2.1 it was documented as bringing the wasm from 22.5 MiB to 12.3 MiB:
 
 ```js
 // webpack.config.js

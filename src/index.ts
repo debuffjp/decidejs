@@ -150,6 +150,15 @@ function toDecision<L extends string>(labels: readonly L[], p: number[]): Decisi
   return { choice: labels[best], confidence: p[best], probabilities };
 }
 
+function usePlainWasm() {
+  // transformers.js points browsers other than Safari at the 23.6 MB WebGPU-capable build whatever JS is bundled.
+  // Leaves paths the app set itself alone.
+  const paths = env.backends.onnx.wasm?.wasmPaths as { mjs?: string; wasm?: string } | string | undefined;
+  if (!paths || typeof paths === "string" || !paths.wasm?.startsWith("https://cdn.jsdelivr.net/npm/onnxruntime-web@")) return;
+  paths.wasm = paths.wasm.replace(".asyncify.", ".");
+  paths.mjs = paths.mjs?.replace(".asyncify.", ".");
+}
+
 /**
  * Loads the encoder (downloaded once, then cached by the browser or transformers.js) and returns `decide()` and
  * `train()`. In a browser, prefer `createWorkerDecider()` from `decidekit/browser`: the encoder blocks the thread
@@ -161,6 +170,7 @@ export async function createDecider({ model: requested = SMALL, device, dtype = 
     env.remoteHost = modelHost.endsWith("/") ? modelHost : modelHost + "/";
     env.remotePathTemplate = "{model}/";
   }
+  if (device !== "webgpu") usePlainWasm();
   const embed: FeatureExtractionPipeline = await (pipeline as any)("feature-extraction", model, {
     device, dtype, revision: REVISIONS[model],
     progress_callback: onProgress && ((p: any) => p.status === "progress" && onProgress({ file: p.file, loaded: p.loaded, total: p.total })),

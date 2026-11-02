@@ -75,15 +75,17 @@ Header config for Vite, webpack and Next.js is in [bundlers.md](bundlers.md).
 |---|---|
 | Model, Decide Small at q8 (default) | 34 MB |
 | Model, all-MiniLM-L6-v2 at q8 (pre-release default) | 23.7 MB |
-| onnxruntime wasm | 23.6 MB (5.8 MB gzipped) |
-| onnxruntime wasm with the alias below | 12.9 MB (3.3 MB gzipped) |
+| onnxruntime wasm | 12.9 MB (3.3 MB gzipped) |
+| onnxruntime wasm with `device: "webgpu"`, or before 0.2.1 | 23.6 MB (5.8 MB gzipped) |
 | A head, 77 labels | 156 KB |
 | A head, 150 labels | 303 KB |
 
-With the alias, the first visit downloads the 34 MB model plus 12.9 MB of wasm (3.3 MB gzipped). Everything is cached
+The first visit downloads the 34 MB model plus 12.9 MB of wasm (3.3 MB gzipped). Everything is cached
 after that. With all-MiniLM-L6-v2 the first visit was about 36 MB.
 
-The alias swaps onnxruntime's WebGPU build for its plain wasm build, which decidekit uses by default:
+From 0.2.1 decidekit picks the plain wasm file itself. Before 0.2.1 these docs said the alias below halved the wasm,
+but in Chrome with an esbuild build, 0.2.0 fetched the 23.6 MB file with or without it. The alias is now optional: it
+swaps onnxruntime's WebGPU JS for its plain wasm JS, which saved 14.5 KB gzipped of worker JS in that build:
 
 ```js
 // vite.config.js

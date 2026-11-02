@@ -134,8 +134,7 @@ const r = await d.decide(text, head);
 
 Import `loadHead` from `decidekit/browser` too, not from `decidekit`: that keeps the encoder out of your page bundle.
 
-Tested from npm in Vite 7, webpack 5 and Next.js 16 apps; see [docs/bundlers.md](docs/bundlers.md) for the config, including a one-line alias
-that halves the wasm download. Serve the page cross-origin isolated if you can:
+Tested from npm in Vite 7, webpack 5 and Next.js 16 apps; see [docs/bundlers.md](docs/bundlers.md) for the config. Serve the page cross-origin isolated if you can:
 
 ```
 Cross-Origin-Opener-Policy: same-origin
@@ -144,7 +143,7 @@ Cross-Origin-Embedder-Policy: credentialless
 
 That lets wasm use several threads: in our runs with all-MiniLM-L6-v2 it cut p95 decision time from 14.3 ms to 7.8 ms. With the default bge-small, isolated, p95 is 13.8 ms.
 
-Download on first visit: the model (34 MB) and onnxruntime's wasm (23.6 MB, 5.8 MB gzipped), both cached after.
+Download on first visit: the model (34 MB) and onnxruntime's wasm (12.9 MB, 3.3 MB gzipped; 23.6 MB before 0.2.1), both cached after.
 
 ## Models
 
